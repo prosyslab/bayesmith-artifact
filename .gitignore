@@ -2,6 +2,7 @@
 !*/
 __pycache__
 benchmark/*out/**
+!Makefile
 !**/*.*
 !dfsan-inject/images/*.txt
 !dfsan-inject/images/*.sh
