@@ -1,0 +1,11 @@
+*
+!*/
+__pycache__
+benchmark/*out/**
+!**/*.*
+!dfsan-inject/images/*.txt
+!dfsan-inject/images/*.sh
+dfsan-inject/images/*
+*.out
+*.o
+*so
