@@ -5,13 +5,14 @@
 
 #include"lclang.h"
 
+using namespace std;
 using namespace tianyichen::std;
 using namespace clang;
 using namespace clang::ast_matchers;
 
-Logger loc_vars;
-Logger plog("/tmp/plog.log",ios_base::app);
-Logger patch_f("/tmp/patch.txt",ios_base::app);
+CompilerInstance* CIp;
+string workspace="/tmp/";
+Logger loc_vars,plog,patch_f;
 string filename,output,patch;
 using ofileloc=string;
 unordered_map<ofileloc,set<ofileloc>> df_edge;
@@ -25,12 +26,12 @@ set<string>sink_file_source_vars;
 map<string,vector<string>>dfsan_labels;
 int dfsan_id_used;
 void load_labels(){
-	ifstream i("/tmp/loc_vars.txt");
+	ifstream i(workspace+"loc_vars.txt");
 	string a,b;
 	while(i>>a>>b)dfsan_labels[a].push_back(b),++dfsan_id_used;
 }
 void write_labels(){
-	loc_vars.open("/tmp/loc_vars.txt");
+	loc_vars.open(workspace+"loc_vars.txt");
 	for(auto&x:dfsan_labels){
 		for(auto&y:x.second)
 			loc_vars+x.first-y;
@@ -175,8 +176,8 @@ StatementMatcher DeclMatcher=anyOf(
 	binaryOperator(
 		anyOf(hasOperatorName("="),hasOperatorName("|="),hasOperatorName("+="))
 	).bind("binop"),
-	ifStmt().bind("ifstmt"),
-	callExpr().bind("callexp")
+	ifStmt().bind("ifstmt")
+	//,callExpr().bind("callexp")
 );
 map<string,set<string>> extra_vars_by_file;
 /*void generate_extra_patches(){
@@ -281,6 +282,14 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 		}
 		return 0;
 	}
+	void log_var_types(const set<Expr*>&res){
+		PrintingPolicy dp(CIp->getLangOpts());
+		plog-"vartypes:";
+		for(auto x:res){
+			x->dumpColor();
+			plog-make_pair(r.get_source(x),x->getType().getAsString(dp));
+		}
+	}
 	void run(const MatchFinder::MatchResult &Result){
 		Context= Result.Context;
 		r.Context=Context;
@@ -314,6 +323,7 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 				//assert(lhs); //not ture can be MemberExpr->-ImplicitCastExpr->DeclRefExpr, e.g. png_ptr->zbuf_size
 				for(auto& varname:source_vars()){
 					plog+"source"<DUM(varname);
+					log_var_types(r.find_vars_expr_raw(_source_vars()));
 					auto uniq_name=get_new_label(it->first);
 					auto dfsan_begin="\ndfsan_set_label("+uniq_name+",&"+varname+",sizeof("+varname+"));\n";
 
@@ -336,6 +346,7 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 					plog+"sink"<DUM(varname);
 					auto label=get_new_label(it->first);
 					//; at the beginning is for closing goto labels
+					if(sink_labels[src_loc].empty())continue;
 					string dfsan_end="\n;dfsan_label "+label+"=dfsan_get_label((long)"+varname+");";
 					for(auto&x:sink_labels[src_loc]){
 						sink_file_source_vars.insert(x);
@@ -345,6 +356,7 @@ printf(__FILE__ "[%d] %s %s %d\n" ,__LINE__,")"+label+"\",\""+x+"\",dfsan_has_la
 					plog-dfsan_end;
 					patch_f<dfsan_end<"\nbefore "<src_loc<'\n';
 					//r.InsertBefore(FS,dfsan_end);
+					log_var_types(r.find_vars_expr_raw(_sink_vars()));	
 				}
 			}
 		}
@@ -418,7 +430,7 @@ private:
 	ASTMatchModify::MyASTMatcherCallBack astcb{r};
 };
 
-class ToyASTAction : public PluginASTAction
+class MyASTAction : public PluginASTAction
 {
 public:
 	virtual unique_ptr<clang::ASTConsumer> CreateASTConsumer(CompilerInstance &Compiler,
@@ -430,6 +442,7 @@ public:
 
 	bool ParseArgs(const CompilerInstance &CI, const
 					std::vector<std::string>& args) {
+		CIp=(CompilerInstance*)&CI;
 		auto&SM=CI.getSourceManager();
 		filename=SM.getFileEntryForID(SM.getMainFileID())->getName().str();
 		load_labels();
@@ -437,12 +450,17 @@ public:
 		if(filename!="conftest.c"){
 			auto md=getenv("DFPG_MODE");
 			if(!md)return 1;
+			auto ws=getenv("WORKDIR");
+			if(!ws)return 1;
+			workspace=ws;
+			if(workspace.back()!='/')workspace.push_back('/');
 			if(!strcmp(md,"genSource")){
 				mode=genSource;
 			}else if(!strcmp(md,"genSink")){
 				mode=genSink;
 			}
-			ifstream ts("/tmp/task.txt");
+			dmp(workspace);
+			ifstream ts(workspace+"task.txt");
 			ts>>output>>patch;
 			string a,b;
 			while(ts>>a>>b){
@@ -452,6 +470,8 @@ public:
 				for(auto&x:dfsan_labels[a])
 					sink_labels[b].insert(x);
 			}
+			plog.open(workspace+"plog.log",ios_base::app);
+			patch_f.open(workspace+"patch.txt",ios_base::app);
 		}
 
 		//plog<interested_points.size()<*interested_points.begin()<'\n';
@@ -460,5 +480,5 @@ public:
 	}
 };
 
-static clang::FrontendPluginRegistry::Add<ToyASTAction>
+static clang::FrontendPluginRegistry::Add<MyASTAction>
 X("DfsanPlugin", "DFsan Plugin");

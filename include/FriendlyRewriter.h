@@ -157,6 +157,31 @@ struct FriendlyRewriter:Rewriter{
 			token=Lexer::findNextToken(token.getLocation(),*SMp,*LOp).getValue();
 		}
 	}
+	auto find_vars_expr_raw(const clang::Expr* e){
+		using namespace clang;
+		using namespace std;
+		set<Expr*> rt;
+		//static tianyichen::std::Logger l("/tmp/std.log",ios_base::app);
+		const function<void(const Expr*)> dfs=[&](const auto e){
+			//toggies for only non struct types
+			if(auto f=dyn_cast<MemberExpr>(e);f){
+				if(!f->getType().getTypePtr()->isStructureType())
+					rt.insert((Expr*)f);
+				return;
+			}
+			if(auto f=dyn_cast<DeclRefExpr>(e);f){
+				if(!dyn_cast<FunctionDecl>(f->getDecl())){
+					if(f->isLValue()&&!f->getDecl()->getType().getTypePtr()->isStructureType())
+						rt.insert((Expr*)f);
+				}
+			}
+			for(auto x:e->children()){
+				dfs((const Expr*)x);
+			}
+		};
+		dfs(e);
+		return rt;
+	}
 	auto find_vars_expr(const clang::Expr* e){
 		using namespace clang;
 		using namespace std;
