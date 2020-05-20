@@ -5,7 +5,6 @@
 
 #include"lclang.h"
 
-using namespace std;
 using namespace tianyichen::std;
 using namespace clang;
 using namespace clang::ast_matchers;
@@ -13,7 +12,7 @@ using namespace clang::ast_matchers;
 CompilerInstance* CIp;
 string workspace="/tmp/";
 Logger loc_vars,plog,patch_f;
-string filename,output,patch;
+string filename,output,patch,full_filename;
 using ofileloc=string;
 unordered_map<ofileloc,set<ofileloc>> df_edge;
 unordered_map<ofileloc,set<string>> sink_labels;
@@ -42,6 +41,7 @@ enum Mode{
 	disabled=0,
 	genSource,
 	genSink,
+	writeIns
 }mode;
 string get_new_label(string loc){
 	auto rt="_SaN_"+to_string(++dfsan_id_used+((mode-1)<<10));
@@ -63,18 +63,6 @@ struct DfsanFactory{
 
 FriendlyRewriter r;
 using namespace llvm;
-string query_src_loc(SourceLocation loc,bool lineonly=true){
-	auto fs=loc.printToString(*r.SMp);
-	int cnt=0;
-	if(fs.find('<')!=string::npos){
-		loc.dump(*r.SMp);
-	}
-	//auto a=fs.rfind('/');
-	//auto b=fs.rfind(':');
-	//fs=fs.substr(a+1,b-a-1);
-	//plines<fs<'\n';
-	return fs;
-}
 class ToyClassVisitor : public RecursiveASTVisitor<ToyClassVisitor>
 {
 private:
@@ -163,22 +151,21 @@ public:
 	}
 	bool VisitStmt(Stmt*s){
 		if(!r.IsInMainFile(s))return 1;
-		auto l=query_src_loc(s->getBeginLoc());
-		if(interested.contains(l))
-			plog<l<'\n';
 		//s->dumpColor();
 		return 1;
 	}
 
 };
 namespace ASTMatchModify{
-StatementMatcher DeclMatcher=anyOf(
-	binaryOperator(
-		anyOf(hasOperatorName("="),hasOperatorName("|="),hasOperatorName("+="))
-	).bind("binop"),
-	ifStmt().bind("ifstmt")
+StatementMatcher DeclMatcher=
+binaryOperator(
+	anyOf(hasOperatorName("="),hasOperatorName("|="),hasOperatorName("+="))
+).bind("binop");
+//anyOf(
+	
+	//,ifStmt().bind("ifstmt")
 	//,callExpr().bind("callexp")
-);
+//);
 map<string,set<string>> extra_vars_by_file;
 /*void generate_extra_patches(){
 	map<string,int>cnt;
@@ -213,7 +200,7 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 		int cnt=0;
 		auto a=fs.rfind('/');
 		auto b=fs.rfind(':');
-		fs=fs.substr(a+1,b-a-1);
+		//fs=fs.substr(a+1,b-a-1);
 		return fs;
 	}
 	int phase=0;
@@ -233,6 +220,7 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 	}
 	auto source_vars(){
 		auto rt=r.find_vars_expr(_source_vars());
+		dmp(rt.size());
 		//erase_if(rt,var_filter);
 		return rt;
 	}
@@ -276,7 +264,7 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 			auto y=split2(x.first,':');
 			if(y.first==filename&&between(atoi(y.second),a,b)){
 				visited.insert(&x.first);
-				plog+"interesting "+loca-locb;
+				plog+"interesting "+y+loca-locb;
 				return 1;
 			}
 		}
@@ -307,15 +295,18 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 			if(s_callexp)FS=s_callexp,mtype=callexp;
 		}
 		assert(mtype!=invalid);
-		if(!FS)return;
-		if(!r.IsInMainFile(FS))return;
+		if(!FS||!r.IsInMainFile(FS))return;
 		//if(!processed.insert(ln).second)return;
 		auto src_loc=query_src_loc(FS->getBeginLoc());
 		auto endLoc=query_src_loc(FS->getEndLoc());
 
 		if(!IsInterestingPair(src_loc,endLoc))return;
+		plog+FS->getBeginLoc().printToString(*r.SMp)-FS->getEndLoc().printToString(*r.SMp);
 		plog+"src:"-r.get_source(FS);
-		auto range=interested.equal_range(src_loc);
+		plog<DUM(src_loc.substr(0,src_loc.rfind(':')));
+		plog<DUM(endLoc.substr(0,endLoc.rfind(':')));
+		auto range=make_pair(interested.lower_bound(src_loc.substr(0,src_loc.rfind(':'))),
+			interested.upper_bound(endLoc.substr(0,src_loc.rfind(':'))));
 		for(auto it=range.first;it!=range.second;++it){
 			//FS->dumpColor();
 			if(it->second&1&&mode==genSource){
@@ -325,15 +316,19 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 					plog+"source"<DUM(varname);
 					log_var_types(r.find_vars_expr_raw(_source_vars()));
 					auto uniq_name=get_new_label(it->first);
-					auto dfsan_begin="\ndfsan_set_label("+uniq_name+",&"+varname+",sizeof("+varname+"));\n";
-
+					dmp((mtype==binop));
 					if(mtype!=binop){
-						plog<"source if|call::"<src_loc<' '<endLoc<'\n';
-						patch_f<<'{'<<dfsan_begin<<"/*ifstmt|callexp*/\n"<<"before "<<src_loc<<'\n';
-						patch_f<<"}\n"<<"after "<<endLoc<<'\n';
+				///*		plog<"source if|call::"<src_loc<' '<endLoc<'\n';
+				//		patch_f<<'{'<<dfsan_begin<<"/*ifstmt|callexp*/\n"<<"before "<<src_loc<<'\n';
+				//		patch_f<<"}\n"<<"after "<<endLoc<<'\n';
+				//	} else if(mtype==callexp){
+				//		plog<"source callexp"<src_loc<' '<endLoc<'\n';
+				//		patch_f<<'{'<<dfsan_begin<<"/*ifstmt|callexp*/\n"<<"before "<<src_loc<<'\n';
+				//		patch_f<<"}\n"<<"after "<<endLoc<<'\n';*/
 					}else{
 						plog<"source binop\n";
 						//patch_f-'{'+"before"-src_loc;
+						auto dfsan_begin=",dfsan_set_label("+uniq_name+",&"+varname+",sizeof("+varname+"))";
 						patch_f<dfsan_begin<"/*binexp*/\n"<"after "<endLoc<'\n';
 					}
 				}
@@ -383,46 +378,55 @@ public:
 		if(mode==disabled)return;
 		Matcher.matchAST(context);
 		bool hasPrev=0;
-		if(mode==genSource){
+		cerr<<visited.size()<<' '<<interested.size()<<endl;
+		dmp(dfsan_labels.size());
+		write_labels();
+		if(mode==genSink){
+			Logger ofs(full_filename+".dfsan");
+			ofs.ccl.push_back(&plog);
 			vector<string> labelsHere;
-			for(auto&x:dfsan_labels){
+			for(auto& x:dfsan_labels){
 				if(split2(x.first,':').first==filename){
-					for(auto&y:x.second){
-						if(hasPrev)patch_f<',';
+					for(auto& y:x.second){
+						if(hasPrev)ofs<',';
 						else{
 							hasPrev=1;
-patch_f<R"(#include <sanitizer/dfsan_interface.h>
+							ofs<R"(#include <sanitizer/dfsan_interface.h>
 dfsan_label )";
 						}
-						patch_f<y;
+						ofs<y;
 						labelsHere+=y;
 					}
 				}
 			}
 			if(hasPrev){
-				patch_f-';';
-				patch_f<"void __attribute__ ((constructor)) _dfsan_init_"+random_id()+"(){\n";
-				for(auto&y:labelsHere){
-					patch_f<y<"=dfsan_create_label(\""<y<"\",0);\n";
+				ofs-';';
+				ofs<"void __attribute__ ((constructor)) _dfsan_init_"+random_id()+"(){\n";
+				for(auto& y:labelsHere){
+					ofs<y<"=dfsan_create_label(\""<y<"\",0);\n";
 				}
-				patch_f+"}\nbefore"<filename<":1\n";
+				ofs-"}";
 			}
-		}
-		
-		hasPrev=0;
-		for(auto&x:sink_file_source_vars){
-			if(hasPrev)patch_f<',';
-			else{
-				hasPrev=1;
-patch_f<R"(#include <sanitizer/dfsan_interface.h>
+
+			hasPrev=0;
+			for(auto& x:sink_file_source_vars){
+				if(hasPrev)ofs<',';
+				else{
+					hasPrev=1;
+					ofs<R"(#include <sanitizer/dfsan_interface.h>
 #include<stdio.h>
 extern dfsan_label )";
+				}
+				ofs<x;
 			}
-			patch_f<x;
+			if(hasPrev)ofs+";\n";
+
+			ofs.ccl.clear();
+			string out;
+			llvm::raw_string_ostream ossr(out);
+			r.getEditBuffer(r.SMp->getMainFileID()).write(ossr);
+			ofs<<out;
 		}
-		if(hasPrev)patch_f+";\nbefore"<filename<":1\n";
-		cerr<<visited.size()<<' '<<interested.size()<<endl;
-		write_labels();
 	}
 private:
 	ToyClassVisitor visitor;
@@ -440,12 +444,10 @@ public:
 	}
 	virtual ActionType getActionType(){return AddBeforeMainAction;}
 
-	bool ParseArgs(const CompilerInstance &CI, const
-					std::vector<std::string>& args) {
+	bool ParseArgs(const CompilerInstance &CI, const vector<string>& args) {
 		CIp=(CompilerInstance*)&CI;
 		auto&SM=CI.getSourceManager();
 		filename=SM.getFileEntryForID(SM.getMainFileID())->getName().str();
-		load_labels();
 		patch_f.ccl.push_back(&plog);
 		if(filename!="conftest.c"){
 			auto md=getenv("DFPG_MODE");
@@ -454,12 +456,12 @@ public:
 			if(!ws)return 1;
 			workspace=ws;
 			if(workspace.back()!='/')workspace.push_back('/');
+			load_labels();
 			if(!strcmp(md,"genSource")){
 				mode=genSource;
 			}else if(!strcmp(md,"genSink")){
 				mode=genSink;
 			}
-			dmp(workspace);
 			ifstream ts(workspace+"task.txt");
 			ts>>output>>patch;
 			string a,b;
@@ -474,6 +476,8 @@ public:
 			patch_f.open(workspace+"patch.txt",ios_base::app);
 		}
 
+		full_filename=SM.getFileEntryForID(SM.getMainFileID())->tryGetRealPathName().str();
+		plog<DUM(full_filename);
 		//plog<interested_points.size()<*interested_points.begin()<'\n';
 		r.setSourceMgr(CI.getSourceManager(),CI.getLangOpts());
 		return true;

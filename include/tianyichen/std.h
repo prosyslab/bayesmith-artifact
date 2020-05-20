@@ -140,6 +140,7 @@ int atoi(string_view s){
 	for(char x:s){
 		if(isdigit(x))rt=rt*10+x-'0';
 		else if(x=='-')neg=!neg;
+		else break;
 	}
 	return neg?-rt:rt;
 }

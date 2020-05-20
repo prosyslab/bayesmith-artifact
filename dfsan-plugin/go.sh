@@ -40,8 +40,9 @@ echo ''> $WORKDIR/patch.txt;make clean;make
 echo '_____________genSink_______________'>>$WORKDIR/plog.log
 export DFPG_MODE=genSink
 make clean;make
+python3 $AHOME/replace.py
 popd
-python3 $AHOME/../dfsan-inject/applyPatch.py $WORKDIR/$APP
+#python3 $AHOME/../dfsan-inject/applyPatch.py $WORKDIR/$APP
 pushd $WORKDIR/$APP
 unset DFPG_MODE
 if ! make 2>makeerr.txt;then
