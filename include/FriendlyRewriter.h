@@ -85,9 +85,9 @@ struct FriendlyRewriter:Rewriter{
 			//it works
 			return InsertTextAfter(s->getEndLoc().getLocWithOffset(1),str);
 		} else{
-			//auto nx_token_o=Lexer::findNextToken(s->getEndLoc(),*SMp,*LOp);
-			//auto&nx_token=nx_token_o.getValue();
-			return InsertTextAfter(s->getEndLoc().getLocWithOffset(1+!get_source(s).ends_with(';')),str);
+			auto nx_token_o=Lexer::findNextToken(s->getEndLoc(),*SMp,*LOp);
+			auto&nx_token=nx_token_o.getValue();
+			return InsertTextAfter(s->getEndLoc().getLocWithOffset(nx_token.getLength()),str);
 		}
 	}
 	//insert after semicolumn
@@ -157,7 +157,7 @@ struct FriendlyRewriter:Rewriter{
 			token=Lexer::findNextToken(token.getLocation(),*SMp,*LOp).getValue();
 		}
 	}
-	auto find_vars_expr_raw(const clang::Expr* e){
+	auto find_vars_expr(const clang::Expr* e){
 		using namespace clang;
 		using namespace std;
 		set<Expr*> rt;
@@ -173,31 +173,6 @@ struct FriendlyRewriter:Rewriter{
 				if(!dyn_cast<FunctionDecl>(f->getDecl())){
 					if(f->isLValue()&&!f->getDecl()->getType().getTypePtr()->isStructureType())
 						rt.insert((Expr*)f);
-				}
-			}
-			for(auto x:e->children()){
-				dfs((const Expr*)x);
-			}
-		};
-		dfs(e);
-		return rt;
-	}
-	auto find_vars_expr(const clang::Expr* e){
-		using namespace clang;
-		using namespace std;
-		set<string> rt;
-		//static tianyichen::std::Logger l("/tmp/std.log",ios_base::app);
-		const function<void(const Expr*)> dfs=[&](const auto e){
-			//toggies for only non struct types
-			if(auto f=dyn_cast<MemberExpr>(e);f){
-				if(!f->getType().getTypePtr()->isStructureType())
-					rt.insert(get_source(f));
-				return;
-			}
-			if(auto f=dyn_cast<DeclRefExpr>(e);f){
-				if(!dyn_cast<FunctionDecl>(f->getDecl())){
-					if(f->isLValue()&&!f->getDecl()->getType().getTypePtr()->isStructureType())
-						rt.insert(f->getNameInfo().getName().getAsString());
 				}
 			}
 			for(auto x:e->children()){
