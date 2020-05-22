@@ -26,7 +26,7 @@ auto& operator<<(ostream& o,const FileLine& f){
 CompilerInstance* CIp;
 string workspace="/tmp/";
 Logger loc_vars,plog,visited_f;
-string filename,output,patch,full_filename;
+string filename,full_filename;
 using ofileloc=string;
 unordered_map<ofileloc,set<ofileloc>> df_edge;
 unordered_map<ofileloc,set<string>> sink_labels;
@@ -139,9 +139,14 @@ anyOf(
 			unless(hasAncestor(binaryOperator()))
 		)
 	).bind("binop")
-	,ifStmt().bind("ifstmt")
-	,callExpr().bind("callexp")
-);
+	//,returnStmt().bind("return")
+	//,expr().bind("expr")
+	//,ifStmt().bind("ifstmt")
+	,callExpr(
+		unless(hasAncestor(binaryOperator()))
+	).bind("callexp")
+)
+;
 
 struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 	ASTContext *Context;
@@ -160,15 +165,13 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 		binop,
 		ifstmt,
 		callexp,
+		vardecl,
 		invalid,
 	}mtype;
 	const BinaryOperator* s_binop;
 	const IfStmt* s_ifstmt;
 	const CallExpr* s_callexp;
-	static bool var_filter(const string&s){
-		if(s.find("___")!=string::npos)return 1;
-		return s=="tmp";
-	}
+	const VarDecl* s_vardecl;
 	static auto filter(set<Expr*>&& a,function<bool(Expr*)>f){
 		set<Expr*> rt;
 		for(auto&& x:a)if(f(x))rt.insert(x);
@@ -177,7 +180,6 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 	auto source_vars(){
 		auto rt=filter(r.find_vars_expr(_source_vars()),
 			[](auto e){return e->isLValue()&&!e->refersToBitField();});
-		//erase_if(rt,var_filter);
 		return rt;
 	}
 	const clang::Expr* _source_vars(){
@@ -249,17 +251,24 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 			s_callexp=Result.Nodes.getNodeAs<CallExpr>("callexp");
 			if(s_callexp)FS=s_callexp,mtype=callexp;
 		}
-		assert(mtype!=invalid);
+		if(!FS){
+			if(s_vardecl=Result.Nodes.getNodeAs<VarDecl>("vardecl"))
+			{
+				//s_vardecl->getinit
+			}
+		}
+		if(mtype==invalid)return;
 		if(!FS||!r.IsInMainFile(FS))return;
 		//if(!processed.insert(ln).second)return;
 		auto src_loc=query_src_loc(FS->getBeginLoc());
 		auto endLoc=query_src_loc(FS->getEndLoc());
+		plog.ccl.clear();
+		plog+"match discovered "+src_loc-endLoc;
 		if(!IsInterestingPair(src_loc,endLoc))return;
-		cerr<<"determined interesting\n";
+		plog+"is interesting "+src_loc-endLoc;
+		plog.ccl.push_back(&cerr);
 		plog+FS->getBeginLoc().printToString(*r.SMp)-FS->getEndLoc().printToString(*r.SMp);
 		plog+"src:"-r.get_source(FS);
-		plog<DUM(src_loc.substr(0,src_loc.rfind(':')));
-		plog<DUM(endLoc.substr(0,endLoc.rfind(':')));
 		auto range=make_pair(interested.lower_bound({src_loc}),
 			interested.upper_bound({endLoc}));
 		dmp(make_pair(src_loc,endLoc));
@@ -274,16 +283,8 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 					auto uniq_name=get_new_label(it->first);
 					if(mtype!=binop){
 						plog+"usource:"+int(mtype)+src_loc-endLoc;
-				///*		plog<"source if|call::"<src_loc<' '<endLoc<'\n';
-				//		patch_f<<'{'<<dfsan_begin<<"/*ifstmt|callexp*/\n"<<"before "<<src_loc<<'\n';
-				//		patch_f<<"}\n"<<"after "<<endLoc<<'\n';
-				//	} else if(mtype==callexp){
-				//		plog<"source callexp"<src_loc<' '<endLoc<'\n';
-				//		patch_f<<'{'<<dfsan_begin<<"/*ifstmt|callexp*/\n"<<"before "<<src_loc<<'\n';
-				//		patch_f<<"}\n"<<"after "<<endLoc<<'\n';*/
-					}else{
+					}else if(mtype==binop){
 						plog<"source binop\n";
-						//patch_f-'{'+"before"-src_loc;
 						//auto dfsan_begin=",dfsan_set_label("+uniq_name+",&"+varname+",sizeof("+varname+"))";
 						if(s_binop->getLHS()->HasSideEffects(*Context)){
 							plog+"HasSideEffects"-r.get_source(s_binop->getLHS());
@@ -293,7 +294,6 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 						auto vn=r.get_source(varname);
 						if(vn.empty()){
 							plog-"ASSERT1";
-							cerr<<"ASSERT1\n";
 							varname->dump();
 							continue;
 						}
@@ -311,6 +311,7 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 			}
 			if(it->second>>1&1&&mode==genSink){
 				//data sink
+				plog+"sink discovered:"-src_loc;
 				for(auto&varname:sink_vars()){
 					plog+"sink"<DUM(varname);
 					//; at the beginning is for closing goto labels
@@ -318,10 +319,10 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 					auto label=get_new_label(it->first);
 					if(r.get_source(varname).empty()){
 						plog-"ASSERT0";
-						cerr<<"ASSERT0\n";
 						varname->dump();
 						continue;
 					}
+					//each variable keeps as variable
 					if(mtype==binop){
 						string dfsan_end=label+"=dfsan_get_label((long)"+r.get_source(varname)+"),";
 						for(auto& x:sink_labels[it->first]){
@@ -331,11 +332,24 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 						dmp(dfsan_end);
 						plog+"dfsan_end"-dfsan_end;
 						r.InsertBefore(FS,dfsan_end);
-					} else{
+					} else if(mtype==callexp){
+						string dfsan_end='('+label+"=dfsan_get_label((long)"+r.get_source(varname)+"),";
+						for(auto& x:sink_labels[it->first]){
+							sink_file_source_vars.insert(x);
+							dfsan_end+=R"(printf(__FILE__ "[%d] %s %s %d\n" ,__LINE__,")"+label+"\",\""+x+"\",dfsan_has_label(" +label+','+x+")),";
+						}
+						dmp(dfsan_end);
+						plog+"dfsan_end"-dfsan_end;
+
+						if(r.isRewritable(varname->getBeginLoc())&&r.isRewritable(varname->getEndLoc())){
+							auto err=r.InsertBefore(varname,dfsan_end)||r.InsertTextAfterToken(varname->getEndLoc(),")");
+							assert(!err);
+						} else plog-"sink not accessible";
+					}else {
 						plog+"usink:"+int(mtype)+src_loc-endLoc;
 					}
-					log_var_types(r.find_vars_expr(_sink_vars()));	
 				}
+				log_var_types(r.find_vars_expr(_sink_vars()));
 			}
 		}
 
@@ -425,12 +439,10 @@ private:
 class MyASTAction : public PluginASTAction
 {
 public:
-	virtual unique_ptr<clang::ASTConsumer> CreateASTConsumer(CompilerInstance &Compiler,
-													llvm::StringRef InFile)
-	{
+	unique_ptr<clang::ASTConsumer> CreateASTConsumer(CompilerInstance &Compiler,llvm::StringRef InFile)override{
 		return unique_ptr<clang::ASTConsumer>(new ToyConsumer());
 	}
-	virtual ActionType getActionType(){return AddBeforeMainAction;}
+	ActionType getActionType()override{return AddBeforeMainAction;}
 
 	bool ParseArgs(const CompilerInstance &CI, const vector<string>& args) {
 		CIp=(CompilerInstance*)&CI;
@@ -451,7 +463,6 @@ public:
 				mode=genSink;
 			}
 			ifstream ts(workspace+"task.txt");
-			ts>>output>>patch;
 			string a,b;
 			while(ts>>a>>b){
 				interested[{a}]|=1;
@@ -462,6 +473,7 @@ public:
 						sink_labels[b].insert(x);
 			}
 			plog.open(workspace+"plog.log",ios_base::app);
+			plog.ccl.push_back(&cerr);
 			visited_f.open(workspace+"visited.txt",ios_base::app);
 		}
 		full_filename=SM.getFileEntryForID(SM.getMainFileID())->tryGetRealPathName().str();

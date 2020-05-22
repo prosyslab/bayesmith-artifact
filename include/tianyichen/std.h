@@ -90,7 +90,7 @@ template<class T>ostream& operator<<(ostream&o,const unordered_set<T>& c){return
 template<class T>ostream& operator<<(ostream&o,const vector<T>& c){return _ostream_ls(o,c);}
 struct Logger:ofstream{
 	using ofstream::ofstream;
-	vector<ofstream*>ccl; //CC list
+	vector<ostream*>ccl; //CC list
 	template<class T>
 	auto& operator<<(const T&v){
 		(ofstream&)*this<<v;
