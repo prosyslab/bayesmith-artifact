@@ -60,11 +60,18 @@ struct FriendlyRewriter:Rewriter{
 		return isa<T>(s);
 	}
 	template<class T>
-	string get_source(const T *s){
-		return Lexer::getSourceText(CharSourceRange(s->getSourceRange(),1),*SMp,{}).str();
+	string get_source(const T* s){
+		return get_source_ref(s).str();
+	}
+	template<class T>
+	llvm::StringRef get_source_ref(const T *s){
+		return Lexer::getSourceText(CharSourceRange(s->getSourceRange(),1),*SMp,{});
 	}
 	string get_source(SourceRange s){
-		return Lexer::getSourceText(CharSourceRange(s,1),*SMp,{}).str();
+		return get_source_ref(s).str();
+	}
+	llvm::StringRef get_source_ref(SourceRange s){
+		return Lexer::getSourceText(CharSourceRange(s,1),*SMp,{});
 	}
 	bool IsInMainFile(clang::SourceLocation Loc){
 		return SMp->isWrittenInMainFile(Loc);

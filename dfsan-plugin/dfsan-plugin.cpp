@@ -7,7 +7,6 @@
 
 using namespace tianyichen::std;
 using namespace clang;
-using namespace clang::ast_matchers;
 
 struct FileLine{
 	string filename;int ln;
@@ -26,7 +25,7 @@ auto& operator<<(ostream& o,const FileLine& f){
 CompilerInstance* CIp;
 string workspace="/tmp/";
 Logger loc_vars,plog,visited_f;
-string filename,full_filename;
+string filename,full_filename,original_code;
 using ofileloc=string;
 unordered_map<ofileloc,set<ofileloc>> df_edge;
 unordered_map<ofileloc,set<string>> sink_labels;
@@ -58,9 +57,13 @@ enum Mode{
 	writeIns
 }mode;
 const char* Mode_str[]={"disabled","genSource","genSink","writeIns"};
-string get_new_label(string loc){
-	auto rt="_SaN_"+to_string(++dfsan_id_used+((mode-1)*10000));
+string get_new_label(const string& loc,const string& var){
+	static Logger labellog(workspace+"label.log",ios::app);
+	string rt="_SaN_";
+	auto hh=hash<string>{}(loc+var);
+	for(int i=0;i<8;++i)rt.push_back("0123456789abcdef"[hh&15]),hh>>=4;
 	dfsan_labels[loc].push_back(rt);
+	labellog+loc+var-rt;
 	return rt;
 }
 struct DfsanFactory{
@@ -130,15 +133,18 @@ public:
 
 };
 namespace ASTMatchModify{
+using namespace clang::ast_matchers;
 StatementMatcher DeclMatcher=
 anyOf(
-	binaryOperator(
+	implicitCastExpr(hasCastKind(CK_LValueToRValue)).bind("ie")
+	,binaryOperator(
 		allOf(
 			anyOf(hasOperatorName("="),hasOperatorName("|="),hasOperatorName("&="),
 				hasOperatorName("+="),hasOperatorName("*="),hasOperatorName("-=")),
 			unless(hasAncestor(binaryOperator()))
 		)
 	).bind("binop")
+	
 	//,returnStmt().bind("return")
 	//,expr().bind("expr")
 	//,ifStmt().bind("ifstmt")
@@ -162,12 +168,14 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 	int phase=0;
 	MyASTMatcherCallBack(FriendlyRewriter&rewriter):r{rewriter}{}
 	enum _mtype{
+		invalid,
+		ie,
 		binop,
 		ifstmt,
 		callexp,
 		vardecl,
-		invalid,
 	}mtype;
+	const ImplicitCastExpr* s_ie;
 	const BinaryOperator* s_binop;
 	const IfStmt* s_ifstmt;
 	const CallExpr* s_callexp;
@@ -243,14 +251,12 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 		mtype=invalid;
 		s_binop = Result.Nodes.getNodeAs<BinaryOperator>("binop");
 		if(s_binop)FS=s_binop,mtype=binop;
-		if(!FS){
-			s_ifstmt=Result.Nodes.getNodeAs<IfStmt>("ifstmt");
-			if(s_ifstmt)FS=s_ifstmt,mtype=ifstmt;
-		}
-		if(!FS){
-			s_callexp=Result.Nodes.getNodeAs<CallExpr>("callexp");
-			if(s_callexp)FS=s_callexp,mtype=callexp;
-		}
+		if(!FS)
+			if(s_ifstmt=Result.Nodes.getNodeAs<IfStmt>("ifstmt"))FS=s_ifstmt,mtype=ifstmt;
+		if(!FS)
+			if(s_callexp=Result.Nodes.getNodeAs<CallExpr>("callexp"))FS=s_callexp,mtype=callexp;
+		if(!FS)
+			if(s_ie=Result.Nodes.getNodeAs<ImplicitCastExpr>("ie"))FS=s_ie,mtype=ie;
 		if(!FS){
 			if(s_vardecl=Result.Nodes.getNodeAs<VarDecl>("vardecl"))
 			{
@@ -259,28 +265,27 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 		}
 		if(mtype==invalid)return;
 		if(!FS||!r.IsInMainFile(FS))return;
-		//if(!processed.insert(ln).second)return;
+		auto source=r.get_source(FS);
 		auto src_loc=query_src_loc(FS->getBeginLoc());
 		auto endLoc=query_src_loc(FS->getEndLoc());
+		if(mtype==ie&&r.get_source(FS).find("_SaN_")!=string::npos)return;
 		plog.ccl.clear();
 		plog+"match discovered "+src_loc-endLoc;
 		if(!IsInterestingPair(src_loc,endLoc))return;
 		plog+"is interesting "+src_loc-endLoc;
 		plog.ccl.push_back(&cerr);
-		plog+FS->getBeginLoc().printToString(*r.SMp)-FS->getEndLoc().printToString(*r.SMp);
 		plog+"src:"-r.get_source(FS);
 		auto range=make_pair(interested.lower_bound({src_loc}),
 			interested.upper_bound({endLoc}));
-		dmp(make_pair(src_loc,endLoc));
-		dmp(make_pair(range.first->first,range.second->second));
 		for(auto it=range.first;it!=range.second;++it){
 			//FS->dumpColor();
 			if(it->second&1&&mode==genSource){
 				//data src
+				if(mtype==ie)return;
 				//assert(lhs); //not ture can be MemberExpr->-ImplicitCastExpr->DeclRefExpr, e.g. png_ptr->zbuf_size
 				for(auto& varname:source_vars()){
 					plog+"source"<DUM(varname);
-					auto uniq_name=get_new_label(it->first);
+					auto uniq_name=get_new_label(it->first,r.get_source(varname));
 					if(mtype!=binop){
 						plog+"usource:"+int(mtype)+src_loc-endLoc;
 					}else if(mtype==binop){
@@ -310,13 +315,29 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 
 			}
 			if(it->second>>1&1&&mode==genSink){
+				plog+"sink discovered:"+src_loc-source;
+				if(mtype==ie){
+					if(s_ie->HasSideEffects(*Context))return;
+					if(!(s_ie->getType()->isArithmeticType()||s_ie->getType()->isPointerType()))return;
+					auto label=get_new_label(it->first,source);
+					string dfsan_end='('+label+"=dfsan_get_label((long)"+r.get_source(s_ie)+"),";
+					for(auto& x:sink_labels[it->first]){
+						sink_file_source_vars.insert(x);
+						dfsan_end+=R"(printf(__FILE__ "[%d] %s %s %d\n" ,__LINE__,")"+label+"\",\""+x+"\",dfsan_has_label(" +label+','+x+")),";
+					}
+					if(r.isRewritable(s_ie->getBeginLoc())&&r.isRewritable(s_ie->getEndLoc())){
+						auto err=r.InsertBefore(s_ie,dfsan_end)||r.InsertTextAfterToken(s_ie->getEndLoc(),")");
+						assert(!err);
+					} else plog-"sink not accessible";
+					return;
+				}
+				return;
 				//data sink
-				plog+"sink discovered:"-src_loc;
 				for(auto&varname:sink_vars()){
 					plog+"sink"<DUM(varname);
 					//; at the beginning is for closing goto labels
 					if(sink_labels[it->first].empty())continue;
-					auto label=get_new_label(it->first);
+					auto label=get_new_label(it->first,r.get_source(varname));
 					if(r.get_source(varname).empty()){
 						plog-"ASSERT0";
 						varname->dump();
@@ -388,8 +409,9 @@ public:
 			vector<string> labelsHere;
 			for(auto& x:dfsan_labels){
 				if(split2(x.first,':').first==filename){
+					unique(x.second,1);
 					for(auto& y:x.second)
-						if(y.size()<=9&&mode==genSource||y.size()>9&&mode==genSink){//_san_9999
+						if(original_code.find(y)==string::npos){
 						if(hasPrev)ofs<',';
 						else{
 							hasPrev=1;
@@ -478,8 +500,9 @@ public:
 		}
 		full_filename=SM.getFileEntryForID(SM.getMainFileID())->tryGetRealPathName().str();
 		plog<DUM(full_filename);
+		auto _=ifstream(full_filename);
+		original_code={(istreambuf_iterator<char>(_)),istreambuf_iterator<char>()};
 		dmp(Mode_str[mode]);
-		dmp(full_filename);
 		//plog<interested_points.size()<*interested_points.begin()<'\n';
 		r.setSourceMgr(CI.getSourceManager(),CI.getLangOpts());
 		return true;

@@ -17,6 +17,10 @@ Conforms to the C++17 standard
 #include<map>
 #include<random>
 #include<string_view>
+#if __has_include("llvm/ADT/StringRef.h")
+#define _TIANYICHEN_HAS_LLVM
+#include "llvm/ADT/StringRef.h"
+#endif
 namespace tianyichen::std{
 using namespace ::std;
 template<class T>
@@ -84,6 +88,9 @@ auto map_keys(const multimap<T,V>&m){
 	for(auto&x:m)rt.insert(x.first);
 	return rt;
 }
+#ifdef _TIANYICHEN_HAS_LLVM
+ostream& operator<<(ostream& o,llvm::StringRef c){ return o<<c.data(); }
+#endif
 template<class T,class V>ostream& operator<<(ostream&o,const pair<T,V>& c){return o<<'<'<<c.first<<','<<c.second<<'>';}
 template<class T>ostream& operator<<(ostream&o,const set<T>& c){return _ostream_ls(o,c);}
 template<class T>ostream& operator<<(ostream&o,const unordered_set<T>& c){return _ostream_ls(o,c);}
