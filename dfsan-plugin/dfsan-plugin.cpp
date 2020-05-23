@@ -186,6 +186,10 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 		return rt;
 	}
 	auto source_vars(){
+		if(mtype==binop){
+			auto rt=s_binop->getLHS();
+			return rt->isLValue()&&!rt->refersToBitField()?set<Expr*>{{rt}}:set<Expr*>{};
+		}
 		auto rt=filter(r.find_vars_expr(_source_vars()),
 			[](auto e){return e->isLValue()&&!e->refersToBitField();});
 		return rt;
@@ -307,6 +311,10 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 						//	r.get_source(s_binop->getRHS())+','+uniq_name+")";
 						//r.ReplaceText(FS->getSourceRange(),dfsan_begin);
 						//plog-"after_replace"-r.get_source(FS)-dfsan_begin;
+						if(!r.isRewritable(FS->getBeginLoc())||!r.isRewritable(FS->getEndLoc())){
+							plog-"source not accessible";
+							continue;
+						}
 						r.InsertBefore(FS,"(");
 						r.InsertTextAfterToken(FS->getEndLoc(),
 							",dfsan_set_label("+uniq_name+",&"+vn+",sizeof("+vn+")),"+vn+")");
@@ -405,7 +413,9 @@ public:
 			llvm::raw_string_ostream ossr(out);
 			r.getEditBuffer(r.SMp->getMainFileID()).write(ossr);
 			Logger ofs(full_filename+".dfsan");
+			Logger liblabels(workspace+"libdfsanlabels.c",ios::app);
 			ofs.ccl.push_back(&plog);
+			ofs.ccl.push_back(&liblabels);
 			vector<string> labelsHere;
 			for(auto& x:dfsan_labels){
 				if(split2(x.first,':').first==filename){
@@ -478,6 +488,10 @@ public:
 			if(!ws)return 1;
 			workspace=ws;
 			if(workspace.back()!='/')workspace.push_back('/');
+			string a,b;
+			for(ifstream bl(workspace+"blacklist.txt");bl>>a;){
+				if(a==filename)return 1;
+			}
 			load_labels();
 			if(!strcmp(md,"genSource")){
 				mode=genSource;
@@ -485,7 +499,6 @@ public:
 				mode=genSink;
 			}
 			ifstream ts(workspace+"task.txt");
-			string a,b;
 			while(ts>>a>>b){
 				interested[{a}]|=1;
 				interested[{b}]|=2;

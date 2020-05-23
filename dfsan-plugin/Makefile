@@ -7,11 +7,15 @@ ICLANG=-isystem/usr/lib/llvm-$(LLVM_VER)/include/ #-I/usr/lib/llvm-11/include/c+
 LCLANG=-L/usr/lib/llvm-$(LLVM_VER)/lib/ -lLLVM -lclangToolingCore -lclangTooling -lclangFrontendTool -lclangFrontend -lclangDriver -lclangSerialization -lclangCodeGen -lclangParse -lclangSema -lclangStaticAnalyzerFrontend -lclangStaticAnalyzerCheckers -lclangStaticAnalyzerCore -lclangAnalysis -lclangARCMigrate -lclangRewrite -lclangRewriteFrontend -lclangEdit -lclangAST -lclangLex -lclangBasic -lclangASTMatchers -lclang -fno-rtti -lstdc++ -lm
 all:dfsan-plugin.so plugin-test.so
 dfsan-plugin.so:dfsan-plugin.cpp #*.h
-	$(CPP) $(FLAGS) $(ICLANG) -shared dfsan-plugin.cpp -o dfsan-plugin.so $(LCLANG)
+	$(CPP) $(FLAGS) $(ICLANG) -shared $? -o $@ $(LCLANG)
 
 plugin-test.so:plugin-test.cpp #*.h
-	$(CPP) $(FLAGS) $(ICLANG) -shared plugin-test.cpp -o plugin-test.so $(LCLANG)
+	$(CPP) $(FLAGS) $(ICLANG) -shared $? -o $@ $(LCLANG)
 test:test.cpp
 	$(CPP) $(FLAGS) -fsanitize=dataflow test.cpp -o test
+clang-dfsan:clang-dfsan.cpp
+	$(CPP) $(FLAGS) $? -o $@ $(LCLANG)
+install:clang-dfsan
+	sudo cp clang-dfsan /usr/bin/
 clean:
 	rm dfsan-plugin.so plugin-test.so
