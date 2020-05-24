@@ -14,10 +14,13 @@ cd $WORKDIR
 down="python3 -m tclib download"
 configure='./configure'
 case $APP in
-	tar-*) $down https://ftp.gnu.org/gnu/tar/$APP.tar.gz $APP.tar.gz any ;;
+	tar-*) $down https://ftp.gnu.org/gnu/tar/$APP.tar.gz $APP.tar.gz any 
+		echo 'safe-read.c'>$WORKDIR/blacklist.txt;;
 	wget-1.19.5) configure='./configure  --with-ssl=openssl'
-	$down https://ftp.gnu.org/gnu/wget/wget-1.19.5.tar.gz  wget-1.19.5.tar.gz any ;;#b39212abe1a73f2b28f4c6cb223c738559caac91d6e416a6d91d4b9d55c9faee ;;
+		echo 'css_.c' >$WORKDIR/blacklist.txt
+		$down https://ftp.gnu.org/gnu/wget/wget-1.19.5.tar.gz  wget-1.19.5.tar.gz any ;;#b39212abe1a73f2b28f4c6cb223c738559caac91d6e416a6d91d4b9d55c9faee ;;
 	wget-*) configure='./configure  --with-ssl=openssl'
+		echo 'css_.c' >$WORKDIR/blacklist.txt
 	$down https://ftp.gnu.org/gnu/wget/$APP.tar.gz  $APP.tar.gz any ;;
 	sed-*) $down https://ftp.gnu.org/gnu/sed/$APP.tar.gz $APP.tar.gz any ;;
 	*) echo "Unknown app" && exit 1 ;;
@@ -32,9 +35,11 @@ esac
 > $WORKDIR/loc_vars.txt
 rm -rf $WORKDIR/$APP
 export DFSAN_OPTIONS=warn_unimplemented=0
-export CC="clang-11 -w -g -I$INCLUDE -fsanitize=dataflow -fsanitize-blacklist=/tmp/openssl-list.txt\
+export CC="clang-dfsan -L$WORKDIR -ldfsanlabels -w -g -I$INCLUDE -fsanitize=dataflow -fsanitize-blacklist=/tmp/openssl-list.txt\
  -Xclang -load -Xclang /home/ubuntu/plwork/PL-working/dfsan-plugin/dfsan-plugin.so -Xclang -add-plugin -Xclang DfsanPlugin"
 pushd $WORKDIR
+> libdfsanlabels.c
+clang-dfsan -shared libdfsanlabels.c -o libdfsanlabels.a
 tar -xzf $APP.tar.gz
 cd $APP
 export DFPG_MODE=genSource
@@ -46,11 +51,13 @@ export DFPG_MODE=genSink
 make clean;make
 python3 $AHOME/replace.py
 popd
+clang-dfsan -shared -fPIC libdfsanlabels.c -o libdfsanlabels.a
 #python3 $AHOME/../dfsan-inject/applyPatch.py $WORKDIR/$APP
 pushd $WORKDIR/$APP
 unset DFPG_MODE
 make clean
-if ! make ;then #2>makeerr.txt;then
+make -j4
+echo 'if ! make -j4 ;then #2>makeerr.txt;then
 	crc=$(crc32 makeerr.txt)
 	retry=1
 	while ((retry<=5)) && ! make 2>makeerr$retry.txt
@@ -58,10 +65,13 @@ if ! make ;then #2>makeerr.txt;then
 		#python3 $AHOME/autofix.py $retry
 		((++retry))
 	done
-fi
+fi' >/dev/null
 cd $WORKDIR/$APP/
-#src/wget www.google.com 2>/dev/null |sort -u
-#src/wget ftp://ftp.gnu.org/gnu/wget/ 2>/dev/null |sort -u
+#>$WORKDIR/san.log
+src/wget www.google.com 2>/dev/null |sort -u >>$WORKDIR/san.log
+src/wget ftp://ftp.gnu.org/gnu/wget/ 2>/dev/null |sort -u >>$WORKDIR/san.log
+sort -u $WORKDIR/san.log
+wc -l $WORKDIR/san.log
 popd 
 
 }

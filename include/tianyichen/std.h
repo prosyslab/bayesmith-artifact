@@ -89,7 +89,7 @@ auto map_keys(const multimap<T,V>&m){
 	return rt;
 }
 #ifdef _TIANYICHEN_HAS_LLVM
-ostream& operator<<(ostream& o,llvm::StringRef c){ return o<<c.data(); }
+auto& operator<<(ostream& o,llvm::StringRef c){ return o<<string_view{c.data(),c.size()}; }
 #endif
 template<class T,class V>ostream& operator<<(ostream&o,const pair<T,V>& c){return o<<'<'<<c.first<<','<<c.second<<'>';}
 template<class T>ostream& operator<<(ostream&o,const set<T>& c){return _ostream_ls(o,c);}

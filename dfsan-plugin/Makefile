@@ -12,7 +12,7 @@ dfsan-plugin.so:dfsan-plugin.cpp #*.h
 plugin-test.so:plugin-test.cpp #*.h
 	$(CPP) $(FLAGS) $(ICLANG) -shared $? -o $@ $(LCLANG)
 test:test.cpp
-	$(CPP) $(FLAGS) -fsanitize=dataflow test.cpp -o test
+	$(CPP) $(FLAGS)  test.cpp -o test $(LCLANG)
 clang-dfsan:clang-dfsan.cpp
 	$(CPP) $(FLAGS) $? -o $@ $(LCLANG)
 install:clang-dfsan

@@ -81,7 +81,7 @@ struct DfsanFactory{
 
 FriendlyRewriter r;
 using namespace llvm;
-class ToyClassVisitor : public RecursiveASTVisitor<ToyClassVisitor>
+class DfsanClassVisitor : public RecursiveASTVisitor<DfsanClassVisitor>
 {
 private:
 	ASTContext *context;
@@ -386,7 +386,7 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 };
 }
 
-class ToyConsumer : public ASTConsumer
+class DfsanConsumer : public ASTConsumer
 {
 public:
 	void Initialize(ASTContext&context) override{
@@ -415,7 +415,7 @@ public:
 			Logger ofs(full_filename+".dfsan");
 			Logger liblabels(workspace+"libdfsanlabels.c",ios::app);
 			ofs.ccl.push_back(&plog);
-			ofs.ccl.push_back(&liblabels);
+			if(mode==genSource)ofs.ccl.push_back(&liblabels);
 			vector<string> labelsHere;
 			for(auto& x:dfsan_labels){
 				if(split2(x.first,':').first==filename){
@@ -443,7 +443,8 @@ dfsan_label )";
 					ofs-"}";
 				}
 			}
-
+			ofs.ccl.pop_back();
+			//create extern labels
 			hasPrev=0;
 			for(auto& x:sink_file_source_vars){
 				if(hasPrev)ofs<',';
@@ -457,13 +458,30 @@ extern dfsan_label )";
 			if(hasPrev)ofs-";";
 			if(sink_file_source_vars.size()&&out.find("stdio.h")==string::npos)
 				ofs-"extern int printf(const char *format, ...);";
-
 			ofs.ccl.clear();
+#define MOVE_DFSAN_LABELS
+#ifdef MOVE_DFSAN_LABELS
+			if(mode==genSink){
+				SmallVector<StringRef,1024> res;
+				SplitString(out,res,"\n");
+				int lc=0;bool one=0;
+				for(auto& x:res){
+					if(x=="#line 1")one=1;
+					switch(++lc){
+					case 2:if(x.startswith("dfsan_label"))ofs+"extern";
+					case 1:ofs-x;
+						break;
+					default:if(one)ofs-x;
+					}
+				}
+			}
+			else
+#endif
 			ofs-"#line 1"<out;
 		}
 	}
 private:
-	ToyClassVisitor visitor;
+	DfsanClassVisitor visitor;
 	ast_matchers::MatchFinder Matcher;
 	ASTMatchModify::MyASTMatcherCallBack astcb{r};
 };
@@ -472,7 +490,7 @@ class MyASTAction : public PluginASTAction
 {
 public:
 	unique_ptr<clang::ASTConsumer> CreateASTConsumer(CompilerInstance &Compiler,llvm::StringRef InFile)override{
-		return unique_ptr<clang::ASTConsumer>(new ToyConsumer());
+		return unique_ptr<clang::ASTConsumer>(new DfsanConsumer());
 	}
 	ActionType getActionType()override{return AddBeforeMainAction;}
 
@@ -480,7 +498,6 @@ public:
 		CIp=(CompilerInstance*)&CI;
 		auto&SM=CI.getSourceManager();
 		filename=SM.getFileEntryForID(SM.getMainFileID())->getName().str();
-		if(filename=="css_.c")return 1;
 		if(filename!="conftest.c"){
 			auto md=getenv("DFPG_MODE");
 			if(!md)return 1;
