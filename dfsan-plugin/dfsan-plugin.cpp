@@ -1,6 +1,6 @@
 #include<bits/stdc++.h>
 #include<tianyichen/std.h>
-#include<ranges>
+//#include<ranges>
 #include<FriendlyRewriter.h>
 #include"lclang.h"
 #include"clang/Frontend/FrontendPluginRegistry.h"
@@ -277,7 +277,7 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 		plog+"match discovered "+src_loc-endLoc;
 		if(!IsInterestingPair(src_loc,endLoc))return;
 		plog+"is interesting "+src_loc-endLoc;
-		plog.ccl.push_back(&cerr);
+		//plog.ccl.push_back(&cerr);
 		plog+"src:"-r.get_source(FS);
 		auto range=make_pair(interested.lower_bound({src_loc}),
 			interested.upper_bound({endLoc}));
@@ -331,7 +331,7 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 					string dfsan_end='('+label+"=dfsan_get_label((long)"+r.get_source(s_ie)+"),";
 					for(auto& x:sink_labels[it->first]){
 						sink_file_source_vars.insert(x);
-						dfsan_end+=R"(printf(__FILE__ "[%d] %s %s %d\n" ,__LINE__,")"+label+"\",\""+x+"\",dfsan_has_label(" +label+','+x+")),";
+						dfsan_end+="dfsanlog(\""+label+"\",\""+x+"\",dfsan_has_label(" +label+','+x+")),";
 					}
 					if(r.isRewritable(s_ie->getBeginLoc())&&r.isRewritable(s_ie->getEndLoc())){
 						auto err=r.InsertBefore(s_ie,dfsan_end)||r.InsertTextAfterToken(s_ie->getEndLoc(),")");
@@ -456,9 +456,10 @@ extern dfsan_label )";
 				ofs<x;
 			}
 			if(hasPrev)ofs-";";
-			if(sink_file_source_vars.size()&&out.find("stdio.h")==string::npos)
-				ofs-"extern int printf(const char *format, ...);";
+			if(sink_file_source_vars.size())
+				ofs-"extern void dfsanlog(const char* sink,const char* source,int positive);";
 			ofs.ccl.clear();
+			out=regex_replace(out,regex("register "),"");//removing register variable declaration
 #define MOVE_DFSAN_LABELS
 #ifdef MOVE_DFSAN_LABELS
 			if(mode==genSink){
@@ -525,7 +526,7 @@ public:
 						sink_labels[b].insert(x);
 			}
 			plog.open(workspace+"plog.log",ios_base::app);
-			plog.ccl.push_back(&cerr);
+			//plog.ccl.push_back(&cerr);
 			visited_f.open(workspace+"visited.txt",ios_base::app);
 		}
 		full_filename=SM.getFileEntryForID(SM.getMainFileID())->tryGetRealPathName().str();

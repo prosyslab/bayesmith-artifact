@@ -61,13 +61,6 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 		if(auto s_binop=Result.Nodes.getNodeAs<BinaryOperator>("binop");s_binop){
 			if(!r.IsInMainFile(s_binop))return;
 			//s_binop->dumpColor();
-			auto res=r.find_vars_expr_raw(s_binop->getRHS());
-			PrintingPolicy dp(CIp->getLangOpts());
-			plog-"vartypes:";
-			for(auto x:res){
-				x->dumpColor();
-				plog-make_pair(r.get_source(x),x->getType().getAsString(dp));
-			}
 		}
 	}
 };

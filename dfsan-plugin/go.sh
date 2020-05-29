@@ -1,13 +1,15 @@
 set -e
 clear
 make
+export PATH=$(pwd):$PATH
 AHOME=$(pwd)
 INCLUDE=$(pwd)/../include
 WWS=$2
 export WORKDIR=/tmp/$WWS
 APP=$1
 mkdir -p $WORKDIR
-python3 $AHOME/../dfsan-inject/genInjectTask.py $APP $WORKDIR
+python3 $AHOME/../dfsan-inject/genInjectTask.py $APP $WORKDIR $3 $4
+#                                                               batch total,id
 cd $WORKDIR
 #cp /home/ubuntu/plwork/PL-working/dfsan-inject/task.txt $WORKDIR
 {
@@ -16,6 +18,9 @@ configure='./configure'
 case $APP in
 	tar-*) $down https://ftp.gnu.org/gnu/tar/$APP.tar.gz $APP.tar.gz any 
 		echo 'safe-read.c'>$WORKDIR/blacklist.txt;;
+	wget-1.12) configure='./configure --without-ssl'
+		echo 'css_.c' >$WORKDIR/blacklist.txt
+		$down https://ftp.gnu.org/gnu/wget/$APP.tar.gz  $APP.tar.gz any ;;
 	wget-1.19.5) configure='./configure  --with-ssl=openssl'
 		echo 'css_.c' >$WORKDIR/blacklist.txt
 		$down https://ftp.gnu.org/gnu/wget/wget-1.19.5.tar.gz  wget-1.19.5.tar.gz any ;;#b39212abe1a73f2b28f4c6cb223c738559caac91d6e416a6d91d4b9d55c9faee ;;
@@ -35,8 +40,8 @@ esac
 > $WORKDIR/loc_vars.txt
 rm -rf $WORKDIR/$APP
 export DFSAN_OPTIONS=warn_unimplemented=0
-export CC="clang-dfsan -L$WORKDIR -ldfsanlabels -w -g -I$INCLUDE -fsanitize=dataflow -fsanitize-blacklist=/tmp/openssl-list.txt\
- -Xclang -load -Xclang /home/ubuntu/plwork/PL-working/dfsan-plugin/dfsan-plugin.so -Xclang -add-plugin -Xclang DfsanPlugin"
+export CC="clang-dfsan -L$WORKDIR -ldfsanlabels -L$AHOME -ldfsan-rt -w -g -I$INCLUDE -fsanitize=dataflow -fsanitize-blacklist=/tmp/openssl-list.txt\
+ -Xclang -load -Xclang $AHOME/dfsan-plugin.so -Xclang -add-plugin -Xclang DfsanPlugin"
 pushd $WORKDIR
 > libdfsanlabels.c
 clang-dfsan -shared libdfsanlabels.c -o libdfsanlabels.a
@@ -57,22 +62,12 @@ pushd $WORKDIR/$APP
 unset DFPG_MODE
 make clean
 make -j4
-echo 'if ! make -j4 ;then #2>makeerr.txt;then
-	crc=$(crc32 makeerr.txt)
-	retry=1
-	while ((retry<=5)) && ! make 2>makeerr$retry.txt
-	do
-		#python3 $AHOME/autofix.py $retry
-		((++retry))
-	done
-fi' >/dev/null
 cd $WORKDIR/$APP/
-#>$WORKDIR/san.log
-src/wget www.google.com 2>/dev/null |sort -u >>$WORKDIR/san.log
-src/wget ftp://ftp.gnu.org/gnu/wget/ 2>/dev/null |sort -u >>$WORKDIR/san.log
-sort -u $WORKDIR/san.log
-wc -l $WORKDIR/san.log
-popd 
-
+>$WORKDIR/san.log
+#src/wget www.google.com 2>/dev/null
+#src/wget ftp://ftp.gnu.org/gnu/wget/ 2>/dev/null
+. $AHOME/../benchmark/test-$APP.sh
+popd
+python3 $AHOME/san2fileline.py $WORKDIR
 }
 python3 -m tclib ifttt 'done'
