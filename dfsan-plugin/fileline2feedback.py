@@ -4,29 +4,33 @@ from collections import defaultdict
 from collections import deque
 workdir=sys.argv[1]
 nodefile=sys.argv[2]
-dupaths=sys.argv[3]
+datalog=sys.argv[3]
 s=open(nodefile,'rb').read()
 nodes=json.loads(s.decode('utf-8','ignore'))['nodes']
 fileLine2node=defaultdict(list)
 for x in nodes:
 	fileLine2node[nodes[x]['loc']].append(x)
 edge=defaultdict(list)
+edgen=defaultdict(list)
 for x in open(workdir+'/sanfl.txt'):
-	a,b=x.split()
+	a,b,p=x.split()
 	a=fileLine2node[a]
-	b=fileLine2node[b]
+	b=fileLine2node[b] 
 	for x in b:
-		edge[x].extend(a)
-for x in open(dupaths).readlines():
-	q=deque()
-	vis=set()
+		if p=='1':
+			edge[x].extend(a)
+		else:
+			edgen[x].extend(a)
+duedges=set(open(datalog+'DUEdge.facts').readlines())
+for x in open(datalog+'DUPath.csv').readlines():
 	a,b=x.split()
-	q.append(a)
-	while len(q) and b not in vis:
-		nx=q.popleft()
-		for y in edge[nx]:
-			if y not in vis:
-				q.append(y)
-				vis.add(y)
-	if b in vis:
-		print('O DUPath({},{}) true'.format(a,b))
+	if b in edge[a]:
+		if x in duedges:
+			print('O DUEdge({},{}) true'.format(a,b))
+		else:
+			print('O DUPath({},{}) true'.format(a,b))
+	elif b in edgen[a]:
+		if x in duedges:
+			print('O DUEdge({},{}) false'.format(a,b))
+		else:
+			print('O DUPath({},{}) false'.format(a,b))

@@ -9,7 +9,7 @@ for x in open(workdir+'/loc_vars.txt'):
 	fileline[b]=a
 res=set()
 for x in open(workdir+'/san.log'):
-	a,b,_=x.split()
-	res.add(fileline[a]+' '+fileline[b])
+	a,b,p=x.split()
+	res.add(fileline[a]+' '+fileline[b]+' '+p)
 for x in res:
 	print(x,file=fo)

@@ -6,8 +6,27 @@ extern "C" void dfsanlog(const char* sink,const char* source,int positive){
 	auto wd=getenv("WORKDIR");
 	if(!wd)return;
 	static Logger log(string{wd}+"/san.log",ios::app);
-	if(!positive||!strcmp(sink,source))return;
-	static set<pair<string,string>> printed;
-	if(printed.emplace(make_pair(string(sink),string(source))).second)
+	//if(!positive)return;
+	if(!strcmp(sink,source))return;
+	static set<tuple<string,string,int>> printed;
+	if(printed.emplace(make_tuple(string(sink),string(source),positive)).second)
 		log+sink+source-positive;
+}
+namespace dfsan_rt{
+bool working=1;
+void limiter(){
+	auto start=time(0);
+	while(working){
+		this_thread::yield();
+		if(time(0)-start>60)abort();
+	}
+}
+struct TimeLimit{
+	TimeLimit(){
+		thread(limiter).detach();
+	}
+	~TimeLimit(){
+		working=0;
+	}
+}_;
 }
