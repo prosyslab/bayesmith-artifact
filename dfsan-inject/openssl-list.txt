@@ -23,4 +23,4 @@ fun:ASN1_*=uninstrumented
 fun:GENERAL_NAME_free=uninstrumented
 fun:CONF_modules_load_file=uninstrumented
 fun:dfsanlog=uninstrumented
-
+fun:dfsansrc=uninstrumented

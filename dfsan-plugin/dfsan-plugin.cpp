@@ -24,7 +24,7 @@ auto& operator<<(ostream& o,const FileLine& f){
 
 CompilerInstance* CIp;
 string workspace="/tmp/";
-Logger loc_vars,plog,visited_f;
+Logger loc_vars,plog,visited_f,visited_edges;
 string filename,full_filename,original_code;
 using ofileloc=string;
 unordered_map<ofileloc,set<ofileloc>> df_edge;
@@ -317,7 +317,7 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 						}
 						r.InsertBefore(FS,"(");
 						r.InsertTextAfterToken(FS->getEndLoc(),
-							",dfsan_set_label("+uniq_name+",&"+vn+",sizeof("+vn+")),"+vn+")");
+							",dfsansrc(\""+uniq_name+"\"),dfsan_set_label("+uniq_name+",&"+vn+",sizeof("+vn+")),"+vn+")");
 					}
 				}
 
@@ -332,6 +332,7 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 					for(auto& x:sink_labels[it->first]){
 						sink_file_source_vars.insert(x);
 						dfsan_end+="dfsanlog(\""+label+"\",\""+x+"\",dfsan_has_label(" +label+','+x+")),";
+						visited_edges+label-x;//not exact if sink is not accessable
 					}
 					if(r.isRewritable(s_ie->getBeginLoc())&&r.isRewritable(s_ie->getEndLoc())){
 						auto err=r.InsertBefore(s_ie,dfsan_end)||r.InsertTextAfterToken(s_ie->getEndLoc(),")");
@@ -456,6 +457,7 @@ extern dfsan_label )";
 				ofs<x;
 			}
 			if(hasPrev)ofs-";";
+			ofs-"extern void dfsansrc(const char*source);";
 			if(sink_file_source_vars.size())
 				ofs-"extern void dfsanlog(const char* sink,const char* source,int positive);";
 			ofs.ccl.clear();
@@ -528,6 +530,7 @@ public:
 			plog.open(workspace+"plog.log",ios_base::app);
 			//plog.ccl.push_back(&cerr);
 			visited_f.open(workspace+"visited.txt",ios_base::app);
+			visited_edges.open(workspace+"visited_edges.txt",ios::app);
 		}
 		full_filename=SM.getFileEntryForID(SM.getMainFileID())->tryGetRealPathName().str();
 		plog<DUM(full_filename);

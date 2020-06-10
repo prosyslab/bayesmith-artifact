@@ -13,15 +13,21 @@ missed=interested.keys()-visited
 missed=sorted(list(missed))
 cache=None
 fc=[]#file content
+notFound=set()
 for x in missed:
 	file,ln=x.split(':')
-	if file=='css.c':continue
+	if file=='css.c' or len(file)==0:continue
 	ln=int(ln)
 	if cache!=file:
 		fl=[line[2:] for line in subprocess.check_output("find . -name {}".format(file), shell=True).splitlines()]
 		if len(fl)>1:
 			fc=[]
 		else:
+			if len(fl)==0:
+				if file not in notFound:
+					notFound.add(file)
+					print(file,'not found',file=sys.stderr)
+				continue
 			fc=open(fl[0]).readlines()
 		cache=file
 	i=0

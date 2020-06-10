@@ -14,7 +14,7 @@ cd $WORKDIR
 #cp /home/ubuntu/plwork/PL-working/dfsan-inject/task.txt $WORKDIR
 {
 down="python3 -m tclib download"
-configure='./configure'
+configure='./configure -q'
 case $APP in
 	tar-*) $down https://ftp.gnu.org/gnu/tar/$APP.tar.gz $APP.tar.gz any 
 		echo 'safe-read.c'>$WORKDIR/blacklist.txt;;
@@ -64,10 +64,12 @@ make clean
 make -j4
 cd $WORKDIR/$APP/
 >$WORKDIR/san.log
+>$WORKDIR/sansrc.log
+>$WORKDIR/visited_edges.txt
 #src/wget www.google.com 2>/dev/null
 #src/wget ftp://ftp.gnu.org/gnu/wget/ 2>/dev/null
 . $AHOME/../benchmark/test-$APP.sh
 popd
 python3 $AHOME/san2fileline.py $WORKDIR
 }
-python3 -m tclib ifttt 'done'
+python3 -m tclib ifttt done$4/$3

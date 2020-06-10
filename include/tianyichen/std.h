@@ -119,6 +119,11 @@ struct Logger:ofstream{
 		*this<v<'\n';
 		return *this;
 	}
+	//concurrency guarantee
+	mutex mtx;
+	auto acquire_lock(){
+		return unique_lock<mutex>(mtx);
+	}
 };
 
 #ifdef _MSC_VER

@@ -22,9 +22,17 @@ for x in open(workdir+'/sanfl.txt'):
 		else:
 			edgen[x].extend(a)
 duedges=set(open(datalog+'DUEdge.facts').readlines())
+fromEntryNode=set()
+def fromEntry(x):
+	global fromEntryNode
+	if x not in fromEntryNode:
+		fromEntryNode.add(x)
+		#print('O DUPath(_G_-ENTRY,{}) true'.format(x))
+
 for x in open(datalog+'DUPath.csv').readlines():
 	a,b=x.split()
 	if b in edge[a]:
+		fromEntry(a);fromEntry(b)
 		if x in duedges:
 			print('O DUEdge({},{}) true'.format(a,b))
 		else:
