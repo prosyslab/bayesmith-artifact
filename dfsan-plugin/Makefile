@@ -1,10 +1,19 @@
 LLVM_VER=11
 CPP=clang-$(LLVM_VER)
-# -stdlib=libc++  
-#FLAGS= -w -std=c++2a -O2 -g -fPIC -I../include #+10s
-FLAGS=  -static-libstdc++ -static-libgcc -w -O2 -std=c++20 -g -fPIC -isystem../include
-ICLANG=-isystem/usr/lib/llvm-$(LLVM_VER)/include/ #-I/usr/lib/llvm-11/include/c++/v1
-LCLANG=-L/usr/lib/llvm-$(LLVM_VER)/lib/ -lclangToolingCore -lclangTooling -lclangFrontendTool -lclangFrontend -lclangDriver -lclangSerialization -lclangCodeGen -lclangParse -lclangSema -lclangStaticAnalyzerFrontend -lclangStaticAnalyzerCheckers -lclangStaticAnalyzerCore -lclangAnalysis -lclangARCMigrate -lclangRewrite -lclangRewriteFrontend -lclangEdit -lclangAST -lclangLex -lclangBasic -lclangASTMatchers -fno-rtti  -lstdc++ -lm
+FLAGS= -v -static-libstdc++ -static-libgcc -w -O2 -std=c++20 -g -fPIC -isystem../include
+
+### building from official packages
+
+# ICLANG=-isystem/usr/lib/llvm-$(LLVM_VER)/include/ #-I/usr/lib/llvm-11/include/c++/v1
+# LCLANG=-L/usr/lib/llvm-$(LLVM_VER)/lib/ -lclangToolingCore -lclangTooling -lclangFrontendTool -lclangFrontend -lclangDriver -lclangSerialization -lclangCodeGen -lclangParse -lclangSema -lclangStaticAnalyzerFrontend -lclangStaticAnalyzerCheckers -lclangStaticAnalyzerCore -lclangAnalysis -lclangARCMigrate -lclangRewrite -lclangRewriteFrontend -lclangEdit -lclangAST -lclangLex -lclangBasic -lclangASTMatchers -fno-rtti  -lstdc++ -lm
+
+###building
+ifndef LLVM_VIRT
+$(error LLVM_VIRT is not set)
+endif
+ICLANG=-isystem$(LLVM_VIRT)/include
+LCLANG=-L$(LLVM_VIRT)/lib -lclangToolingCore -lclangTooling -lclangFrontendTool -lclangFrontend -lclangDriver -lclangSerialization -lclangCodeGen -lclangParse -lclangSema -lclangStaticAnalyzerFrontend -lclangStaticAnalyzerCheckers -lclangStaticAnalyzerCore -lclangAnalysis -lclangARCMigrate -lclangRewrite -lclangRewriteFrontend -lclangEdit -lclangAST -lclangLex -lclangBasic -lclangASTMatchers -fno-rtti  -lstdc++ -lm
+
 all:dfsan-plugin.so plugin-test.so clang-dfsan libdfsan-rt.a
 dfsan-plugin.so:dfsan-plugin.cpp #*.h
 	$(CPP) $(FLAGS) $(ICLANG) -shared $? -o $@ $(LCLANG)
@@ -18,4 +27,5 @@ clang-dfsan:clang-dfsan.cpp
 libdfsan-rt.a: dfsan-rt.cpp
 	$(CPP) $(FLAGS) $(ICLANG) -DLLVM_DISABLE_ABI_BREAKING_CHECKS_ENFORCING=1 -shared $? -o $@ $(LCLANG)
 clean:
+	echo $(PATH)
 	rm dfsan-plugin.so plugin-test.so clang-dfsan *.a
