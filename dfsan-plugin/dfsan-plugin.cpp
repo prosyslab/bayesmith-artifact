@@ -57,13 +57,13 @@ enum Mode{
 	writeIns
 }mode;
 const char* Mode_str[]={"disabled","genSource","genSink","writeIns"};
-string get_new_label(const string& loc,const string& var){
+string get_new_label(const string& loc,const string& var,bool source){
 	static Logger labellog(workspace+"label.log",ios::app);
 	string rt="_SaN_";
-	auto hh=hash<string>{}(loc+var);
+	auto hh=hash<string>{}(loc+var)>>1<<1|source;
 	for(int i=0;i<8;++i)rt.push_back("0123456789abcdef"[hh&15]),hh>>=4;
 	dfsan_labels[loc].push_back(rt);
-	labellog+loc+var-rt;
+	labellog+loc+var+source-rt;
 	return rt;
 }
 struct DfsanFactory{
@@ -253,6 +253,7 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 		auto&SM=Context->getSourceManager();
 		const Stmt* FS=0;
 		mtype=invalid;
+		plog-"::run";
 		s_binop = Result.Nodes.getNodeAs<BinaryOperator>("binop");
 		if(s_binop)FS=s_binop,mtype=binop;
 		if(!FS)
@@ -289,7 +290,7 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 				//assert(lhs); //not ture can be MemberExpr->-ImplicitCastExpr->DeclRefExpr, e.g. png_ptr->zbuf_size
 				for(auto& varname:source_vars()){
 					plog+"source"<DUM(varname);
-					auto uniq_name=get_new_label(it->first,r.get_source(varname));
+					auto uniq_name=get_new_label(it->first,r.get_source(varname),1);
 					if(mtype!=binop){
 						plog+"usource:"+int(mtype)+src_loc-endLoc;
 					}else if(mtype==binop){
@@ -327,12 +328,12 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 				if(mtype==ie){
 					if(s_ie->HasSideEffects(*Context))return;
 					if(!(s_ie->getType()->isArithmeticType()||s_ie->getType()->isPointerType()))return;
-					auto label=get_new_label(it->first,source);
+					auto label=get_new_label(it->first,source,0);
 					string dfsan_end='('+label+"=dfsan_get_label((long)"+r.get_source(s_ie)+"),";
 					for(auto& x:sink_labels[it->first]){
 						sink_file_source_vars.insert(x);
-						dfsan_end+="dfsanlog(\""+label+"\",\""+x+"\",dfsan_has_label(" +label+','+x+")),";
-						visited_edges+label-x;//not exact if sink is not accessable
+						dfsan_end+="dfsanlog(\""+label+"\",\""+x+"\","+label+","+x+",dfsan_has_label(" +label+','+x+")),";
+						visited_edges+label-x;
 					}
 					if(r.isRewritable(s_ie->getBeginLoc())&&r.isRewritable(s_ie->getEndLoc())){
 						auto err=r.InsertBefore(s_ie,dfsan_end)||r.InsertTextAfterToken(s_ie->getEndLoc(),")");
@@ -340,45 +341,7 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 					} else plog-"sink not accessible";
 					return;
 				}
-				return;
 				//data sink
-				for(auto&varname:sink_vars()){
-					plog+"sink"<DUM(varname);
-					//; at the beginning is for closing goto labels
-					if(sink_labels[it->first].empty())continue;
-					auto label=get_new_label(it->first,r.get_source(varname));
-					if(r.get_source(varname).empty()){
-						plog-"ASSERT0";
-						varname->dump();
-						continue;
-					}
-					//each variable keeps as variable
-					if(mtype==binop){
-						string dfsan_end=label+"=dfsan_get_label((long)"+r.get_source(varname)+"),";
-						for(auto& x:sink_labels[it->first]){
-							sink_file_source_vars.insert(x);
-							dfsan_end+=R"(printf(__FILE__ "[%d] %s %s %d\n" ,__LINE__,")"+label+"\",\""+x+"\",dfsan_has_label(" +label+','+x+")),";
-						}
-						dmp(dfsan_end);
-						plog+"dfsan_end"-dfsan_end;
-						r.InsertBefore(FS,dfsan_end);
-					} else if(mtype==callexp){
-						string dfsan_end='('+label+"=dfsan_get_label((long)"+r.get_source(varname)+"),";
-						for(auto& x:sink_labels[it->first]){
-							sink_file_source_vars.insert(x);
-							dfsan_end+=R"(printf(__FILE__ "[%d] %s %s %d\n" ,__LINE__,")"+label+"\",\""+x+"\",dfsan_has_label(" +label+','+x+")),";
-						}
-						dmp(dfsan_end);
-						plog+"dfsan_end"-dfsan_end;
-
-						if(r.isRewritable(varname->getBeginLoc())&&r.isRewritable(varname->getEndLoc())){
-							auto err=r.InsertBefore(varname,dfsan_end)||r.InsertTextAfterToken(varname->getEndLoc(),")");
-							assert(!err);
-						} else plog-"sink not accessible";
-					}else {
-						plog+"usink:"+int(mtype)+src_loc-endLoc;
-					}
-				}
 				log_var_types(r.find_vars_expr(_sink_vars()));
 			}
 		}
@@ -459,7 +422,7 @@ extern dfsan_label )";
 			if(hasPrev)ofs-";";
 			ofs-"extern void dfsansrc(const char*source);";
 			if(sink_file_source_vars.size())
-				ofs-"extern void dfsanlog(const char* sink,const char* source,int positive);";
+				ofs-"extern void dfsanlog(const char* sink,const char* source,int ilbl,int slbl,int positive);";
 			ofs.ccl.clear();
 			out=regex_replace(out,regex("register "),"");//removing register variable declaration
 #define MOVE_DFSAN_LABELS
@@ -518,8 +481,7 @@ public:
 			}else if(!strcmp(md,"genSink")){
 				mode=genSink;
 			}
-			ifstream ts(workspace+"task.txt");
-			while(ts>>a>>b){
+			for(ifstream ts(workspace+"task.txt");ts>>a>>b;){
 				interested[{a}]|=1;
 				interested[{b}]|=2;
 				df_edge[a].insert(b);
