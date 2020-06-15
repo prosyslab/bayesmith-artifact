@@ -1,7 +1,6 @@
 set -e
 clear
 make
-export PATH=$(pwd):$PATH
 AHOME=$(pwd)
 INCLUDE=$(pwd)/../include
 WWS=$2
@@ -11,11 +10,20 @@ mkdir -p $WORKDIR
 python3 $AHOME/../dfsan-inject/genInjectTask.py $APP $WORKDIR $3 $4
 #                                                               batch total,id
 cd $WORKDIR
+ARCHIEVE=$APP.tar.gz
 #cp /home/ubuntu/plwork/PL-working/dfsan-inject/task.txt $WORKDIR
 {
 down="python3 -m tclib download"
-configure='./configure -q'
+configure='./configure'
 case $APP in
+	sed-4.3) $down https://ftp.gnu.org/gnu/sed/sed-4.3.tar.xz sed-4.3.tar.xz any
+		ARCHIEVE=sed-4.3.tar.xz ;;
+	grep-2.19) ARCHIEVE=grep-2.19.tar.xz
+		$down https://ftp.gnu.org/gnu/grep/grep-2.19.tar.xz $ARCHIEVE any ;;
+	sort-7.2) $down https://ftp.gnu.org/gnu/coreutils/coreutils-7.2.tar.gz coreutils-7.2.tar.gz any 
+		APP=coreutils-7.2;ARCHIEVE=$APP.tar.gz	;;
+	readelf-2.24) $down https://ftp.gnu.org/gnu/binutils/binutils-2.24.tar.gz binutils-2.24.tar.gz any
+		APP=binutils-2.24;ARCHIEVE=$APP.tar.gz ;;
 	tar-*) $down https://ftp.gnu.org/gnu/tar/$APP.tar.gz $APP.tar.gz any 
 		echo 'safe-read.c'>$WORKDIR/blacklist.txt;;
 	wget-1.12) configure='./configure --without-ssl'
@@ -38,34 +46,35 @@ esac
 #https://ftp.gnu.org/gnu/sed/sed-4.2.2.tar.gz sed-4.2.2.tar.gz fea0a94d4b605894f3e2d5572e3f96e4413bcad3a085aae7367c2cf07908b2ff
 > $WORKDIR/plog.log
 > $WORKDIR/loc_vars.txt
-rm -rf $WORKDIR/$APP
+> $WORKDIR/visited_edges.txt
+rm -rf $WORKDIR/$APP ||sudo rm -rf $WORKDIR/$APP
 export DFSAN_OPTIONS=warn_unimplemented=0
-export CC="clang-dfsan -L$WORKDIR -ldfsanlabels -L$AHOME -ldfsan-rt -w -g -I$INCLUDE -fsanitize=dataflow -fsanitize-blacklist=/tmp/openssl-list.txt\
- -Xclang -load -Xclang $AHOME/dfsan-plugin.so -Xclang -add-plugin -Xclang DfsanPlugin"
+export CC="clang-dfsan"
 pushd $WORKDIR
 > libdfsanlabels.c
-clang-dfsan -shared libdfsanlabels.c -o libdfsanlabels.a
-tar -xzf $APP.tar.gz
+clang-11 -shared -fPIC libdfsanlabels.c -o libdfsanlabels.a
+unp $ARCHIEVE
 cd $APP
 export DFPG_MODE=genSource
 $configure
-> $WORKDIR/visited.txt;make clean;make
+export DFSAN_HEADPARA=" -L$WORKDIR -ldfsanlabels -L$AHOME -ldfsan-rt -w -g -I$INCLUDE -fsanitize=dataflow -fsanitize-blacklist=/tmp/openssl-list.txt\
+ -Xclang -load -Xclang $AHOME/dfsan-plugin.so -Xclang -add-plugin -Xclang DfsanPlugin"
+> $WORKDIR/visited.txt;make clean;make -i
 python3 $AHOME/replace.py
 echo '_____________genSink_______________'>>$WORKDIR/plog.log
 export DFPG_MODE=genSink
-make clean;make
+make clean;make -i
 python3 $AHOME/replace.py
 popd
-clang-dfsan -shared -fPIC libdfsanlabels.c -o libdfsanlabels.a
+clang-11 -shared -fPIC libdfsanlabels.c -o libdfsanlabels.a
 #python3 $AHOME/../dfsan-inject/applyPatch.py $WORKDIR/$APP
 pushd $WORKDIR/$APP
 unset DFPG_MODE
 make clean
-make -j4
+make -i -j4
 cd $WORKDIR/$APP/
 >$WORKDIR/san.log
 >$WORKDIR/sansrc.log
->$WORKDIR/visited_edges.txt
 #src/wget www.google.com 2>/dev/null
 #src/wget ftp://ftp.gnu.org/gnu/wget/ 2>/dev/null
 . $AHOME/../benchmark/test-$APP.sh

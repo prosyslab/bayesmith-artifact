@@ -428,17 +428,21 @@ extern dfsan_label )";
 #define MOVE_DFSAN_LABELS
 #ifdef MOVE_DFSAN_LABELS
 			if(mode==genSink){
-				SmallVector<StringRef,1024> res;
-				SplitString(out,res,"\n");
+				//SplitString(out,res,"\n"); llvm::SplitString ignores empty lines and breaks GNU binutils
 				int lc=0;bool one=0;
-				for(auto& x:res){
+				const auto process=[&](string_view x){
 					if(x=="#line 1")one=1;
 					switch(++lc){
-					case 2:if(x.startswith("dfsan_label"))ofs+"extern";
+					case 2:if(x.starts_with("dfsan_label"))ofs+"extern";
 					case 1:ofs-x;
 						break;
 					default:if(one)ofs-x;
 					}
+				};
+				size_t pit=0;
+				for(auto it=out.find('\n',0);it!=string::npos;it=out.find('\n',it+1)){
+					process({out.data()+pit,it-pit});
+					pit=it;
 				}
 			}
 			else
@@ -481,13 +485,19 @@ public:
 			}else if(!strcmp(md,"genSink")){
 				mode=genSink;
 			}
+			bool foundme=0;
 			for(ifstream ts(workspace+"task.txt");ts>>a>>b;){
+				foundme|=split2(a,':').first==filename||split2(b,':').first==filename;
 				interested[{a}]|=1;
 				interested[{b}]|=2;
 				df_edge[a].insert(b);
 				if(dfsan_labels.contains(a))
 					for(auto&x:dfsan_labels[a])
 						sink_labels[b].insert(x);
+			}
+			if(!foundme){
+				mode=disabled;
+				return 1;
 			}
 			plog.open(workspace+"plog.log",ios_base::app);
 			//plog.ccl.push_back(&cerr);

@@ -1,6 +1,6 @@
 LLVM_VER=11
 CPP=clang-$(LLVM_VER)
-FLAGS= -v -static-libstdc++ -static-libgcc -w -O2 -std=c++20 -g -fPIC -isystem../include
+FLAGS= -w -O2 -std=c++20 -g -fPIC -isystem../include
 
 ### building from official packages
 
