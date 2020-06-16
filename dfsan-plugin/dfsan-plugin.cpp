@@ -253,7 +253,6 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 		auto&SM=Context->getSourceManager();
 		const Stmt* FS=0;
 		mtype=invalid;
-		plog-"::run";
 		s_binop = Result.Nodes.getNodeAs<BinaryOperator>("binop");
 		if(s_binop)FS=s_binop,mtype=binop;
 		if(!FS)
@@ -439,9 +438,10 @@ extern dfsan_label )";
 					default:if(one)ofs-x;
 					}
 				};
-				size_t pit=0;
+				if(out.back()!='\n')out.push_back('\n');
+				size_t pit=-1;
 				for(auto it=out.find('\n',0);it!=string::npos;it=out.find('\n',it+1)){
-					process({out.data()+pit,it-pit});
+					process({out.data()+pit+1,it-pit-1});
 					pit=it;
 				}
 			}
@@ -499,6 +499,7 @@ public:
 				mode=disabled;
 				return 1;
 			}
+			static SingleInstance si("dfsan");
 			plog.open(workspace+"plog.log",ios_base::app);
 			//plog.ccl.push_back(&cerr);
 			visited_f.open(workspace+"visited.txt",ios_base::app);

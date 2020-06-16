@@ -3,6 +3,7 @@ clear
 make
 AHOME=$(pwd)
 INCLUDE=$(pwd)/../include
+MAKEARGS="-i"
 WWS=$2
 export WORKDIR=/tmp/$WWS
 APP=$1
@@ -16,6 +17,9 @@ ARCHIEVE=$APP.tar.gz
 down="python3 -m tclib download"
 configure='./configure'
 case $APP in
+	latex2rtf-2.1.1) $down https://master.dl.sourceforge.net/project/latex2rtf/latex2rtf-unix/2.1.1/latex2rtf-2.1.1beta8.tar.gz $ARCHIEVE 6e0c9da83af5e13ab732227792367f25ffcedbfab22b74911a269e2470383554
+		APP=latex2rtf ;;
+	shntool-3.0.5) $down http://shnutils.freeshell.org/shntool/dist/src/shntool-3.0.5.tar.gz $ARCHIEVE c496d7c6079609d0b71cca5f1ff7202962bb7921c3fe0e6081ae5a143ce3b14b ;;
 	sed-4.3) $down https://ftp.gnu.org/gnu/sed/sed-4.3.tar.xz sed-4.3.tar.xz any
 		ARCHIEVE=sed-4.3.tar.xz ;;
 	grep-2.19) ARCHIEVE=grep-2.19.tar.xz
@@ -59,11 +63,11 @@ export DFPG_MODE=genSource
 $configure
 export DFSAN_HEADPARA=" -L$WORKDIR -ldfsanlabels -L$AHOME -ldfsan-rt -w -g -I$INCLUDE -fsanitize=dataflow -fsanitize-blacklist=/tmp/openssl-list.txt\
  -Xclang -load -Xclang $AHOME/dfsan-plugin.so -Xclang -add-plugin -Xclang DfsanPlugin"
-> $WORKDIR/visited.txt;make clean;make -i
+> $WORKDIR/visited.txt;make clean;make $MAKEARGS
 python3 $AHOME/replace.py
 echo '_____________genSink_______________'>>$WORKDIR/plog.log
 export DFPG_MODE=genSink
-make clean;make -i
+make clean;make $MAKEARGS
 python3 $AHOME/replace.py
 popd
 clang-11 -shared -fPIC libdfsanlabels.c -o libdfsanlabels.a
@@ -71,7 +75,7 @@ clang-11 -shared -fPIC libdfsanlabels.c -o libdfsanlabels.a
 pushd $WORKDIR/$APP
 unset DFPG_MODE
 make clean
-make -i -j4
+make $MAKEARGS
 cd $WORKDIR/$APP/
 >$WORKDIR/san.log
 >$WORKDIR/sansrc.log

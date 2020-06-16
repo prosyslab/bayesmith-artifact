@@ -17,6 +17,9 @@ Conforms to the C++17 standard
 #include<map>
 #include<random>
 #include<string_view>
+
+#include"./linux.h"
+
 #if __has_include("llvm/ADT/StringRef.h")
 #define _TIANYICHEN_HAS_LLVM
 #include "llvm/ADT/StringRef.h"

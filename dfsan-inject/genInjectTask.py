@@ -7,7 +7,10 @@ batchnum=int(sys.argv[3])
 batchid=int(sys.argv[4])
 print(sys.argv,file=sys.stderr)
 print(troot,file=sys.stderr)
-alarms=open(troot+'interval/datalog/DUPath.csv').readlines()
+if 'shntool' or 'latex2rtf' in sys.argv[1]:
+	alarms=open(troot+'taint/datalog/DUPath.csv').readlines()
+else:
+	alarms=open(troot+'interval/datalog/DUPath.csv').readlines()
 #alarms=open(troot+'interval/datalog/DUEdge.facts').readlines()
 #alarms=open(troot+'taint/datalog/Alarm.facts')
 s=open(troot+'node.json','rb').read()
