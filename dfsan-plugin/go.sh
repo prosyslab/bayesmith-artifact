@@ -1,9 +1,10 @@
+shopt -s expand_aliases #enable aliases
 set -e
 clear
 make
+alias cc=clang-dfsan
 AHOME=$(pwd)
 INCLUDE=$(pwd)/../include
-MAKEARGS="-i"
 WWS=$2
 export WORKDIR=/tmp/$WWS
 APP=$1
@@ -17,16 +18,26 @@ ARCHIEVE=$APP.tar.gz
 down="python3 -m tclib download"
 configure='./configure'
 case $APP in
+	optipng-0.5.3) $down https://github.com/TianyiChen/PL-assets/releases/download/main/optipng-0.5.3.tar.gz $ARCHIEVE 69df63fd29fa499c85687fa35569fd208741a91b4f34949d1fd8463ebd353384
+		make(){
+			pushd src
+			command make -f scripts/unix.mak "$@"
+			popd
+		}
+		configure='' ;;
+	urjtag-0.8) $down https://master.dl.sourceforge.net/project/urjtag/urjtag/0.8/urjtag-0.8.tar.gz $ARCHIEVE 47684f0552fe90aae1d1afbc4264433ec467edab1b7e6b37145bf783d956345b ;;
 	latex2rtf-2.1.1) $down https://master.dl.sourceforge.net/project/latex2rtf/latex2rtf-unix/2.1.1/latex2rtf-2.1.1beta8.tar.gz $ARCHIEVE 6e0c9da83af5e13ab732227792367f25ffcedbfab22b74911a269e2470383554
-		APP=latex2rtf ;;
+		APP=latex2rtf configure='';;
 	shntool-3.0.5) $down http://shnutils.freeshell.org/shntool/dist/src/shntool-3.0.5.tar.gz $ARCHIEVE c496d7c6079609d0b71cca5f1ff7202962bb7921c3fe0e6081ae5a143ce3b14b ;;
 	sed-4.3) $down https://ftp.gnu.org/gnu/sed/sed-4.3.tar.xz sed-4.3.tar.xz any
 		ARCHIEVE=sed-4.3.tar.xz ;;
 	grep-2.19) ARCHIEVE=grep-2.19.tar.xz
 		$down https://ftp.gnu.org/gnu/grep/grep-2.19.tar.xz $ARCHIEVE any ;;
 	sort-7.2) $down https://ftp.gnu.org/gnu/coreutils/coreutils-7.2.tar.gz coreutils-7.2.tar.gz any 
+		MAKEARGS="-i" # other binaries fail
 		APP=coreutils-7.2;ARCHIEVE=$APP.tar.gz	;;
 	readelf-2.24) $down https://ftp.gnu.org/gnu/binutils/binutils-2.24.tar.gz binutils-2.24.tar.gz any
+		MAKEARGS="-i"
 		APP=binutils-2.24;ARCHIEVE=$APP.tar.gz ;;
 	tar-*) $down https://ftp.gnu.org/gnu/tar/$APP.tar.gz $APP.tar.gz any 
 		echo 'safe-read.c'>$WORKDIR/blacklist.txt;;
@@ -48,16 +59,17 @@ esac
 #https://curl.haxx.se/download/curl-7.41.0.tar.gz curl-7.41.0.tar.gz
 #https://ftp.gnu.org/gnu/wget/wget-1.11.4.tar.gz wget-1.11.4.tar.gz 7315963b6eefb7530b4a4f63a5d5ccdab30078784cf41ccb5297873f9adea2f3
 #https://ftp.gnu.org/gnu/sed/sed-4.2.2.tar.gz sed-4.2.2.tar.gz fea0a94d4b605894f3e2d5572e3f96e4413bcad3a085aae7367c2cf07908b2ff
-> $WORKDIR/plog.log
-> $WORKDIR/loc_vars.txt
-> $WORKDIR/visited_edges.txt
+
 rm -rf $WORKDIR/$APP ||sudo rm -rf $WORKDIR/$APP
 export DFSAN_OPTIONS=warn_unimplemented=0
 export CC="clang-dfsan"
 pushd $WORKDIR
+> plog.log
+> loc_vars.txt
+> visited_edges.txt
 > libdfsanlabels.c
 clang-11 -shared -fPIC libdfsanlabels.c -o libdfsanlabels.a
-unp $ARCHIEVE
+unp $ARCHIEVE >/dev/null
 cd $APP
 export DFPG_MODE=genSource
 $configure

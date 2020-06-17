@@ -17,7 +17,7 @@ touched=set()
 for x in open(workdir+'/san.log'):
 	if len(x.split())==1:
 		#start
-		res.clear()
+		src.clear()
 		continue
 	if len(x.split())!=3:
 		src.add(x.split()[0])
@@ -33,7 +33,7 @@ for x in open(workdir+'/san.log'):
 	else:
 		discarded+=1
 print('discarded '+str(discarded),file=log)
-
+print('res',len(res))
 for x in res:
 	print(x,file=fo)
 
