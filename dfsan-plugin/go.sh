@@ -90,9 +90,7 @@ make clean
 make $MAKEARGS
 cd $WORKDIR/$APP/
 >$WORKDIR/san.log
->$WORKDIR/sansrc.log
-#src/wget www.google.com 2>/dev/null
-#src/wget ftp://ftp.gnu.org/gnu/wget/ 2>/dev/null
+
 . $AHOME/../benchmark/test-$APP.sh
 popd
 python3 $AHOME/san2fileline.py $WORKDIR
