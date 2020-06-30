@@ -232,7 +232,7 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 		int b=atoi(locb.substr(1+locb.find(':')));
 		for(auto&x:interested){
 			if(x.first.filename==filename&&between(x.first.ln,a,b)){
-				if(mtype==binop)visited.insert(&x.first);
+				if(mtype==binop||mtype==ie)visited.insert(&x.first);
 				plog+"interesting "+x.first+loca-locb;
 				return 1;
 			}

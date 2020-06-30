@@ -29,11 +29,16 @@ batchsize=-(-len(alarms)//batchnum)
 random.seed(0)
 random.shuffle(alarms)
 err=0
+def isEntityNode(x):
+	#return x['cmd'][0]!='skip'
+	return x['cmd'][0] in ['set','alloc','call']
 for _ in alarms[batchsize*batchid:batchsize*(batchid+1)]:
 	try:
 		a,b=nodes[_.split()[0]],nodes[_.split()[1]]
-		i+=1
-		print(' '.join(nodes[n]['loc'] for n in _.split()))
+		if isEntityNode(a) and isEntityNode(b):
+			i+=1
+			print(' '.join(nodes[n]['loc'] for n in _.split()))
+		else:err+=1
 	except:
 		err+=1
 print('err',err,file=sys.stderr)
