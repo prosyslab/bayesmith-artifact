@@ -1,4 +1,4 @@
-import sys
+import sys,os.path
 import json
 from collections import defaultdict
 from collections import deque
@@ -8,6 +8,7 @@ datalog=sys.argv[3]
 s=open(nodefile,'rb').read()
 nodes=json.loads(s.decode('utf-8','ignore'))['nodes']
 fileLine2node=defaultdict(list)
+sys.stdout=open(workdir+'/feedback.txt','w')
 for x in nodes:
 	fileLine2node[nodes[x]['loc']].append(x)
 edge=defaultdict(list)
@@ -27,7 +28,47 @@ for x in open(workdir+'/sanfl.txt'):
 duedges=set(open(datalog+'DUEdge.facts').readlines())
 
 confid=open(workdir+'/observed-queries.txt','w')
-for x in open(datalog+'DUPath.csv').readlines():
+dupaths=open(datalog+'DUPath.csv').readlines()
+dupathe=defaultdict(list)
+for _ in dupaths:
+	a,b=_.split()
+	dupathe[a].append(b)
+
+# merge edges to larger paths
+def dfs0(x):
+	global reachable
+	reachable.append(x)
+	if x not in edge:return
+	for y in edge[x]:
+		if y not in reachable:
+			dfs0(y)
+for x in edge:
+	reachable=[]
+	dfs0(x)
+	#print(len(edge[x]),len(list(set(edge[x])|set(reachable))),file=sys.stderr)
+	edge[x]=list(set(edge[x])|set(reachable))
+
+# infer smaller paths from edges, requires path unique
+path=[]
+def dfs1(x):
+	global reachcnt,path
+	path.append(x)
+	print(len(path),x,file=sys.stderr)
+	if x==dst:
+		reachcnt+=1
+		return
+	if x in dupathe:
+		for y in dupathe[x]:
+			if y not in path:
+				dfs1(y)
+	path.pop()
+for src in edge:
+	for dst in edge[src]:
+		reachcnt=0
+		dfs1(src)
+		print(src,dst,reachcnt,file=sys.stderr)
+
+for x in dupaths:
 	a,b=x.split()
 	if b in edge[a]:
 		if x in duedges:
