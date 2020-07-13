@@ -123,9 +123,11 @@ for src in edge:
 print(len(provided),file=sys.stderr)
 for x in dupaths:
 	a,b=x.split()
+	if (a,b) in provided:continue
 	if b in edge[a]:
 		positive_feedback(a,b)
 	elif b in edgen[a]:
+		continue
 		if x in duedges:
 			print('O DUEdge({},{}) false'.format(a,b))
 			print(f'DUEdge({a},{b})\t{negative_confidence[(a,b)]}',file=confid)

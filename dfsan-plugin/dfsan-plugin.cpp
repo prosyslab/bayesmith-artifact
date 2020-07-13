@@ -37,6 +37,7 @@ set<string>sink_file_source_vars;
 
 map<string,vector<string>>dfsan_labels;
 int dfsan_id_used;
+bool dfsan_bad_used;
 void load_labels(){
 	ifstream i(workspace+"loc_vars.txt");
 	string a,b;
@@ -283,66 +284,130 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 			interested.upper_bound({endLoc}));
 		for(auto it=range.first;it!=range.second;++it){
 			//FS->dumpColor();
-			if(it->second&1&&mode==genSource){
-				//data src
-				if(mtype==ie)return;
-				//assert(lhs); //not ture can be MemberExpr->-ImplicitCastExpr->DeclRefExpr, e.g. png_ptr->zbuf_size
-				for(auto& varname:source_vars()){
-					plog+"source"<DUM(varname);
-					auto uniq_name=get_new_label(it->first,r.get_source(varname),1);
-					if(mtype!=binop){
-						plog+"usource:"+int(mtype)+src_loc-endLoc;
-					}else if(mtype==binop){
-						plog<"source binop\n";
-						//auto dfsan_begin=",dfsan_set_label("+uniq_name+",&"+varname+",sizeof("+varname+"))";
-						if(s_binop->getLHS()->HasSideEffects(*Context)){
-							plog+"HasSideEffects"-r.get_source(s_binop->getLHS());
-							continue;
-						}
-						varname->dumpColor();
-						auto vn=r.get_source(varname);
-						if(vn.empty()){
-							plog-"ASSERT1";
-							varname->dump();
-							continue;
-						}
-						//auto dfsan_begin="DFSET("
-						//	+r.get_source(s_binop->getLHS())+','+
-						//	r.get_source(s_binop->getRHS())+','+uniq_name+")";
-						//r.ReplaceText(FS->getSourceRange(),dfsan_begin);
-						//plog-"after_replace"-r.get_source(FS)-dfsan_begin;
-						if(!r.isRewritable(FS->getBeginLoc())||!r.isRewritable(FS->getEndLoc())){
-							plog-"source not accessible";
-							continue;
-						}
-						r.InsertBefore(FS,"(");
-						r.InsertTextAfterToken(FS->getEndLoc(),
-							",dfsansrc(\""+uniq_name+"\"),dfsan_set_label("+uniq_name+",&"+vn+",sizeof("+vn+")),"+vn+")");
-					}
-				}
+			if(mode==genSource){
+				if(it->second>>2&1){//uni source, same as above except uniq_name is const
+					if(mtype==ie)return;
+					//assert(lhs); //not ture can be MemberExpr->-ImplicitCastExpr->DeclRefExpr, e.g. png_ptr->zbuf_size
+					for(auto& varname:source_vars()){
+						plog+"source"<DUM(varname);
+						dfsan_bad_used=1;
+						string uniq_name="_SaN_bad00000";
+						if(mtype!=binop){
+							plog+"usource:"+int(mtype)+src_loc-endLoc;
+						} else if(mtype==binop){
+							plog<"source binop\n";
+							//auto dfsan_begin=",dfsan_set_label("+uniq_name+",&"+varname+",sizeof("+varname+"))";
+							if(s_binop->getLHS()->HasSideEffects(*Context)){
+								plog+"HasSideEffects"-r.get_source(s_binop->getLHS());
+								continue;
+							}
+							varname->dumpColor();
+							auto vn=r.get_source(varname);
+							if(vn.empty()){
+								plog-"ASSERT1";
+								varname->dump();
+								continue;
+							}
 
-			}
-			if(it->second>>1&1&&mode==genSink){
-				plog+"sink discovered:"+src_loc-source;
-				if(mtype==ie){
-					if(s_ie->HasSideEffects(*Context))return;
-					if(!(s_ie->getType()->isArithmeticType()||s_ie->getType()->isPointerType()))return;
-					auto label=get_new_label(it->first,source,0);
-					string dfsan_end='('+label+"=dfsan_get_label((long)"+r.get_source(s_ie)+"),";
-					for(auto& x:sink_labels[it->first]){
-						sink_file_source_vars.insert(x);
-						dfsan_end+="dfsanlog(\""+label+"\",\""+x+"\","+label+","+x+",dfsan_has_label(" +label+','+x+")),";
-						visited_edges+label-x;
+							if(!r.isRewritable(FS->getBeginLoc())||!r.isRewritable(FS->getEndLoc())){
+								plog-"source not accessible";
+								//https://stackoverflow.com/a/32118182
+								//r.InsertTextBefore(r.SMp->getFileLoc(FS->getBeginLoc()),"(");
+								//r.InsertTextAfterToken(r.SMp->getFileLoc(FS->getEndLoc()),
+								//	",dfsansrc(\""+uniq_name+"\"),dfsan_set_label("+uniq_name+",&"+vn+",sizeof("+vn+")),"+vn+")");
+								continue;
+							}
+							r.InsertBefore(FS,"(");
+							r.InsertTextAfterToken(FS->getEndLoc(),
+								",dfsansrc(\""+uniq_name+"\"),dfsan_set_label("+uniq_name+",&"+vn+",sizeof("+vn+")),"+vn+")");
+						}
 					}
-					if(r.isRewritable(s_ie->getBeginLoc())&&r.isRewritable(s_ie->getEndLoc())){
-						auto err=r.InsertBefore(s_ie,dfsan_end)||r.InsertTextAfterToken(s_ie->getEndLoc(),")");
-						assert(!err);
-					} else plog-"sink not accessible";
-					return;
 				}
-				//data sink
-				log_var_types(r.find_vars_expr(_sink_vars()));
+				else if(it->second&1){
+					//data src
+					if(mtype==ie)return;
+					//assert(lhs); //not ture can be MemberExpr->-ImplicitCastExpr->DeclRefExpr, e.g. png_ptr->zbuf_size
+					for(auto& varname:source_vars()){
+						plog+"source"<DUM(varname);
+						auto uniq_name=get_new_label(it->first,r.get_source(varname),1);
+						if(mtype!=binop){
+							plog+"usource:"+int(mtype)+src_loc-endLoc;
+						} else if(mtype==binop){
+							plog<"source binop\n";
+							//auto dfsan_begin=",dfsan_set_label("+uniq_name+",&"+varname+",sizeof("+varname+"))";
+							if(s_binop->getLHS()->HasSideEffects(*Context)){
+								plog+"HasSideEffects"-r.get_source(s_binop->getLHS());
+								continue;
+							}
+							varname->dumpColor();
+							auto vn=r.get_source(varname);
+							if(vn.empty()){
+								plog-"ASSERT1";
+								varname->dump();
+								continue;
+							}
+
+							if(!r.isRewritable(FS->getBeginLoc())||!r.isRewritable(FS->getEndLoc())){
+								plog-"source not accessible";
+								//https://stackoverflow.com/a/32118182
+								//r.InsertTextBefore(r.SMp->getFileLoc(FS->getBeginLoc()),"(");
+								//r.InsertTextAfterToken(r.SMp->getFileLoc(FS->getEndLoc()),
+								//	",dfsansrc(\""+uniq_name+"\"),dfsan_set_label("+uniq_name+",&"+vn+",sizeof("+vn+")),"+vn+")");
+								continue;
+							}
+							r.InsertBefore(FS,"(");
+							r.InsertTextAfterToken(FS->getEndLoc(),
+								",dfsansrc(\""+uniq_name+"\"),dfsan_set_label("+uniq_name+",&"+vn+",sizeof("+vn+")),"+vn+")");
+						}
+					}
+				}
+				
 			}
+			if(mode==genSink){
+				if(it->second>>3&1){
+					dfsan_bad_used=1;
+					plog+"sink discovered:"+src_loc-source;
+					if(mtype==ie){
+						if(s_ie->HasSideEffects(*Context))return;
+						if(!(s_ie->getType()->isArithmeticType()||s_ie->getType()->isPointerType()))return;
+						auto label=get_new_label(it->first,source,0);
+						string dfsan_end='('+label+"=dfsan_get_label((long)"+r.get_source(s_ie)+"),";
+						for(auto& x:{"_SaN_bad00000"}){
+							sink_file_source_vars.insert(x);
+							dfsan_end+="dfsanlog(\""+label+"\",\""+x+"\","+label+","+x+",dfsan_has_label(" +label+','+x+")),";
+							visited_edges+label-x;
+						}
+						if(r.isRewritable(s_ie->getBeginLoc())&&r.isRewritable(s_ie->getEndLoc())){
+							auto err=r.InsertBefore(s_ie,dfsan_end)||r.InsertTextAfterToken(s_ie->getEndLoc(),")");
+							assert(!err);
+						} else plog-"sink not accessible";
+						return;
+					}
+				}
+				else if(it->second>>1&1){
+					plog+"sink discovered:"+src_loc-source;
+					if(mtype==ie){
+						if(s_ie->HasSideEffects(*Context))return;
+						if(!(s_ie->getType()->isArithmeticType()||s_ie->getType()->isPointerType()))return;
+						auto label=get_new_label(it->first,source,0);
+						string dfsan_end='('+label+"=dfsan_get_label((long)"+r.get_source(s_ie)+"),";
+						for(auto& x:sink_labels[it->first]){
+							sink_file_source_vars.insert(x);
+							dfsan_end+="dfsanlog(\""+label+"\",\""+x+"\","+label+","+x+",dfsan_has_label(" +label+','+x+")),";
+							visited_edges+label-x;
+						}
+						if(r.isRewritable(s_ie->getBeginLoc())&&r.isRewritable(s_ie->getEndLoc())){
+							auto err=r.InsertBefore(s_ie,dfsan_end)||r.InsertTextAfterToken(s_ie->getEndLoc(),")");
+							assert(!err);
+						} else plog-"sink not accessible";
+						return;
+					}
+					//data sink
+					log_var_types(r.find_vars_expr(_sink_vars()));
+				}
+			
+			}
+			
 		}
 
 	}
@@ -378,8 +443,11 @@ public:
 			Logger ofs(full_filename+".dfsan");
 			Logger liblabels(workspace+"libdfsanlabels.c",ios::app);
 			ofs.ccl.push_back(&plog);
-			if(mode==genSource)ofs.ccl.push_back(&liblabels);
 			vector<string> labelsHere;
+			if(dfsan_bad_used){
+				ofs-"#include <sanitizer/dfsan_interface.h>\nextern dfsan_label _SaN_bad00000;";
+			}
+			if(mode==genSource)ofs.ccl.push_back(&liblabels);
 			for(auto& x:dfsan_labels){
 				if(split2(x.first,':').first==filename){
 					unique(x.second,1);
@@ -488,6 +556,14 @@ public:
 			bool foundme=0;
 			for(ifstream ts(workspace+"task.txt");ts>>a>>b;){
 				foundme|=split2(a,':').first==filename||split2(b,':').first==filename;
+				if(a=="E:-1"||b=="E:-1"){
+					if(b=="E:-1"){//uni source
+						interested[{a}]|=4;
+					} else{//uni sink
+						interested[{b}]|=8;
+					}
+					continue;
+				}
 				interested[{a}]|=1;
 				interested[{b}]|=2;
 				df_edge[a].insert(b);
@@ -499,7 +575,7 @@ public:
 				mode=disabled;
 				return 1;
 			}
-			static SingleInstance si("dfsan");
+			//static SingleInstance si("dfsan");
 			plog.open(workspace+"plog.log",ios_base::app);
 			//plog.ccl.push_back(&cerr);
 			visited_f.open(workspace+"visited.txt",ios_base::app);

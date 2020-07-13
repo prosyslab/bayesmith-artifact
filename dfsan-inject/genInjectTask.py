@@ -9,10 +9,11 @@ print(sys.argv,file=sys.stderr)
 print(troot,file=sys.stderr)
 if 'urjtag' in sys.argv[1] or 'shntool' in sys.argv[1] or 'latex2rtf' in sys.argv[1] or 'optipng' in sys.argv[1]:
 	alarms=open(troot+'taint/datalog/DUPath.csv').readlines()
+	duedges=open(troot+'taint/datalog/DUEdge.facts').readlines()
 else:
 	alarms=open(troot+'interval/datalog/DUPath.csv').readlines()
-#alarms=open(troot+'interval/datalog/DUEdge.facts').readlines()
-#alarms=open(troot+'taint/datalog/Alarm.facts')
+	duedges=open(troot+'interval/datalog/DUEdge.facts').readlines()
+
 s=open(troot+'node.json','rb').read()
 nodes=json.loads(s.decode('utf-8','ignore'))['nodes']
 i=0
@@ -38,6 +39,13 @@ for _ in alarms[batchsize*batchid:batchsize*(batchid+1)]:
 		if isEntityNode(a) and isEntityNode(b):
 			i+=1
 			print(' '.join(nodes[n]['loc'] for n in _.split()))
+		elif 'ENTRY' in _.split()[0]:
+			#special ENTRY src and sink, 6/12
+			assert a['cmd'][0]=='skip'
+			if _ in duedges:
+				print(b['loc'],'E:-1')
+			else:
+				print('E:-1',b['loc'])
 		else:err+=1
 	except:
 		err+=1

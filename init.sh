@@ -1,3 +1,4 @@
+ln -s ~/Desktop/llvm/ /tmp/llvm-project
 export LLVM_VIRT=/tmp/llvm-project/virtualroot
 export PATH=$PWD/dfsan-plugin:$LLVM_VIRT/bin:$PATH
 export LD_LIBRARY_PATH=$LLVM_VIRT/lib:$LD_LIBRARY_PATH

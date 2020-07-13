@@ -8,6 +8,7 @@ workdir=sys.argv[1]+'/'
 fileline={}
 log=open(workdir+Path(__file__).stem+'.log','a')
 fo=open(workdir+'/sanfl.txt','a')
+fileline['_SaN_bad00000']=':-1'
 for x in open(workdir+'/loc_vars.txt'):
 	a,b=x.split()
 	fileline[b]=a
