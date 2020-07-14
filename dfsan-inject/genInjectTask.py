@@ -42,6 +42,7 @@ for _ in alarms[batchsize*batchid:batchsize*(batchid+1)]:
 		elif 'ENTRY' in _.split()[0]:
 			#special ENTRY src and sink, 6/12
 			assert a['cmd'][0]=='skip'
+			assert b['cmd'][0]!='skip'
 			if _ in duedges:
 				print(b['loc'],'E:-1')
 			else:

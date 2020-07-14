@@ -499,12 +499,8 @@ extern dfsan_label )";
 				int lc=0;bool one=0;
 				const auto process=[&](string_view x){
 					if(x=="#line 1")one=1;
-					switch(++lc){
-					case 2:if(x.starts_with("dfsan_label"))ofs+"extern";
-					case 1:ofs-x;
-						break;
-					default:if(one)ofs-x;
-					}
+					if(++lc==1||one)ofs-x;
+					else if(x.starts_with("dfsan_label"))ofs+"extern"-x;
 				};
 				if(out.back()!='\n')out.push_back('\n');
 				size_t pit=-1;
