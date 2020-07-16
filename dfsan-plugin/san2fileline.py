@@ -55,7 +55,7 @@ def load_sanlog(pid):
 		return rt
 	except:
 		print('error file:',workdir+'dfg/'+pid+'san.log')
-		print(x[0].split('.'),[pid,str(t)])
+		if 'x' in vars():print(x[0].split('.'),[pid,str(t)])
 		#traceback.print_exc()
 		return None
 def find_all_srcs_of_label(lbl):

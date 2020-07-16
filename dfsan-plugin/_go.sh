@@ -1,7 +1,7 @@
 shopt -s expand_aliases #enable aliases
 set -e
 clear
-make
+make -j4
 alias cc=clang-dfsan
 AHOME=$(pwd)
 INCLUDE=$(pwd)/../include
@@ -61,7 +61,13 @@ pushd $WORKDIR
 > plog.log
 > loc_vars.txt
 > visited_edges.txt
-> libdfsanlabels.c
+cat > libdfsanlabels.c <<- EOM
+#include <sanitizer/dfsan_interface.h>
+dfsan_label _SaN_bad00000;
+void __attribute__ ((constructor)) _dfsan_init_bad00000(){
+_SaN_bad00000=dfsan_create_label("_SaN_bad00000",0);
+}
+EOM
 clang-11 -shared -fPIC libdfsanlabels.c -o libdfsanlabels.a
 unp $ARCHIEVE >/dev/null
 }

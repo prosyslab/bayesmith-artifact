@@ -8,6 +8,7 @@ if (( $# < 3 )); then
 	echo 'wrong usage!'
 	exit 1
 fi
+export PYTHONHASHSEED=0
 mkdir -p $BINGO/examples/$APP
 pushd $BINGO/examples/$APP
 export PROBLEM_DIR=$BINGO/examples/$APP

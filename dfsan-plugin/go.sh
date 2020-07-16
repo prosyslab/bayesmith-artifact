@@ -3,8 +3,9 @@
 cd $APP
 export DFPG_MODE=genSource
 $configure
-export DFSAN_HEADPARA=" -fstack-protector-all -L$WORKDIR -ldfsanlabels -L$AHOME -ldfsan-rt -w -g -I$INCLUDE -fsanitize=dataflow -fsanitize-blacklist=/tmp/openssl-list.txt\
- -Xclang -load -Xclang $AHOME/dfsan-plugin.so -Xclang -add-plugin -Xclang DfsanPlugin  -fsanitize-coverage=edge,no-prune,trace-pc-guard"
+# -fvisibility=hidden -fsanitize=safe-stack,cfi -flto -fcf-protection -fstack-protector-all
+export DFSAN_HEADPARA=" -L$WORKDIR -ldfsanlabels -L$AHOME -ldfsan-rt -w -g -I$INCLUDE -fsanitize=dataflow -fsanitize-blacklist=/tmp/openssl-list.txt\
+ -Xclang -load -Xclang $AHOME/dfsan-plugin.so -Xclang -add-plugin -Xclang DfsanPlugin"
 > $WORKDIR/visited.txt;make clean;make $MAKEARGS
 python3 $AHOME/replace.py
 echo '_____________genSink_______________'>>$WORKDIR/plog.log
@@ -23,7 +24,7 @@ cd $WORKDIR/$APP/
 mkdir -p $WORKDIR/dfg # even single threaded execution leads interfere
 rm -f $WORKDIR/dfg/*
 . $AHOME/../benchmark/test-$APP.sh
-cat $WORKDIR/dfg/*txt > $WORKDIR/dfgraph.txt
+#cat $WORKDIR/dfg/*txt > $WORKDIR/dfgraph.txt # mysterious 000
 popd
  python3 $AHOME/san2fileline.py $WORKDIR
 }

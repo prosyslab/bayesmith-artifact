@@ -16,6 +16,7 @@ for x in nodes:
 edge=defaultdict(list)
 edgen=defaultdict(list)
 negative_confidence={}
+#read positive and negative edges from sanfl
 for x in open(workdir+'/sanfl.txt'):
 	a,b,p=x.split()
 	a=fileLine2node[a]
@@ -31,10 +32,6 @@ duedges=set(open(datalog+'DUEdge.facts').readlines())
 
 confid=open(workdir+'/observed-queries.txt','w')
 dupaths=open(datalog+'DUPath.csv').readlines()
-dupathe=defaultdict(list)
-for _ in dupaths:
-	a,b=_.split()
-	dupathe[a].append(b)
 
 # merge edges to larger paths
 def dfs0(x):
@@ -47,9 +44,8 @@ def dfs0(x):
 for x in edge:
 	reachable=[]
 	dfs0(x)
-	#print(len(edge[x]),len(list(set(edge[x])|set(reachable))),file=sys.stderr)
 	edge[x]=list(set(edge[x])|set(reachable))
-
+ 
 # infer smaller paths from edges, requires path unique
 
 prunedname_cons=open(prunedname_cons).read()
@@ -61,7 +57,7 @@ edgep_r=defaultdict(list)
 
 for x in dupaths:
 	a,b=x.split()
-	#alive after pruing, check if we can infer the (small) path form large path discovered
+	#the path is alive after pruing, check if we can infer the (small) path form large path discovered
 	if a+','+b in prunedname_cons:
 		edgep[a].append(b)
 		edgep_r[b].append(a)
@@ -110,6 +106,9 @@ def positive_feedback(a,b):
 	else:
 		print('O DUPath({},{}) true'.format(a,b))
 		print(f'DUPath({a},{b})\t0.99',file=confid)
+
+#additional feedback
+toadd=defaultdict(set)
 for src in edge:
 	for dst in edge[src]:
 		reachcnt=0
@@ -118,9 +117,38 @@ for src in edge:
 		bridges=find_all_bridges_on_discovered_path(src)
 		for x in bridges:
 			if x[0]+','+x[1] in named_cons_all:
+				toadd[x[0]].add(x[1])
 				positive_feedback(*x)
 				print('additional feedback:',x[0]+','+x[1],file=sys.stderr)
 print(len(provided),file=sys.stderr)
+
+for x in toadd:edge[x]=list(set(edge[x])|toadd[x])
+
+for x in edge:
+	reachable=[]
+	dfs0(x)
+	edge[x]=list(set(edge[x])|set(reachable))
+
+toadd=defaultdict(set)
+for src in edge:
+	for dst in edge[src]:
+		reachcnt=0
+		all_reachable_nodes_in_reversed_pruned=set()
+		_all_reachable_nodes_in_reversed_pruned(dst)
+		bridges=find_all_bridges_on_discovered_path(src)
+		for x in bridges:
+			if x[0]+','+x[1] in named_cons_all and (x[0],x[1]) not in provided:
+				toadd[x[0]].add(x[1])
+				positive_feedback(*x)
+				print('additional feedback2:',x[0]+','+x[1],file=sys.stderr)
+
+for x in edge:
+	reachable=[]
+	dfs0(x)
+	edge[x]=list(set(edge[x])|set(reachable))
+
+#dump remaining graph and negative feedback
+NEG_LIMIT=100
 for x in dupaths:
 	a,b=x.split()
 	if (a,b) in provided:continue
@@ -128,10 +156,12 @@ for x in dupaths:
 		positive_feedback(a,b)
 	elif b in edgen[a]:
 		continue
-		if x in duedges:
+		#if NEG_LIMIT==0:continue
+		NEG_LIMIT-=1
+		if x in duedges:      
 			print('O DUEdge({},{}) false'.format(a,b))
-			print(f'DUEdge({a},{b})\t{negative_confidence[(a,b)]}',file=confid)
+			print(f'DUEdge({a},{b})\t0.01',file=confid)
 		else:
 			print('O DUPath({},{}) false'.format(a,b))
-			print(f'DUPath({a},{b})\t{negative_confidence[(a,b)]}',file=confid)
+			print(f'DUPath({a},{b})\t0.01',file=confid)
   
