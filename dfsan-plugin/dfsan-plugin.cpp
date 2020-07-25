@@ -444,7 +444,7 @@ public:
 			Logger liblabels(workspace+"libdfsanlabels.c",ios::app);
 			ofs.ccl.push_back(&plog);
 			vector<string> labelsHere;
-			if(dfsan_bad_used){
+			if(dfsan_bad_used||1){
 				ofs-"#include <sanitizer/dfsan_interface.h>\nextern dfsan_label _SaN_bad00000;";
 			}
 			if(mode==genSource)ofs.ccl.push_back(&liblabels);

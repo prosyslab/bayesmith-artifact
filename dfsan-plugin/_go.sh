@@ -21,7 +21,7 @@ case $APP in
 	optipng-0.5.3) $down https://github.com/TianyiChen/PL-assets/releases/download/main/optipng-0.5.3.tar.gz $ARCHIEVE 69df63fd29fa499c85687fa35569fd208741a91b4f34949d1fd8463ebd353384
 		make(){
 			pushd src
-			command make -f scripts/unix.mak "$@"
+			command make -i -f scripts/unix.mak "$@"
 			popd
 		}
 		configure='' ;;

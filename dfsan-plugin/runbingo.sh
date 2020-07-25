@@ -4,7 +4,8 @@ BINGO_CI=$PWD/../../bingo-ci-experiment/
 APP=$1
 WORKDIR=$2/
 TYPE=$3 # interval or taint
-if (( $# < 3 )); then
+RUNNAME=$4
+if (( $# < 4 )); then
 	echo 'wrong usage!'
 	exit 1
 fi
@@ -32,6 +33,7 @@ set -x
 
 cd ../.. #bingo
 time bash -x  ./scripts/bnet/build-bnet.sh $PROBLEM_DIR noaugment_base $PROBLEM_DIR/rule-prob.txt||echo 'failed'
-echo "AC 1e-6 500 1000 100 stats.txt combined out" >> $PROBLEM_DIR/feedback.txt
-./scripts/bnet/driver.py $PROBLEM_DIR/bnet/noaugment_base/bnet-dict.out $PROBLEM_DIR/bnet/noaugment_base/factor-graph.fg $PROBLEM_DIR/base_queries.txt $PROBLEM_DIR/oracle_queries.txt <$PROBLEM_DIR/feedback.txt
+./scripts/bnet/elim-inconsistent-fb.py $PROBLEM_DIR/bnet/noaugment_base/named_cons_all.txt.pruned.edbobsderived $WORKDIR/feedback.txt /dev/null > $BINGO/examples/$APP/feedback.txt
+echo "AC 1e-6 500 1000 100 ${RUNNAME}stats.txt ${RUNNAME}combined out" >> $PROBLEM_DIR/feedback.txt
+time ./scripts/bnet/driver.py $PROBLEM_DIR/bnet/noaugment_base/bnet-dict.out $PROBLEM_DIR/bnet/noaugment_base/factor-graph.fg $PROBLEM_DIR/base_queries.txt $PROBLEM_DIR/oracle_queries.txt <$PROBLEM_DIR/feedback.txt
 
