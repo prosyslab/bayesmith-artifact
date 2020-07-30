@@ -55,7 +55,7 @@ case $APP in
 esac
 
 rm -rf $WORKDIR/$APP ||sudo rm -rf $WORKDIR/$APP
-export DFSAN_OPTIONS="warn_unimplemented=0:coverage=1:coverage_dir=/tmp/cov"
+export DFSAN_OPTIONS="warn_unimplemented=0" #":coverage=1:coverage_dir=/tmp/cov"
 export CC="clang-dfsan"
 pushd $WORKDIR
 > plog.log
