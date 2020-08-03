@@ -25,6 +25,9 @@ test:test.cpp
 	$(CPP) $(FLAGS)  test.cpp -o test $(LCLANG)
 clang-dfsan:clang-dfsan.cpp
 	$(CPP) $(FLAGS) $? -o $@ $(LCLANG)
+	#ln -fs clang-dfsan g++
+	#ln -fs clang-dfsan gcc
+	#ln -fs clang-dfsan cc
 libdfsan-rt.a: dfsan-rt.cpp
 	$(CPP) $(FLAGS) $(ICLANG) -DLLVM_DISABLE_ABI_BREAKING_CHECKS_ENFORCING=1 -shared $? -o $@ $(LCLANG)
 clean:

@@ -5,16 +5,17 @@ from pathlib import Path
 import traceback
 
 workdir=sys.argv[1]+'/'
+init=len(sys.argv)>2 and sys.argv[2]=='init' #init confidence
 fileline={}
-log=open(workdir+Path(__file__).stem+'.log','a')
-fo=open(workdir+'/sanfl.txt','a')
+log=open(workdir+Path(__file__).stem+'.log','w')
+fo=open(workdir+'/sanfl.txt','w')
 fileline['_SaN_bad00000']=':-1'
 for x in open(workdir+'/loc_vars.txt'):
 	a,b=x.split()
 	fileline[b]=a
 
 instrumented=set(open(workdir+"visited_edges.txt").read().splitlines())
-pos=set() #positive edges
+pos=defaultdict(int) #positive edges
 neg=Counter() #negative
 touched=set()
 
@@ -35,9 +36,9 @@ def load_dfgraph(pid):
 			if len(ln)==3:ln.append('') #no desc
 			dfg.append((int(ln[1]),int(ln[2]),ln[3]))
 		return True
-	except:
+	except Exception as e:
 		print('error file:',workdir+'dfg/'+pid+'dfg.txt')
-		#traceback.print_exc()
+		print(e)
 		return None
 def load_sanlog(pid):
 	try:
@@ -53,10 +54,9 @@ def load_sanlog(pid):
 			assert len(x)==5+1 or len(x)==2+1
 			rt.append(x[1:])
 		return rt
-	except:
+	except Exception as e:
 		print('error file:',workdir+'dfg/'+pid+'san.log')
-		if 'x' in vars():print(x[0].split('.'),[pid,str(t)])
-		#traceback.print_exc()
+		print(e)
 		return None
 def find_all_srcs_of_label(lbl):
 	rt=[]
@@ -71,7 +71,11 @@ def find_all_srcs_of_label(lbl):
 	dfs(lbl)
 	return rt
 
+total_runs=0
 def process(insid):
+	global total_runs
+	pos=set()
+	neg=Counter() #negative
 	if load_dfgraph(insid)==None:
 		print('failed dfg',insid)
 		return
@@ -79,6 +83,7 @@ def process(insid):
 	if sanlog is None:
 		print('failed slg',insid)
 		return
+	total_runs+=1
 	src=set()
 	for x in sanlog:
 		if len(x)==2:#src
@@ -96,18 +101,32 @@ def process(insid):
 			if p=='1':
 				pos.add(fileline[a]+' '+fileline[b])
 			else:
-				neg[fileline[a]+' '+fileline[b]]+=1		
+				neg[fileline[a]+' '+fileline[b]]+=1
+	return pos,neg
 
 processed=set()
 for filename in os.listdir(workdir+'dfg'):
 	i=filename[:-7]
 	if i not in processed:
-		process(i)
+		_=process(i)
+		if _ is not None:
+			ppos,pneg=_
+			for x in ppos:pos[x]+=1
+			for x in pneg:neg[x]+=1
 		processed.add(i)
+print('total_runs',total_runs)
+
+def positive_confidence(x):
+	if init:return .999
+	return pos[x]/total_runs
+def negative_confidence(x):
+	if init:return .999
+	return neg[x] # actural times passed
 
 for x in pos:
-	print(x,'1',file=fo)
+	print(x,1,positive_confidence(x),file=fo)
 for x in neg:
 	if x in pos:continue
-	print(x,max(0.1, .5**neg[x]),file=fo)
+	print(x,0,negative_confidence(x),file=fo)
+
 print('coverage',len(touched&instrumented),len(instrumented),file=log)

@@ -2,11 +2,12 @@ import sys,os.path
 import json
 from collections import defaultdict
 from collections import deque
-workdir=sys.argv[1]
+workdir=sys.argv[1]+'/'
 nodefile=sys.argv[2]
 datalog=sys.argv[3]
 prunedname_cons=sys.argv[4]
 named_cons_all=open(sys.argv[5]).read()
+init='INIT' in os.environ
 s=open(nodefile,'rb').read()
 nodes=json.loads(s.decode('utf-8','ignore'))['nodes']
 fileLine2node=defaultdict(list)
@@ -16,19 +17,22 @@ for x in nodes:
 		fileLine2node[nodes[x]['loc']].append(x)
 edge=defaultdict(list)
 edgen=defaultdict(list)
-negative_confidence={}
+confidence=defaultdict(lambda:.5)
+posconfidence=defaultdict(lambda:.8)
 #read positive and negative edges from sanfl
 for x in open(workdir+'/sanfl.txt'):
-	a,b,p=x.split()
+	a,b,p,prob=x.split()
 	a=fileLine2node[a]
 	b=fileLine2node[b] 
 	for x in b:
 		if p=='1':
 			edge[x].extend(a)
+			for y in a:
+				posconfidence[(x,y)]=float(prob)
 		else:
 			edgen[x].extend(a)
 			for y in a:
-				negative_confidence[(x,y)]=min(.25,1-float(p))
+				confidence[(x,y)]=float(prob)
 duedges=set(open(datalog+'DUEdge.facts').readlines())
 
 confid=open(workdir+'/observed-queries.txt','w')
@@ -101,55 +105,45 @@ def positive_feedback(a,b):
 	if (a,b) in provided:
 		return
 	provided.add((a,b))
-	if x in duedges:
-		print('O DUEdge({},{}) true'.format(a,b))
-		print(f'DUEdge({a},{b})\t0.8',file=confid)
-	else:
-		print('O DUPath({},{}) true'.format(a,b))
-		print(f'DUPath({a},{b})\t0.8',file=confid)
+	#if x in duedges:
+	#	print('O DUEdge({},{}) true'.format(a,b))
+	#	print(f'DUEdge({a},{b})\t0.8',file=confid)
+	#else:
+	print('O DUPath({},{}) true'.format(a,b))
+	print(f'DUPath({a},{b})\t{posconfidence[(a,b)]}',file=confid)
 
 #additional feedback
-toadd=defaultdict(set)
-for src in edge:
-	for dst in edge[src]:
-		reachcnt=0
-		all_reachable_nodes_in_reversed_pruned=set()
-		_all_reachable_nodes_in_reversed_pruned(dst)
-		bridges=find_all_bridges_on_discovered_path(src)
-		for x in bridges:
-			if x[0]+','+x[1] in named_cons_all:
-				toadd[x[0]].add(x[1])
-				positive_feedback(*x)
-				print('additional feedback:',x[0]+','+x[1],file=sys.stderr)
-print(len(provided),file=sys.stderr)
 
-for x in toadd:edge[x]=list(set(edge[x])|toadd[x])
+for _ in range(2):
+	toadd=defaultdict(set)
+	for src in edge:
+		for dst in edge[src]:
+			reachcnt=0
+			all_reachable_nodes_in_reversed_pruned=set()
+			_all_reachable_nodes_in_reversed_pruned(dst)
+			bridges=find_all_bridges_on_discovered_path(src)
+			for x in bridges:
+				if x[0]+','+x[1] in named_cons_all:
+					toadd[x[0]].add(x[1])
+					positive_feedback(*x)
+					print(f'additional feedback{_}:',x[0]+','+x[1],file=sys.stderr)
+	print(len(provided),file=sys.stderr)
 
-for x in edge:
-	reachable=[]
-	dfs0(x)
-	edge[x]=list(set(edge[x])|set(reachable))
+	for x in toadd:edge[x]=list(set(edge[x])|toadd[x])
 
-toadd=defaultdict(set)
-for src in edge:
-	for dst in edge[src]:
-		reachcnt=0
-		all_reachable_nodes_in_reversed_pruned=set()
-		_all_reachable_nodes_in_reversed_pruned(dst)
-		bridges=find_all_bridges_on_discovered_path(src)
-		for x in bridges:
-			if x[0]+','+x[1] in named_cons_all and (x[0],x[1]) not in provided:
-				toadd[x[0]].add(x[1])
-				positive_feedback(*x)
-				print('additional feedback2:',x[0]+','+x[1],file=sys.stderr)
+	for x in edge:
+		reachable=[]
+		dfs0(x)
+		edge[x]=list(set(edge[x])|set(reachable))
 
-for x in edge:
-	reachable=[]
-	dfs0(x)
-	edge[x]=list(set(edge[x])|set(reachable))
+# read default confidence
+default_confidence=defaultdict(lambda:.9)
+for x in open(workdir+'PT.txt'):
+	x=x.split()
+	if 'Rank'==x[0]:continue
+	default_confidence[x[-1]]=float(x[1])
 
 #dump remaining graph and negative feedback
-NEG_LIMIT=100
 for x in dupaths:
 	a,b=x.split()
 	if (a,b) in provided:continue
@@ -157,11 +151,20 @@ for x in dupaths:
 		positive_feedback(a,b)
 	elif b in edgen[a]:
 		#if NEG_LIMIT==0:continue
-		NEG_LIMIT-=1
-		if x in duedges:      
-			print('O DUEdge({},{}) false'.format(a,b))
-			print(f'DUEdge({a},{b})\t{negative_confidence[(a,b)]}',file=confid)
+		if f'DUPath({a},{b})' not in default_confidence:
+			print('not in ' if f'DUEdge({a},{b})' not in default_confidence else 'in' ,f'DUPath({a},{b})',file=sys.stderr)
+			pass
+		#if x in duedges:      
+		#	print('O DUEdge({},{}) false'.format(a,b))
+		#	print(f'DUEdge({a},{b})\t{negative_confidence[(a,b)]}',file=conf id)
+		#else:
+		if init:
+			conf=confidence[(a,b)]
 		else:
-			print('O DUPath({},{}) false'.format(a,b))
-			print(f'DUPath({a},{b})\t{negative_confidence[(a,b)]}',file=confid)
-  
+			cnt=confidence[(a,b)]
+			p=min(.98,default_confidence[f'DUPath({a},{b})'])
+			print(p,cnt,file=sys.stderr)
+			conf=(1-p)/(1-p+p*(1-p)**cnt)
+		assert 0<=conf<=1,'confidence'
+		print(f'O DUPath({a},{b}) false')
+		print(f'DUPath({a},{b})\t{conf}',file=confid)

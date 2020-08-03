@@ -2,7 +2,6 @@ shopt -s expand_aliases #enable aliases
 set -e
 clear
 make -j4
-alias cc=clang-dfsan
 AHOME=$(pwd)
 INCLUDE=$(pwd)/../include
 WWS=$2
@@ -18,6 +17,13 @@ ARCHIEVE=$APP.tar.gz
 down="python3 -m tclib download"
 configure='./configure'
 case $APP in
+	bc-1.06) $down https://ftp.gnu.org/gnu/bc/bc-1.06.tar.gz $ARCHIEVE any 
+		echo 'scan.c'>$WORKDIR/blacklist.txt;; #like a preprocessed file
+	vim-8.0)
+		;;
+	nginx-*) configure='./configure --without-http_rewrite_module --without-http_gzip_module'
+		$down https://nginx.org/download/$APP.tar.gz $ARCHIEVE any ;;
+ 	redis-*) $down https://download.redis.io/releases/$APP.tar.gz $ARCHIEVE any ;;
 	optipng-0.5.3) $down https://github.com/TianyiChen/PL-assets/releases/download/main/optipng-0.5.3.tar.gz $ARCHIEVE 69df63fd29fa499c85687fa35569fd208741a91b4f34949d1fd8463ebd353384
 		make(){
 			pushd src
@@ -56,7 +62,10 @@ esac
 
 rm -rf $WORKDIR/$APP ||sudo rm -rf $WORKDIR/$APP
 export DFSAN_OPTIONS="warn_unimplemented=0" #":coverage=1:coverage_dir=/tmp/cov"
+#export DFSAN_HEADPARA=' -fsanitize=dataflow -fsanitize-blacklist=/tmp/openssl-list.txt'
 export CC="clang-dfsan"
+export CXX="clang-dfsan"
+
 pushd $WORKDIR
 > plog.log
 > loc_vars.txt

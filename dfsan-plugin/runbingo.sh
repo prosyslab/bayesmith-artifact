@@ -1,5 +1,5 @@
 BINGO=$PWD/../../bingo/
-#set -e
+set -e
 BINGO_CI=$PWD/../../bingo-ci-experiment/
 APP=$1
 WORKDIR=$2/
@@ -11,16 +11,38 @@ if (( $# < 4 )); then
 fi
 export PYTHONHASHSEED=0
 mkdir -p $BINGO/examples/$APP
-pushd $BINGO/examples/$APP
 export PROBLEM_DIR=$BINGO/examples/$APP
+pushd $PROBLEM_DIR
 rm -rf *
-cp $WORKDIR/feedback.txt $BINGO/examples/$APP/feedback.txt
-cp $WORKDIR/observed-queries.txt $BINGO/examples/$APP/observed-queries.txt
 ln -s $BINGO_CI/benchmark/$APP/sparrow-out/$TYPE/bnet/Alarm.txt base_queries.txt
 ln -s $BINGO_CI/benchmark/$APP/sparrow-out/$TYPE/bnet/GroundTruth.txt oracle_queries.txt
 ln -s $BINGO_CI/benchmark/$APP/sparrow-out/$TYPE/bnet/named_cons_all.txt named_cons_all.txt
 touch rule-prob.txt
+popd
+# dummy feedbacks for workflow
+export INIT=''
+touch $WORKDIR/PT.txt
+python3 san2fileline.py $WORKDIR init
+python3 fileline2feedback.py $WORKDIR $BINGO_CI/benchmark/$APP/sparrow-out/node.json $BINGO_CI/benchmark/$APP/sparrow-out/$TYPE/datalog/ /dev/null $PROBLEM_DIR/named_cons_all.txt 2>/dev/null
+unset INIT
+pushd $PROBLEM_DIR
+touch $PROBLEM_DIR/feedback.txt
+cp $WORKDIR/observed-queries.txt $PROBLEM_DIR/observed-queries.txt
+sed 's/O //' feedback.txt | sed 's/ true//'| sed 's/ false//' | sort | uniq > observed-tuples.txt
 grep ', DUPath' named_cons_all.txt | sed 's/.*, DUPath/DUPath/' | sort | uniq > all-dupath.txt
+comm -12 all-dupath.txt <(sed 's/O //' feedback.txt | sed 's/ true//'| sed 's/ false//' | sort | uniq) > observed-tuples.txt
+cat base_queries.txt observed-tuples.txt > observable-tuples.txt
+cd $BINGO
+time bash -x  ./scripts/bnet/build-bnet.sh $PROBLEM_DIR noaugment_base $PROBLEM_DIR/rule-prob.txt
+echo -e "BP 1e-6 500 1000 100\nPT $WORKDIR/PT.txt"|./scripts/bnet/driver.py $PROBLEM_DIR/bnet/noaugment_base/bnet-dict.out $PROBLEM_DIR/bnet/noaugment_base/factor-graph.fg $PROBLEM_DIR/base_queries.txt $PROBLEM_DIR/oracle_queries.txt
+popd
+# generate feedbacks
+python3 san2fileline.py $WORKDIR
+python3 fileline2feedback.py $WORKDIR $BINGO_CI/benchmark/$APP/sparrow-out/node.json $BINGO_CI/benchmark/$APP/sparrow-out/$TYPE/datalog/ $PROBLEM_DIR/bnet/noaugment_base/named_cons_all.txt.pruned.edbobsderived $PROBLEM_DIR/named_cons_all.txt
+# done with feedbacks
+pushd $PROBLEM_DIR
+cp $WORKDIR/feedback.txt $PROBLEM_DIR/feedback.txt
+cp $WORKDIR/observed-queries.txt $PROBLEM_DIR/observed-queries.txt
 sed 's/O //' feedback.txt | sed 's/ true//'| sed 's/ false//' | sort | uniq > observed-tuples.txt
 comm -12 all-dupath.txt <(sed 's/O //' feedback.txt | sed 's/ true//'| sed 's/ false//' | sort | uniq) > observed-tuples.txt
 cat base_queries.txt observed-tuples.txt > observable-tuples.txt
@@ -33,7 +55,7 @@ set -x
 
 cd ../.. #bingo
 time bash -x  ./scripts/bnet/build-bnet.sh $PROBLEM_DIR noaugment_base $PROBLEM_DIR/rule-prob.txt||echo 'failed'
-./scripts/bnet/elim-inconsistent-fb.py $PROBLEM_DIR/bnet/noaugment_base/named_cons_all.txt.pruned.edbobsderived $WORKDIR/feedback.txt /dev/null > $BINGO/examples/$APP/feedback.txt
+./scripts/bnet/elim-inconsistent-fb.py $PROBLEM_DIR/bnet/noaugment_base/named_cons_all.txt.pruned.edbobsderived $WORKDIR/feedback.txt /dev/null > $PROBLEM_DIR/feedback.txt
 echo "AC 1e-6 500 1000 100 ${RUNNAME}stats.txt ${RUNNAME}combined out" >> $PROBLEM_DIR/feedback.txt
 time ./scripts/bnet/driver.py $PROBLEM_DIR/bnet/noaugment_base/bnet-dict.out $PROBLEM_DIR/bnet/noaugment_base/factor-graph.fg $PROBLEM_DIR/base_queries.txt $PROBLEM_DIR/oracle_queries.txt <$PROBLEM_DIR/feedback.txt
 

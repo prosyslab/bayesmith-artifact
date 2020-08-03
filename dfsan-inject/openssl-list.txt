@@ -1,3 +1,4 @@
+fun:AES_*=uninstrumented
 fun:SSL*=uninstrumented
 fun:ssl*=uninstrumented
 fun:RAND*=uninstrumented
@@ -24,3 +25,9 @@ fun:GENERAL_NAME_free=uninstrumented
 fun:CONF_modules_load_file=uninstrumented
 fun:dfsanlog=uninstrumented
 fun:dfsansrc=uninstrumented
+fun:*asan_*=uninstrumented
+fun:apr_*=uninstrumented
+fun:apu_version*=uninstrumented
+fun:ap_regcomp=uninstrumented
+fun:pcre_*=uninstrumented
+fun:je_get_defrag_hint=uninstrumented
