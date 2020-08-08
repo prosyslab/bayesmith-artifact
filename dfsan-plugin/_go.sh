@@ -17,6 +17,10 @@ ARCHIEVE=$APP.tar.gz
 down="python3 -m tclib download"
 configure='./configure'
 case $APP in
+	libtasn1-4.3) $down https://ftp.gnu.org/gnu/libtasn1/libtasn1-4.3.tar.gz $ARCHIEVE any 
+		MAKEARGS=' -i V=1';configure='./configure'
+		echo 'ASN1.c'>$WORKDIR/blacklist.txt;;
+	gnuplot-5.2.5) $down https://sourceforge.net/projects/gnuplot/files/gnuplot/5.2.5/gnuplot-5.2.5.tar.gz/download $ARCHIEVE 039db2cce62ddcfd31a6696fe576f4224b3bc3f919e66191dfe2cdb058475caa ;;
 	bc-1.06) $down https://ftp.gnu.org/gnu/bc/bc-1.06.tar.gz $ARCHIEVE any 
 		echo 'scan.c'>$WORKDIR/blacklist.txt;; #like a preprocessed file
 	vim-8.0)

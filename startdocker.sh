@@ -1,3 +1,4 @@
+. init.sh
 docker run -it \
 --mount type=bind,source=/tmp,target=/tmp \
 --mount type=bind,source=$PWD,target=/home/ubuntu/dynamicbingo,readonly \
