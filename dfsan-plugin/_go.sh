@@ -49,6 +49,9 @@ case $APP in
 	readelf-2.24) $down https://ftp.gnu.org/gnu/binutils/binutils-2.24.tar.gz binutils-2.24.tar.gz any
 		MAKEARGS="-i"
 		APP=binutils-2.24;ARCHIEVE=$APP.tar.gz ;;
+	readelf-2.32) $down https://ftp.gnu.org/gnu/binutils/binutils-2.32.tar.gz binutils-2.32.tar.gz any
+		MAKEARGS="-i"
+		APP=binutils-2.32;ARCHIEVE=$APP.tar.gz ;;
 	tar-*) $down https://ftp.gnu.org/gnu/tar/$APP.tar.gz $APP.tar.gz any 
 		echo 'safe-read.c'>$WORKDIR/blacklist.txt;;
 	wget-1.12) configure='./configure --without-ssl'

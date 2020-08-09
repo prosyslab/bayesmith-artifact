@@ -4,18 +4,22 @@ RUN adduser --disabled-password --gecos '' ubuntu&&adduser ubuntu sudo&&echo '%s
 SHELL ["/bin/bash", "-c"]
 USER ubuntu
 RUN sudo add-apt-repository -y ppa:avsm/ppa && \
-sudo apt install -y  ocaml opam make m4 git&&pushd /tmp &&git clone https://github.com/KihongHeo/sparrow.git && \
-cd sparrow&& git checkout 5580437e53fffdb25056dc43cc9193ddab68039d && \
-sed -i 's/opam init /opam init --disable-sandboxing /g' build.sh&&yes|./build.sh && sudo mv bin/sparrow /usr/bin && popd
+sudo apt install -y  ocaml opam make m4 git&&pushd /tmp &&git clone https://github.com/prosyslab/sparrow.git && \
+cd sparrow && ls -l&& \
+sed -i 's/opam init /opam init --disable-sandboxing /g' build.sh; \
+#sed -i 's/clangml/clangml.4.1.0/g' build.sh; \
+yes|./build.sh||true ; yes|opam install clangml.4.1.0; yes|./build.sh && sudo mv $(readlink -f bin/sparrow) /usr/bin/sparrow
 USER root
 RUN DEBIAN_FRONTEND="noninteractive" apt install -y dejagnu \
 #binutil
-r-base-dev libcurl4-openssl-dev r-cran-rjava \
+#r-base-dev libcurl4-openssl-dev r-cran-rjava \
 #R; R,git
 #libpcre3 libpcre3-dev libpcrecpp0v5 libssl-dev zlib1g-dev \
 #nginx
-libapr1-dev libaprutil1-dev \
+#libapr1-dev libaprutil1-dev \
 #apache
-flex
+flex \
 # bc
+texinfo help2man
+# makeinfo,libtasn1-4.3
 USER ubuntu
