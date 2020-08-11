@@ -26,6 +26,6 @@ rm -f $WORKDIR/dfg/*
 . $AHOME/../benchmark/test-$APP.sh
 #cat $WORKDIR/dfg/*txt > $WORKDIR/dfgraph.txt # mysterious 000
 popd
- python3 $AHOME/san2fileline.py $WORKDIR
+#python3 $AHOME/san2fileline.py $WORKDIR
 }
-python3 -m tclib ifttt done$4/$3
+python3 -m tclib ifttt done$APP 2>/dev/null ||true

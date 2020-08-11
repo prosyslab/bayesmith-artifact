@@ -14,7 +14,7 @@ endif
 ICLANG=-isystem$(LLVM_VIRT)/include
 LCLANG=-L$(LLVM_VIRT)/lib -lclangToolingCore -lclangTooling -lclangFrontendTool -lclangFrontend -lclangDriver -lclangSerialization -lclangCodeGen -lclangParse -lclangSema -lclangStaticAnalyzerFrontend -lclangStaticAnalyzerCheckers -lclangStaticAnalyzerCore -lclangAnalysis -lclangARCMigrate -lclangRewrite -lclangRewriteFrontend -lclangEdit -lclangAST -lclangLex -lclangBasic -lclangASTMatchers -fno-rtti $(LCPP)
 
-all:dfsan-plugin.so plugin-test.so clang-dfsan libdfsan-rt.a interactive-feedback
+all:dfsan-plugin.so plugin-test.so clang-dfsan libdfsan-rt.a interactive-feedback graphtun
 dfsan-plugin.so:dfsan-plugin.cpp #*.h
 	$(CPP) $(FLAGS) $(ICLANG) -shared $? -o $@ $(LCLANG)
 interactive-feedback:interactive-feedback.cpp
@@ -23,6 +23,8 @@ plugin-test.so:plugin-test.cpp #*.h
 	$(CPP) $(FLAGS) $(ICLANG) -shared $? -o $@ $(LCLANG)
 test:test.cpp
 	$(CPP) $(FLAGS)  test.cpp -o test $(LCLANG)
+graphtun:graphtun.cpp
+	$(CPP) $(FLAGS) $? -o $@ $(LCPP)
 clang-dfsan:clang-dfsan.cpp
 	$(CPP) $(FLAGS) $? -o $@ $(LCLANG)
 	#ln -fs clang-dfsan g++

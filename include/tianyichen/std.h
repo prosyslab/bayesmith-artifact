@@ -4,6 +4,9 @@ Copyright (C) Tianyi Chen, 2018-2020
 Conforms to the C++17 standard
 */
 #pragma once
+#if __has_include("bits/stdc++.h")
+#include<bits/stdc++.h>
+#endif
 #include<vector>
 #include<chrono>
 #include<mutex>
@@ -17,6 +20,7 @@ Conforms to the C++17 standard
 #include<map>
 #include<random>
 #include<string_view>
+#include<type_traits>
 
 #include"./linux.h"
 
@@ -146,7 +150,7 @@ struct time_class{\
 	chrono::high_resolution_clock::time_point t1=chrono::high_resolution_clock::now();\
 	~time_class(){\
 		chrono::high_resolution_clock::time_point t2=chrono::high_resolution_clock::now();\
-		lock_guard<mutex>(_ittime_var.mx);\
+		lock_guard<mutex> _time_guard(_ittime_var.mx);\
 		_ittime_var.t+=chrono::duration_cast<chrono::duration<double>>(t2 - t1).count();\
 	}\
 }___;
@@ -163,7 +167,40 @@ template<class A,class B,class C>
 bool between(A a,B low,C high){
 	return low<=a&&a<=high;
 }
-template<class T,class V>
+template<class T,class V,
+	typename = enable_if_t<is_base_of_v<string,T>||is_base_of_v<string_view,T>>>
+pair<T,T> split2(const T& c,V v){
+	auto sep=c.find(v);
+	if(sep==string::npos)return make_pair(c,T{});
+	return make_pair(T{c.begin(),c.begin()+sep},T{c.begin()+sep+v.size(),c.end()});
+}
+template<class T>
+pair<T,T> split2(const T& c,const char* v){
+	return split2(c,string_view{v});
+}
+template<class T,class V,
+	typename = enable_if_t<(is_base_of_v<string,T>||is_base_of_v<string_view,T>)>>
+vector<T> split(const T& c,V v,bool preserve_empty=0){
+	size_t prev=0;vector<T> rt;
+	for(auto sep=c.find(v);sep!=string::npos;sep=c.find(v,prev)){
+		if(sep-prev||preserve_empty)
+			rt.emplace_back(c.begin()+prev,c.begin()+sep);
+		prev=sep+v.size();
+	}
+	if(c.size()-prev)rt.emplace_back(c.begin()+prev,c.end());
+	return rt;
+}
+template<class T,typename = enable_if_t<(is_base_of_v<string,T>||is_base_of_v<string_view,T>)>>
+vector<T> split(const T& c,const char* v,bool preserve_empty=0){
+	return split(c,string_view{v},preserve_empty);
+}
+void __test_split(){
+	cerr<<split2((string_view)"a\nb","\n")<<'\n';
+	cerr<<split((string)"a\n\n\n\nb","\n\n")<<'\n';
+	cerr<<split((string)"a\n\n\n\nb","\n\n",1)<<'\n';
+}
+template<class T,class V,
+	typename = enable_if_t<!is_convertible_v<V,const char*>>>
 pair<T,T> split2(const T&c,const V&v){
 	auto sep=find(c.begin(),c.end(),v);
 	if(sep==c.end())return make_pair(c,T{});
