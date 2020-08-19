@@ -167,9 +167,9 @@ template<class A,class B,class C>
 bool between(A a,B low,C high){
 	return low<=a&&a<=high;
 }
-template<class T,class V,
+template<class T,
 	typename = enable_if_t<is_base_of_v<string,T>||is_base_of_v<string_view,T>>>
-pair<T,T> split2(const T& c,V v){
+pair<T,T> split2(const T& c,string_view v){
 	auto sep=c.find(v);
 	if(sep==string::npos)return make_pair(c,T{});
 	return make_pair(T{c.begin(),c.begin()+sep},T{c.begin()+sep+v.size(),c.end()});
@@ -199,9 +199,9 @@ void __test_split(){
 	cerr<<split((string)"a\n\n\n\nb","\n\n")<<'\n';
 	cerr<<split((string)"a\n\n\n\nb","\n\n",1)<<'\n';
 }
-template<class T,class V,
-	typename = enable_if_t<!is_convertible_v<V,const char*>>>
-pair<T,T> split2(const T&c,const V&v){
+
+template<class T,class V,typename = enable_if_t<is_pod_v<V>>>
+pair<T,T> split2(const T&c,const V v){
 	auto sep=find(c.begin(),c.end(),v);
 	if(sep==c.end())return make_pair(c,T{});
 	return make_pair(T{c.begin(),sep},T{sep+1,c.end()});
