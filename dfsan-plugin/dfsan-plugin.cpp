@@ -31,7 +31,7 @@ unordered_map<ofileloc,set<ofileloc>> df_edge;
 unordered_map<ofileloc,set<string>> sink_labels;
 map<FileLine,int>interested;
 set<const FileLine*>visited;
-set<string>sink_file_source_vars;
+set<string>sink_file_source_vars,blacklist;
 //>>0&1, source
 //>>1&1, sink
 
@@ -233,6 +233,7 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 		int b=atoi(locb.substr(1+locb.find(':')));
 		for(auto&x:interested){
 			if(x.first.filename==filename&&between(x.first.ln,a,b)){
+				if(blacklist.contains(x.first.filename))return 0;
 				if(mtype==binop||mtype==ie)visited.insert(&x.first);
 				plog+"interesting "+x.first+loca-locb;
 				return 1;
@@ -444,7 +445,7 @@ public:
 			Logger liblabels(workspace+"libdfsanlabels.c",ios::app);
 			ofs.ccl.push_back(&plog);
 			vector<string> labelsHere;
-			if(dfsan_bad_used||1){
+			if(dfsan_bad_used){
 				ofs-"#include <sanitizer/dfsan_interface.h>\nextern dfsan_label _SaN_bad00000;";
 			}
 			if(mode==genSource)ofs.ccl.push_back(&liblabels);
@@ -541,6 +542,7 @@ public:
 			if(workspace.back()!='/')workspace.push_back('/');
 			string a,b;
 			for(ifstream bl(workspace+"blacklist.txt");bl>>a;){
+				blacklist.insert(a);
 				if(a==filename)return 1;
 			}
 			load_labels();
@@ -590,3 +592,40 @@ public:
 
 static clang::FrontendPluginRegistry::Add<MyASTAction>
 X("DfsanPlugin", "DFsan Plugin");
+
+//ref: https://llvm.org/docs/WritingAnLLVMPass.html
+#include<llvm/Pass.h>
+#include "llvm/IR/Module.h"
+#include "llvm/IR/LegacyPassManager.h"
+#include "llvm/Transforms/IPO/PassManagerBuilder.h"
+namespace llvm_experimental{
+using namespace llvm;
+Logger llog("/tmp/llog.log");
+struct DfsanPass:ModulePass{
+	static char ID;
+	DfsanPass(): ModulePass(ID) {}
+	virtual bool runOnModule(llvm::Module& M) override{
+		auto x=M.begin();
+		return 0;
+		for(auto& F : M) {
+			dmp(&F);
+			/*for(auto& B : F) {
+				dmp(&B);
+				for(auto& I : B) {
+				}
+			}*/
+		}
+		return 0;
+	}
+};
+char DfsanPass::ID=0;
+#if 1
+static RegisterPass<DfsanPass> X("DFSan","DFSan Pass",
+	false /* Only looks at CFG */,
+	false /* Analysis Pass */);
+static RegisterStandardPasses Y(
+	PassManagerBuilder::EP_EarlyAsPossible,
+	[](const PassManagerBuilder& Builder,
+		legacy::PassManagerBase& PM) { PM.add(new DfsanPass()); });
+#endif
+}

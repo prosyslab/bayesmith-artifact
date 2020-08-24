@@ -15,7 +15,7 @@ int main(int argc,char** argv){
 		(argv[i][1]&&strcmp("-load",argv[i])&&(!memcmp(argv[i],"-l",2)||!memcmp(argv[i],"-L",2))?
 			linkargs:call)<<' '<<quoted(argv[i]);
 	}
-	linkargs<<" -lstdc++";
+	//linkargs<<" -lstdc++";
 	l+call.str()-linkargs.str();
 	return system((call.str()+linkargs.str()).data())>>8;//linux
 }

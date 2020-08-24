@@ -26,7 +26,7 @@ test:test.cpp
 graphtun:graphtun.cpp
 	$(CPP) $(FLAGS) $? -o $@ $(LCPP)
 clang-dfsan:clang-dfsan.cpp
-	$(CPP) $(FLAGS) $? -o $@ $(LCLANG)
+	$(CPP) $(FLAGS) -D__GLIBCXX_USE_CXX11_ABI=0 $? -o $@ $(LCLANG)
 	#ln -fs clang-dfsan g++
 	#ln -fs clang-dfsan gcc
 	#ln -fs clang-dfsan cc
