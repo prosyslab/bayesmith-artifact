@@ -1,7 +1,8 @@
+LLVM_ROOT=/home/ubuntu/Desktop/llvm/
 if [ -f /.dockerenv ]; then
 	:
 else
-	ln -s ~/Desktop/llvm/ /tmp/llvm-project
+	ln -s $LLVM_ROOT /tmp/llvm-project
 fi
 export LLVM_VIRT=/tmp/llvm-project/virtualroot
 export PATH=$PWD:$PWD/dfsan-plugin:$LLVM_VIRT/bin:$PATH
