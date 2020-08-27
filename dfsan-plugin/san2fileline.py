@@ -3,7 +3,7 @@ import json
 from collections import defaultdict,Counter
 from pathlib import Path
 import traceback
-
+sys.setrecursionlimit(int(1e7))
 workdir=sys.argv[1]+'/'
 init=len(sys.argv)>2 and sys.argv[2]=='init' #init confidence
 fileline={}
@@ -19,6 +19,7 @@ pos=defaultdict(int) #positive edges
 neg=Counter() #negative
 touched=set()
 
+#dfg[node]=(childA,childB,label)
 def load_dfgraph(pid):
 	try:
 		fdfg=open(workdir+'dfg/'+pid+'dfg.txt')
@@ -40,6 +41,7 @@ def load_dfgraph(pid):
 		print('error file:',workdir+'dfg/'+pid+'dfg.txt')
 		print(e)
 		return None
+
 def load_sanlog(pid):
 	try:
 		a=open(workdir+'dfg/'+pid+'san.log').readlines()
@@ -60,7 +62,11 @@ def load_sanlog(pid):
 		return None
 def find_all_srcs_of_label(lbl):
 	rt=[]
+	vis=defaultdict(lambda:0)
 	def dfs(i):
+		nonlocal vis
+		if vis[i]:return
+		vis[i]=1
 		if i==0:return
 		nonlocal rt
 		if i>=len(dfg):return
@@ -85,6 +91,7 @@ def process(insid):
 		return
 	total_runs+=1
 	src=set()
+	print('run loaded',insid)
 	for x in sanlog:
 		if len(x)==2:#src
 			src.add(x[0])

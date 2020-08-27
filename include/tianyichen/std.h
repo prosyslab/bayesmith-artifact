@@ -22,8 +22,6 @@ Conforms to the C++17 standard
 #include<string_view>
 #include<type_traits>
 
-#include"./linux.h"
-
 #if __has_include("llvm/ADT/StringRef.h")
 #define _TIANYICHEN_HAS_LLVM
 #include "llvm/ADT/StringRef.h"
@@ -179,8 +177,9 @@ pair<T,T> split2(const T& c,const char* v){
 	return split2(c,string_view{v});
 }
 template<class T,class V,
-	typename = enable_if_t<(is_base_of_v<string,T>||is_base_of_v<string_view,T>)>>
-vector<T> split(const T& c,V v,bool preserve_empty=0){
+	class=enable_if_t<(is_base_of_v<string,T>||is_base_of_v<string_view,T>)
+		&&!is_pod_v<V>>>
+vector<T> split(const T& c,const V v,bool preserve_empty=0){
 	size_t prev=0;vector<T> rt;
 	for(auto sep=c.find(v);sep!=string::npos;sep=c.find(v,prev)){
 		if(sep-prev||preserve_empty)
@@ -188,6 +187,17 @@ vector<T> split(const T& c,V v,bool preserve_empty=0){
 		prev=sep+v.size();
 	}
 	if(c.size()-prev)rt.emplace_back(c.begin()+prev,c.end());
+	return rt;
+}
+template<class T>
+vector<T> split(const T&c,char v,bool preserve_empty=0){
+	auto prev=c.begin();vector<T> rt;
+	for(auto sep=find(c.begin(),c.end(),v);sep!=c.end();sep=find(prev,c.end(),v)){
+		if(sep-prev||preserve_empty)
+			rt.emplace_back(prev,sep);
+		prev=sep+1;
+	}
+	if(c.end()-prev)rt.emplace_back(prev,c.end());
 	return rt;
 }
 template<class T,typename = enable_if_t<(is_base_of_v<string,T>||is_base_of_v<string_view,T>)>>
@@ -271,3 +281,5 @@ struct vtuple_implicit<T,R...>:vtuple_implicit<R...>{
 	}
 };
 }
+
+#include"./linux.h"

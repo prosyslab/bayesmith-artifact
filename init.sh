@@ -3,6 +3,8 @@ if [ -f /.dockerenv ]; then
 	:
 else
 	ln -s $LLVM_ROOT /tmp/llvm-project
+	ulimit -s unlimited # allow large recursion
+	# executing this in docker causes segfault
 fi
 export LLVM_VIRT=/tmp/llvm-project/virtualroot
 export PATH=$PWD:$PWD/dfsan-plugin:$LLVM_VIRT/bin:$PATH

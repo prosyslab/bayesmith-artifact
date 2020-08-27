@@ -8,6 +8,7 @@ Conforms to the C++20 standard
 #include<sys/file.h>
 #include<string>
 namespace tianyichen::std{
+Logger Cerr("/dev/stderr");
 struct SingleInstance{
 	int fh;
 	SingleInstance(::std::string name){

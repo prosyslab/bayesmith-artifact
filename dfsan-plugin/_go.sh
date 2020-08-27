@@ -17,6 +17,10 @@ ARCHIEVE=$APP.tar.gz
 down="python3 -m tclib download"
 configure='./configure'
 case $APP in
+	curl-7.69.3) ARCHIEVE=curl-7.69.3.tar.xz
+		$down https://curl.haxx.se/download/curl-7.69.3.tar.xz $ARCHIEVE any;;
+	fribidi-1.0.7) ARCHIEVE=fribidi-1.0.7.tar.bz2
+		$down https://github.com/fribidi/fribidi/releases/download/v1.0.7/fribidi-1.0.7.tar.bz2 $ARCHIEVE 5ab5f21e9f2fc57b4b40f8ea8f14dba78a5cc46d9cf94bc5e00a58e6886a935d;;
 	patch-2.7.1) echo 'parse-datetime.y'>$WORKDIR/blacklist.txt
 		ARCHIEVE=$APP.tar.xz; $down https://ftp.gnu.org/gnu/patch/patch-2.7.1.tar.xz $ARCHIEVE any;;
 	kilo-0.0.1) ARCHIEVE=kilo-0.0.1.zip;configure=''
@@ -27,6 +31,8 @@ case $APP in
 	cflow-1.6) ARCHIEVE=cflow-1.6.tar.bz2
 		$down https://ftp.gnu.org/gnu/cflow/cflow-1.6.tar.bz2 cflow-1.6.tar.bz2 any
 		echo 'c.l'>$WORKDIR/blacklist.txt;;
+	gzip-1.2.4a) $down https://ftp.gnu.org/gnu/gzip/gzip-1.2.4a.tar.gz $ARCHIEVE any 
+		echo 'unlzw.c'>$WORKDIR/blacklist.txt;;
 	zsh-5.4.2) ARCHIEVE=zsh-5.4.2.tar.xz
 		$down https://sourceforge.net/projects/zsh/files/zsh/5.4.2/zsh-5.4.2.tar.xz/download $ARCHIEVE a80b187b6b770f092ea1f53e89021d06c03d8bbe6a5e996bcca3267de14c5e52 ;; 
 	gnuplot-5.2.5) $down https://sourceforge.net/projects/gnuplot/files/gnuplot/5.2.5/gnuplot-5.2.5.tar.gz/download $ARCHIEVE 039db2cce62ddcfd31a6696fe576f4224b3bc3f919e66191dfe2cdb058475caa ;;
@@ -80,7 +86,6 @@ case $APP in
 	wget-*) configure='./configure  --with-ssl=openssl'
 		echo 'css_.c' >$WORKDIR/blacklist.txt
 	$down https://ftp.gnu.org/gnu/wget/$APP.tar.gz  $APP.tar.gz any ;;
-	sed-*) $down https://ftp.gnu.org/gnu/sed/$APP.tar.gz $APP.tar.gz any ;;
 	*) echo "Unknown app" && exit 1 ;;
 esac
 
