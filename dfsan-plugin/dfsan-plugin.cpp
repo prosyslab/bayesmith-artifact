@@ -272,8 +272,8 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 		if(mtype==invalid)return;
 		if(!FS||!r.IsInMainFile(FS))return;
 		auto source=r.get_source(FS);
-		auto src_loc=query_src_loc(FS->getBeginLoc());
-		auto endLoc=query_src_loc(FS->getEndLoc());
+		auto src_loc=split(query_src_loc(FS->getBeginLoc()),'/').back();
+		auto endLoc=split(query_src_loc(FS->getEndLoc()),'/').back();
 		if(mtype==ie&&r.get_source(FS).find("_SaN_")!=string::npos)return;
 		plog.ccl.clear();
 		plog+"match discovered "+src_loc-endLoc;
@@ -532,10 +532,16 @@ public:
 	bool ParseArgs(const CompilerInstance &CI, const vector<string>& args) {
 		CIp=(CompilerInstance*)&CI;
 		auto&SM=CI.getSourceManager();
-		filename=SM.getFileEntryForID(SM.getMainFileID())->getName().str();
+		filename=split(SM.getFileEntryForID(SM.getMainFileID())->getName().str(),'/').back();
+		full_filename=SM.getFileEntryForID(SM.getMainFileID())->tryGetRealPathName().str();
 		if(filename!="conftest.c"){
 			auto md=getenv("DFPG_MODE");
 			if(!md)return 1;
+			if(!strcmp(md,"genSource")){
+				mode=genSource;
+			} else if(!strcmp(md,"genSink")){
+				mode=genSink;
+			}
 			auto ws=getenv("WORKDIR");
 			if(!ws)return 1;
 			workspace=ws;
@@ -546,11 +552,6 @@ public:
 				if(a==filename)return 1;
 			}
 			load_labels();
-			if(!strcmp(md,"genSource")){
-				mode=genSource;
-			}else if(!strcmp(md,"genSink")){
-				mode=genSink;
-			}
 			bool foundme=0;
 			for(ifstream ts(workspace+"task.txt");ts>>a>>b;){
 				foundme|=split2(a,':').first==filename||split2(b,':').first==filename;
@@ -579,8 +580,6 @@ public:
 			visited_f.open(workspace+"visited.txt",ios_base::app);
 			visited_edges.open(workspace+"visited_edges.txt",ios::app);
 		}
-		full_filename=SM.getFileEntryForID(SM.getMainFileID())->tryGetRealPathName().str();
-		plog<DUM(full_filename);
 		auto _=ifstream(full_filename);
 		original_code={(istreambuf_iterator<char>(_)),istreambuf_iterator<char>()};
 		dmp(Mode_str[mode]);
