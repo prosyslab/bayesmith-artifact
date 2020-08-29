@@ -4,7 +4,7 @@ cd $APP
 export DFPG_MODE=genSource
 $configure
 # -fvisibility=hidden -fsanitize=safe-stack,cfi -flto -fcf-protection -fstack-protector-all
-export DFSAN_HEADPARA=" $DFSAN_HEADPARA -v -L$WORKDIR -ldfsanlabels -L$AHOME -ldfsan-rt -w -g -I$INCLUDE -fsanitize=dataflow -fsanitize-blacklist=/tmp/openssl-list.txt\
+export DFSAN_HEADPARA=" $DFSAN_HEADPARA -L$WORKDIR -ldfsanlabels -L$AHOME -ldfsan-rt -w -I$INCLUDE -fsanitize=dataflow -fsanitize-blacklist=/tmp/openssl-list.txt\
  -Xclang -load -Xclang $AHOME/dfsan-plugin.so -Xclang -add-plugin -Xclang DfsanPlugin"
 > $WORKDIR/visited.txt;make clean;make $MAKEARGS
 python3 $AHOME/replace.py

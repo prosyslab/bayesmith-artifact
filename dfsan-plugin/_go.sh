@@ -8,7 +8,7 @@ WWS=$2
 export WORKDIR=/tmp/$WWS
 APP=$1
 mkdir -p $WORKDIR
-python3 $AHOME/../dfsan-inject/genInjectTask.py $APP $WORKDIR $3 $4
+python3 $AHOME/../dfsan-inject/genInjectTask.py $APP $WORKDIR 1 0
 #                                                               batch total,id
 cd $WORKDIR
 ARCHIEVE=$APP.tar.gz

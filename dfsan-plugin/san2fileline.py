@@ -122,6 +122,7 @@ for filename in os.listdir(workdir+'dfg'):
 			for x in pneg:neg[x]+=1
 		processed.add(i)
 print('total_runs',total_runs)
+print('total_runs',total_runs,file=log)
 
 def positive_confidence(x):
 	if init:return .999

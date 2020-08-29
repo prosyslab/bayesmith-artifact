@@ -4,7 +4,7 @@ pushd tests
 unp ../../cantrbry.zip
 alias gzip=../gzip
 echo "1 2 3"> a.in
-echo "1 2 3 4 5"> a.in
+echo "1 2 3 4 5"> b.in
 for x in *;do
 gzip $x ||true
 done
