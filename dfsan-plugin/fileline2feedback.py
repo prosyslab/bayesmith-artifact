@@ -1,5 +1,5 @@
 import sys,os.path
-import json
+import json,random
 from collections import defaultdict
 from collections import deque
 workdir=sys.argv[1]+'/'
@@ -100,6 +100,9 @@ def find_all_bridges_on_discovered_path(x):
 	return bridges
 
 provided=set()
+
+feedbacks=[]
+confids=[]
 def positive_feedback(a,b):
 	global provided
 	if (a,b) in provided:
@@ -109,8 +112,8 @@ def positive_feedback(a,b):
 	#	print('O DUEdge({},{}) true'.format(a,b))
 	#	print(f'DUEdge({a},{b})\t0.8',file=confid)
 	#else:
-	print('O DUPath({},{}) true'.format(a,b))
-	print(f'DUPath({a},{b})\t{posconfidence[(a,b)]}',file=confid)
+	feedbacks.append(f'O DUPath({a},{b}) true')
+	confids.append(f'DUPath({a},{b})\t{posconfidence[(a,b)]}')
 
 #additional feedback
 
@@ -166,5 +169,13 @@ for x in dupaths:
 			print(p,cnt,file=sys.stderr)
 			conf=(1-p)/(1-p+p*(1-p)**cnt)
 		assert 0<=conf<=1,'confidence'
-		print(f'O DUPath({a},{b}) false')
-		print(f'DUPath({a},{b})\t{conf}',file=confid)
+		feedbacks.append(f'O DUPath({a},{b}) false')
+		confids.append(f'DUPath({a},{b})\t{conf}')
+FEEDBACKCAP=int(len(dupaths)*.05)+1
+random.seed(233)
+random.shuffle(feedbacks)
+random.seed(233)
+random.shuffle(confids)
+for i in range(FEEDBACKCAP):
+	print(feedbacks[i])
+	print(confids[i],file=confid)
