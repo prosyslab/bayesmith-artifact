@@ -176,6 +176,6 @@ random.seed(233)
 random.shuffle(feedbacks)
 random.seed(233)
 random.shuffle(confids)
-for i in range(FEEDBACKCAP):
+for i in range(min(FEEDBACKCAP,len(feedbacks))):
 	print(feedbacks[i])
 	print(confids[i],file=confid)
