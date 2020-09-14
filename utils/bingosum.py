@@ -15,7 +15,8 @@ for x in sorted(os.listdir(os.environ['BINGO'])):
 		inv=y[1].split()[-3]
 		#print(inv)
 		iters=len(y)-1
-		assert int(y[-1].split()[3])>0 #bug is found
+		if int(y[-1].split()[3])==0: #bug not found
+			iters='>'+str(iters)
 		#print(iters)
 		data[a][b]=f'{inv},{iters}'
 print('Summary,',','.join([x+'inv,'+x+'iters' for x in RTYPES]))
