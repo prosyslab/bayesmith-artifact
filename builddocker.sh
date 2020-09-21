@@ -1,1 +1,1 @@
-docker build -t dynamicbingo:latest .
+docker build --network=host -t dynamicbingo:latest .
