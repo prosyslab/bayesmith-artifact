@@ -28,6 +28,5 @@ RUN sudo add-apt-repository -y ppa:avsm/ppa && \
 sudo apt install -y  ocaml opam make m4 git&&pushd /tmp &&git clone https://github.com/prosyslab/sparrow.git && \
 cd sparrow && git checkout c9865fba0440ea362b38c71780ee8ccc42605729 && git status && \
 sed -i 's/opam init /opam init --disable-sandboxing /g' build.sh; \
-# opam pin -y add git+https://gitlab.inria.fr/memcad/clangml.git#snapshot;
-yes|./build.sh ; \
+yes|./build.sh ; opam pin -y add git+https://gitlab.inria.fr/memcad/clangml.git#snapshot; \
 eval $(opam env) ;make;sudo mv $(readlink -f bin/sparrow) /usr/bin/sparrow
