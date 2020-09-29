@@ -138,3 +138,19 @@ for x in neg:
 	print(x,0,negative_confidence(x),file=fo)
 
 print('coverage',len(touched&instrumented),len(instrumented),file=log)
+
+ins_cnt=defaultdict(set)
+touch_cnt=defaultdict(set)
+
+for x in touched:
+	y=fileline[x.split()[0]]
+	touch_cnt[y.split(':')[0]].add(y)
+
+for x in instrumented:
+	y=fileline[x.split()[0]]
+	ins_cnt[y.split(':')[0]].add(y)
+
+for x in ins_cnt:
+	print(x,len(touch_cnt[x])/len(ins_cnt[x]),file=log)
+	print(x,'touched',touch_cnt[x],file=log)
+	print(x,ins_cnt[x]-touch_cnt[x],file=log)

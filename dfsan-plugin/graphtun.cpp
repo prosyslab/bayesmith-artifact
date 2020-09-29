@@ -29,7 +29,10 @@ int main(int argc,char**argv){
 	while(getline(cin,buf)){
 		buf=split2(buf,": ").second;
 		auto d=split(buf,", ");
-		assert(d.size()>=2);
+		if(d.size()<2){
+			//R0: TrueBranch(setup_replacement-66877,setup_replacement-66898)
+			continue;
+		}
 		auto to=getid(d.back());
 		d.pop_back();
 		for(auto& x:d){

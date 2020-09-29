@@ -93,7 +93,7 @@ def find_all_bridges_on_discovered_path(x):
 				parent[x]=n
 				dfs1(x)
 				low[n]=min(low[n],low[x])
-				if low[x]>visited[n] or 1:bridges.append((n,x))
+				if low[x]>visited[n]:bridges.append((n,x))
 			elif x!=parent[n]:
 				low[n]=min(low[n],visited[x])# non tree edge
 	dfs1(x)
@@ -171,7 +171,7 @@ for x in dupaths:
 		assert 0<=conf<=1,'confidence'
 		feedbacks.append(f'O DUPath({a},{b}) false')
 		confids.append(f'DUPath({a},{b})\t{conf}')
-FEEDBACKCAP=int(len(dupaths)*.05)+1
+FEEDBACKCAP=int(len(dupaths)*1)+1
 random.seed(233)
 random.shuffle(feedbacks)
 random.seed(233)

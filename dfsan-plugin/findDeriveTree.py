@@ -13,14 +13,13 @@ for x in open(rules):
 		x=x[x.find(  ')')+1:]
 	x=x[2:].strip()
 	# left==>x
-
 	From[x].append(left)
 	for y in left:
 		to[y].append(x)
 
 def dfs(x,level=0,silent=False):
 	global visited
-	if x in visited:return
+	#if x in visited:return
 	visited.add(x)
 	if not silent:print('  '*level,x,len(From[x]))
 	for y in From[x]:
