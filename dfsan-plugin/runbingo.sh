@@ -45,7 +45,7 @@ grep ', DUPath' named_cons_all.txt | sed 's/.*, DUPath/DUPath/' | sort | uniq > 
 comm -12 all-dupath.txt <(sed 's/O //' feedback.txt | sed 's/ true//'| sed 's/ false//' | sort | uniq) > observed-tuples.txt
 cat base_queries.txt observed-tuples.txt > observable-tuples.txt
 cd $BINGO
-time bash -x  ./scripts/bnet/build-bnet.sh $PROBLEM_DIR noaugment_base $PROBLEM_DIR/rule-prob.txt
+time bash -x  ./scripts/bnet/build-bnet.sh $PROBLEM_DIR noaugment_base $PROBLEM_DIR/bnet/noaugment_base/rule-prob.txt.obs-derived.txt
 echo -e "BP 1e-6 500 1000 100\nPT $WORKDIR/PT.txt"|./scripts/bnet/driver.py $PROBLEM_DIR/bnet/noaugment_base/bnet-dict.out $PROBLEM_DIR/bnet/noaugment_base/factor-graph.fg $PROBLEM_DIR/base_queries.txt $PROBLEM_DIR/oracle_queries.txt
 popd
 # rankv2
@@ -68,7 +68,7 @@ done
 set -x
 
 cd ../.. #bingo
-time bash -x  ./scripts/bnet/build-bnet.sh $PROBLEM_DIR noaugment_base $PROBLEM_DIR/rule-prob.txt||echo 'failed'
+time bash -x  ./scripts/bnet/build-bnet.sh $PROBLEM_DIR noaugment_base $PROBLEM_DIR/bnet/noaugment_base/rule-prob.txt.obs-derived.txt||echo 'failed'
 ./scripts/bnet/elim-inconsistent-fb.py $PROBLEM_DIR/bnet/noaugment_base/named_cons_all.txt.pruned.edbobsderived $PROBLEM_DIR/feedback.txt /dev/null | sponge $PROBLEM_DIR/feedback.txt
 echo "AC 1e-6 500 1000 100 ${RUNNAME}full-stats.txt ${RUNNAME}full-combined out" >> $PROBLEM_DIR/feedback.txt
 cat $PROBLEM_DIR/feedback.txt|./scripts/bnet/driver.py $PROBLEM_DIR/bnet/noaugment_base/bnet-dict.out $PROBLEM_DIR/bnet/noaugment_base/factor-graph.fg $PROBLEM_DIR/base_queries.txt $PROBLEM_DIR/oracle_queries.txt &
@@ -93,7 +93,7 @@ done
 set -x
 
 cd ../.. #bingo
-time bash -x  ./scripts/bnet/build-bnet.sh $PROBLEM_DIR noaugment_base $PROBLEM_DIR/rule-prob.txt||echo 'failed'
+time bash -x  ./scripts/bnet/build-bnet.sh $PROBLEM_DIR noaugment_base $PROBLEM_DIR/bnet/noaugment_base/rule-prob.txt.obs-derived.txt||echo 'failed'
 echo "AC 1e-6 500 1000 100 ${RUNNAME}random-stats.txt ${RUNNAME}random-combined out" >> $PROBLEM_DIR/feedback.random
 cat $PROBLEM_DIR/feedback.random|./scripts/bnet/driver.py $PROBLEM_DIR/bnet/noaugment_base/bnet-dict.out $PROBLEM_DIR/bnet/noaugment_base/factor-graph.fg $PROBLEM_DIR/base_queries.txt $PROBLEM_DIR/oracle_queries.txt &
 
