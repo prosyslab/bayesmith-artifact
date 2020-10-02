@@ -103,6 +103,8 @@ provided=set()
 
 feedbacks=[]
 confids=[]
+default_confidence=defaultdict(lambda:.9)
+
 def positive_feedback(a,b):
 	global provided
 	if (a,b) in provided:
@@ -113,7 +115,8 @@ def positive_feedback(a,b):
 	#	print(f'DUEdge({a},{b})\t0.8',file=confid)
 	#else:
 	feedbacks.append(f'O DUPath({a},{b}) true')
-	confids.append(f'DUPath({a},{b})\t{posconfidence[(a,b)]}')
+	c=default_confidence['DUPath({a},{b})']**(1/3)
+	confids.append(f'DUPath({a},{b})\t{c}')
 
 #additional feedback
 
@@ -140,7 +143,6 @@ for _ in range(2):
 		edge[x]=list(set(edge[x])|set(reachable))
 
 # read default confidence
-default_confidence=defaultdict(lambda:.9)
 for x in open(workdir+'PT.txt'):
 	x=x.split()
 	if 'Rank'==x[0]:continue
