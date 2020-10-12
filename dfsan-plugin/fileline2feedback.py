@@ -104,6 +104,11 @@ provided=set()
 feedbacks=[]
 confids=[]
 default_confidence=defaultdict(lambda:.9)
+# read default confidence
+for x in open(workdir+'PT.txt'):
+	x=x.split()
+	if 'Rank'==x[0]:continue
+	default_confidence[x[-1]]=float(x[1])
 
 def positive_feedback(a,b):
 	global provided
@@ -115,8 +120,9 @@ def positive_feedback(a,b):
 	#	print(f'DUEdge({a},{b})\t0.8',file=confid)
 	#else:
 	feedbacks.append(f'O DUPath({a},{b}) true')
-	c=default_confidence['DUPath({a},{b})']**(1/3)
-	confids.append(f'DUPath({a},{b})\t{c}')
+	c=default_confidence[f'DUPath({a},{b})']**(1/3)
+	#print('dcin',f'DUPath({a},{b})',(f'DUPath({a},{b})' in default_confidence),('xacacac' in default_confidence),default_confidence[f'DUPath({a},{b})'],file=sys.stderr)
+	confids.append(f'DUPath({a},{b})\t{posconfidence[(a,b)]}')
 
 #additional feedback
 
@@ -141,12 +147,6 @@ for _ in range(2):
 		reachable=[]
 		dfs0(x)
 		edge[x]=list(set(edge[x])|set(reachable))
-
-# read default confidence
-for x in open(workdir+'PT.txt'):
-	x=x.split()
-	if 'Rank'==x[0]:continue
-	default_confidence[x[-1]]=float(x[1])
 
 #dump remaining graph and negative feedback
 for x in dupaths:

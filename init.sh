@@ -14,3 +14,4 @@ cp dfsan-inject/openssl-list.txt /tmp/openssl-list.txt
 export PYTHONHASHSEED=0
 export BINGO=$PWD/../bingo/
 export BINGO_CI=$PWD/../bingo-ci-experiment/
+export VANILLA_CI=$PWD/../vanilla-experiment/

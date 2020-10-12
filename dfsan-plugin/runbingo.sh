@@ -49,7 +49,8 @@ time bash -x  ./scripts/bnet/build-bnet.sh $PROBLEM_DIR noaugment_base $PROBLEM_
 echo -e "BP 1e-6 500 1000 100\nPT $WORKDIR/PT.txt"|./scripts/bnet/driver.py $PROBLEM_DIR/bnet/noaugment_base/bnet-dict.out $PROBLEM_DIR/bnet/noaugment_base/factor-graph.fg $PROBLEM_DIR/base_queries.txt $PROBLEM_DIR/oracle_queries.txt
 popd
 # rankv2
-export RANKV2_PT=$WORKDIR/PT.txt
+#export RANKV2_PT=$WORKDIR/PT.txt
+export RANKV2_PT=$VANILLA_CI/benchmark/$APP/sparrow-out/interval/bingo_combined/0.out
 # generate feedbacks
 python3 san2fileline.py $WORKDIR
 python3 fileline2feedback.py $WORKDIR $BINGO_CI/benchmark/$APP/sparrow-out/node.json $BINGO_CI/benchmark/$APP/sparrow-out/$TYPE/datalog/ $PROBLEM_DIR/bnet/noaugment_base/named_cons_all.txt.pruned.edbobsderived $PROBLEM_DIR/named_cons_all.txt
