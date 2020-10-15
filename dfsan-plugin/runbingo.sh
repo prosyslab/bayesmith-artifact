@@ -29,7 +29,7 @@ pushd $BINGO
 		touch observed-queries.txt
 	popd
 	./scripts/bnet/build-bnet.sh $PROBLEM_DIR noaugment_base $PROBLEM_DIR/rule-prob.txt
-	echo "AC 1e-6 500 1000 100 ${RUNNAME}nofeedback-stats.txt ${RUNNAME}nofeedback-combined out"| ./scripts/bnet/driver.py $PROBLEM_DIR/bnet/noaugment_base/bnet-dict.out $PROBLEM_DIR/bnet/noaugment_base/factor-graph.fg $PROBLEM_DIR/base_queries.txt $PROBLEM_DIR/oracle_queries.txt &
+	echo "AC 1e-6 500 1000 100 ${RUNNAME}nofeedback-stats.txt ${RUNNAME}nofeedback-combined out"| ./scripts/bnet/driver.py $PROBLEM_DIR/bnet/noaugment_base/bnet-dict.out $PROBLEM_DIR/bnet/noaugment_base/factor-graph.fg $PROBLEM_DIR/base_queries.txt $PROBLEM_DIR/oracle_queries.txt >/dev/null &
 popd
 # dummy feedbacks for workflow
 export INIT=''
@@ -46,11 +46,11 @@ comm -12 all-dupath.txt <(sed 's/O //' feedback.txt | sed 's/ true//'| sed 's/ f
 cat base_queries.txt observed-tuples.txt > observable-tuples.txt
 cd $BINGO
 time bash -x  ./scripts/bnet/build-bnet.sh $PROBLEM_DIR noaugment_base $PROBLEM_DIR/rule-prob.txt
-echo -e "BP 1e-6 500 1000 100\nPT $WORKDIR/PT.txt"|./scripts/bnet/driver.py $PROBLEM_DIR/bnet/noaugment_base/bnet-dict.out $PROBLEM_DIR/bnet/noaugment_base/factor-graph.fg $PROBLEM_DIR/base_queries.txt $PROBLEM_DIR/oracle_queries.txt
+echo -e "BP 1e-6 500 1000 100\nPT $WORKDIR/PT.txt"|./scripts/bnet/driver.py $PROBLEM_DIR/bnet/noaugment_base/bnet-dict.out $PROBLEM_DIR/bnet/noaugment_base/factor-graph.fg $PROBLEM_DIR/base_queries.txt $PROBLEM_DIR/oracle_queries.txt >/dev/null
 popd
 # rankv2
 #export RANKV2_PT=$WORKDIR/PT.txt
-export RANKV2_PT=$VANILLA_CI/benchmark/$APP/sparrow-out/interval/bingo_combined/0.out
+export RANKV2_PT=$VANILLA_CI/benchmark/$APP/sparrow-out/$TYPE/bingo_combined/0.out
 # generate feedbacks
 python3 san2fileline.py $WORKDIR
 python3 fileline2feedback.py $WORKDIR $BINGO_CI/benchmark/$APP/sparrow-out/node.json $BINGO_CI/benchmark/$APP/sparrow-out/$TYPE/datalog/ $PROBLEM_DIR/bnet/noaugment_base/named_cons_all.txt.pruned.edbobsderived $PROBLEM_DIR/named_cons_all.txt

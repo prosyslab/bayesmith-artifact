@@ -9,3 +9,6 @@ PREFIX=0829
 ./runbingo.sh sed-4.3 /tmp/sed-4.3/ interval ${PREFIX}sed >/dev/null 2>/dev/null &
 ./runbingo.sh sort-7.2 /tmp/sort-7.2/ interval ${PREFIX}sort > /dev/null 2> /dev/null &
 ./runbingo.sh tar-1.28 /tmp/tar-1.28/ interval ${PREFIX}tar > /dev/null 2> /dev/null &
+./runbingo.sh optipng-0.5.3 /tmp/optipng-0.5.3/ taint ${PREFIX}optipng >/dev/null 2>/dev/null &
+./runbingo.sh latex2rtf-2.1.1 /tmp/latex2rtf-2.1.1/ taint ${PREFIX}latex2rtf >/dev/null 2>/dev/null &
+./runbingo.sh shntool-3.0.5 /tmp/shntool-3.0.5/ taint ${PREFIX}shntool >/dev/null 2>/dev/null &
