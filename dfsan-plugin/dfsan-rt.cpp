@@ -8,6 +8,7 @@ extern "C"  void dfsan_dump_labels(int fd);
 namespace dfsan_rt{
 int pid;
 Logger log;
+Logger slog;
 int seq;auto seq2=new int(0);
 auto start=time(0);
 extern "C" void dfsanlog(const char* sink,const char* source,int ilbl,int slbl,int positive){
@@ -31,12 +32,23 @@ void limiter(){
 	auto start=time(0);
 	while(working){
 		this_thread::yield();
-		if(time(0)-start>10){
+		if(time(0)-start>30){
+			Cerr-"Killed by dfsan-rt";
 			sync();
 			abort();
 		}
 	}
 }
+int argc;char** argv;char** envp;
+static void dump_target_state(int _argc, char* _argv[], char* _envp[]){
+	argc=_argc;
+	argv=_argv;
+	envp=_envp;
+}
+
+__attribute__((section(".init_array"))) void (* p_dump_target_state)(int,char*[],char*[]) = &dump_target_state;
+char buffer[BUFSIZ];
+
 struct TimeLimit{
 	TimeLimit(){
 		pid=getpid();
@@ -44,6 +56,27 @@ struct TimeLimit{
 		auto wd=getenv("WORKDIR");
 		if(!wd)return;
 		log.open(string{wd}+"/dfg/"+to_string(pid)+"san.log");
+		slog.open(string{wd}+"/dfg/"+to_string(pid)+"run.log");
+		slog-"argv:";
+		for(int i=0;i<argc;++i)slog-argv[i];
+		string peek;
+		//setbuf(stdin, buffer);
+		//peek.push_back(cin.peek());
+#ifdef DFSAN_EXTRACT_STDIN
+		for(int i=0;i<10;++i){
+			auto c=getchar();
+			if(c!=EOF)peek.push_back(c);
+			else break;
+		}
+		slog-"stdin:"+peek.size()<"<<<"<peek;
+		slog-">>>";
+		for(auto i=peek.rbegin();i!=peek.rend();++i)ungetc(*i,stdin);
+#endif
+		slog-"envp:";
+		for (char **env = envp; *env != 0; env++){
+			char *thisEnv = *env;
+			slog-thisEnv;
+		}
 		log+"start"+pid-std::chrono::high_resolution_clock::now().time_since_epoch().count();
 	}
 	~TimeLimit(){

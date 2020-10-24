@@ -2,7 +2,7 @@ shopt -s expand_aliases #enable aliases
 set -e
 clear
 make -j4
-AHOME=$(pwd)
+export AHOME=$(pwd)
 INCLUDE=$(pwd)/../include
 WWS=$2
 export WORKDIR=/tmp/$WWS

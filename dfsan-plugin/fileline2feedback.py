@@ -12,6 +12,7 @@ s=open(nodefile,'rb').read()
 nodes=json.loads(s.decode('utf-8','ignore'))['nodes']
 fileLine2node=defaultdict(list)
 sys.stdout=open(workdir+'/feedback.txt','w')
+feedlog=open(workdir+'/feedback.log','w')
 for x in nodes:
 	if 'G_-ENTRY' in x or nodes[x]['cmd'][0]!='skip':
 		fileLine2node[nodes[x]['loc']].append(x)
@@ -136,16 +137,19 @@ for _ in range(2):
 			bridges=find_all_bridges_on_discovered_path(src)
 			for x in bridges:
 				if x[0]+','+x[1] in named_cons_all:
+					print('bridge:',x[0]+','+x[1],src,dst,file=feedlog)
 					toadd[x[0]].add(x[1])
 					positive_feedback(*x)
 					print(f'additional feedback{_}:',x[0]+','+x[1],file=sys.stderr)
 	print(len(provided),file=sys.stderr)
 
 	for x in toadd:edge[x]=list(set(edge[x])|toadd[x])
-
 	for x in edge:
 		reachable=[]
 		dfs0(x)
+		c=set(reachable)-set(edge[x])
+		if len(c):
+			print('dfs0:',x,c,file=feedlog)
 		edge[x]=list(set(edge[x])|set(reachable))
 
 #dump remaining graph and negative feedback
