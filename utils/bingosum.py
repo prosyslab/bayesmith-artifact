@@ -1,4 +1,5 @@
 import sys,os
+from collections import defaultdict
 prefix=sys.argv[1]
 RTYPES=['full','true','random','nofeedback']
 def parsesname(x):
@@ -10,7 +11,7 @@ data={}
 for x in sorted(os.listdir(os.environ['BINGO'])):
 	if 'stats' in x and x.startswith(prefix):
 		a,b=parsesname(x)
-		if a not in data:data[a]={}
+		if a not in data:data[a]=defaultdict(lambda:'null,null')
 		y=open(os.environ['BINGO']+'/'+x).readlines()
 		inv=y[1].split()[-3]
 		#print(inv)
