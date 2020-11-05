@@ -113,6 +113,7 @@ def process(insid):
 
 processed=set()
 for filename in os.listdir(workdir+'dfg'):
+	if not os.path.isfile(workdir+'dfg/'+filename):continue
 	i=filename[:-7]
 	if i not in processed:
 		_=process(i)
