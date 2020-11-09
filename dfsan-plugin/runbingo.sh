@@ -29,6 +29,7 @@ pushd $BINGO
 		touch observed-queries.txt
 	popd
 	./scripts/bnet/build-bnet.sh $PROBLEM_DIR noaugment_base $PROBLEM_DIR/rule-prob.txt
+	### @no feedback
 	echo "AC 1e-6 500 1000 100 ${RUNNAME}nofeedback-stats.txt ${RUNNAME}nofeedback-combined out"| ./scripts/bnet/driver.py $PROBLEM_DIR/bnet/noaugment_base/bnet-dict.out $PROBLEM_DIR/bnet/noaugment_base/factor-graph.fg $PROBLEM_DIR/base_queries.txt $PROBLEM_DIR/oracle_queries.txt >/dev/null 2>&1 &
 popd
 # dummy feedbacks for workflow
@@ -72,9 +73,11 @@ cd ../.. #bingo
 time bash -x  ./scripts/bnet/build-bnet.sh $PROBLEM_DIR noaugment_base $PROBLEM_DIR/rule-prob.txt||echo 'failed'
 #./scripts/bnet/elim-inconsistent-fb.py $PROBLEM_DIR/bnet/noaugment_base/named_cons_all.txt.pruned.edbobsderived $PROBLEM_DIR/feedback.txt /dev/null | sponge $PROBLEM_DIR/feedback.txt
 echo "AC 1e-6 500 1000 100 ${RUNNAME}full-stats.txt ${RUNNAME}full-combined out" >> $PROBLEM_DIR/feedback.txt
-cat $PROBLEM_DIR/feedback.txt|./scripts/bnet/driver.py $PROBLEM_DIR/bnet/noaugment_base/bnet-dict.out $PROBLEM_DIR/bnet/noaugment_base/factor-graph.fg $PROBLEM_DIR/base_queries.txt $PROBLEM_DIR/oracle_queries.txt &
+### @full
+#cat $PROBLEM_DIR/feedback.txt|./scripts/bnet/driver.py $PROBLEM_DIR/bnet/noaugment_base/bnet-dict.out $PROBLEM_DIR/bnet/noaugment_base/factor-graph.fg $PROBLEM_DIR/base_queries.txt $PROBLEM_DIR/oracle_queries.txt &
 grep ' true' $PROBLEM_DIR/feedback.txt > $PROBLEM_DIR/feedbacktrue.txt
 echo "AC 1e-6 500 1000 100 ${RUNNAME}true-stats.txt ${RUNNAME}true-combined out" >> $PROBLEM_DIR/feedbacktrue.txt
+### @true
 time ./scripts/bnet/driver.py $PROBLEM_DIR/bnet/noaugment_base/bnet-dict.out $PROBLEM_DIR/bnet/noaugment_base/factor-graph.fg $PROBLEM_DIR/base_queries.txt $PROBLEM_DIR/oracle_queries.txt <$PROBLEM_DIR/feedbacktrue.txt >/dev/null  2>&1 &
 ### random true baseline
 truelines=$(wc -l< $PROBLEM_DIR/feedbacktrue.txt)
@@ -96,6 +99,18 @@ set -x
 cd ../.. #bingo
 time bash -x  ./scripts/bnet/build-bnet.sh $PROBLEM_DIR noaugment_base $PROBLEM_DIR/rule-prob.txt||echo 'failed'
 echo "AC 1e-6 500 1000 100 ${RUNNAME}random-stats.txt ${RUNNAME}random-combined out" >> $PROBLEM_DIR/feedback.random
+### @random
 cat $PROBLEM_DIR/feedback.random|./scripts/bnet/driver.py $PROBLEM_DIR/bnet/noaugment_base/bnet-dict.out $PROBLEM_DIR/bnet/noaugment_base/factor-graph.fg $PROBLEM_DIR/base_queries.txt $PROBLEM_DIR/oracle_queries.txt >/dev/null 2>&1 &
 
 wait
+
+function waitla {
+	target=${1:-$(($(nproc)+4))}
+	la=$(cut -d' ' -f 1 /proc/loadavg)
+	until [[ $(echo "$la<$target" | bc) -eq "1" ]]; do
+		#echo $la
+		sleep 1
+		la=$(cut -d' ' -f 1 /proc/loadavg)
+	done
+}
+waitla 20

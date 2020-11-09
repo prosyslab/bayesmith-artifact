@@ -25,6 +25,7 @@ mkdir -p $WORKDIR/dfg # even single threaded execution leads interfere
 rm -f $WORKDIR/dfg/*
 . $AHOME/../benchmark/test-$APP.sh ||. $AHOME/../benchmark/make-check.sh
 #cat $WORKDIR/dfg/*txt > $WORKDIR/dfgraph.txt # mysterious 000
+chmod 777 $WORKDIR
 popd
 #python3 $AHOME/san2fileline.py $WORKDIR
 }

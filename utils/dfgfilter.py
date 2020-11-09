@@ -1,3 +1,4 @@
+#appliable for grep,sed,sort,readelf
 import sys,os
 from pathlib import Path
 WORKDIR=sys.argv[1]+'/'
@@ -6,7 +7,8 @@ Path(WORKDIR+'dfg/bak').mkdir(parents=True, exist_ok=True)
 for x in os.listdir(WORKDIR+'/dfg'):
 	if not os.path.isfile(WORKDIR+'/dfg/'+x):continue
 	if x.endswith('run.log'):
-		exe=open(WORKDIR+'/dfg/'+x).readlines()[1]
+		xx=open(WORKDIR+'/dfg/'+x,'rb').readlines()
+		exe=str(xx[1]) if len(xx)>1 else ''
 		id=x[:-7]
 		if KEYWORD not in exe:
 			print('rename',id,x)
