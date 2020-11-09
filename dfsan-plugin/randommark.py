@@ -1,6 +1,11 @@
 # randomly selecting cons
 import sys,random
-random.seed(0)
+def get_sample_seed():
+	try:
+		return int(os.environ['FEEDBACK_SAMPLE_SEED'])
+	except:
+		return 0
+random.seed(get_sample_seed())
 DUPaths,work_dir,num=sys.argv[1:]
 dupath=open(DUPaths).readlines()
 random.shuffle(dupath)
