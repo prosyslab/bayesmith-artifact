@@ -8,7 +8,7 @@ WWS=$2
 export WORKDIR=/tmp/$WWS
 APP=$1
 mkdir -p $WORKDIR
-python3 $AHOME/../dfsan-inject/genInjectTask.py $APP $WORKDIR 1 0
+python3 $AHOME/../dfsan-inject/genInjectTask.py $APP $WORKDIR $3 $4
 #                                                               batch total,id
 cd $WORKDIR
 ARCHIEVE=$APP.tar.gz
@@ -97,8 +97,6 @@ export CXX="clang-dfsan"
 
 pushd $WORKDIR
 > plog.log
-> loc_vars.txt
-> visited_edges.txt
 cat > libdfsanlabels.c <<- EOM
 #include <sanitizer/dfsan_interface.h>
 dfsan_label _SaN_bad00000;

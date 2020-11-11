@@ -13,7 +13,8 @@ for i in itertools.count(start=0):
 	f=f'{prefix}{i}.out'
 	if not os.path.isfile(f):
 		break
-	rank=sum(map(lambda x:int(x.split()[0]),filter(lambda x:'TrueGround' in x,open(f).readlines())))
+	rank=list(map(lambda x:int(x.split()[0]),filter(lambda x:'TrueGround' in x,open(f).readlines())))
+	rank=sum(rank)/len(rank)
 	if rank>prev+5 and rank>prev*1.1:
 		event+=1
 		totalinc+=rank-prev
