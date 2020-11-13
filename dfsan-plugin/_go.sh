@@ -11,6 +11,7 @@ mkdir -p $WORKDIR
 python3 $AHOME/../dfsan-inject/genInjectTask.py $APP $WORKDIR $3 $4
 #                                                               batch total,id
 cd $WORKDIR
+echo $4/$3 >> batch.log
 ARCHIEVE=$APP.tar.gz
 #cp /home/ubuntu/plwork/PL-working/dfsan-inject/task.txt $WORKDIR
 {

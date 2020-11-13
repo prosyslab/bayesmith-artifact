@@ -32,7 +32,7 @@ void limiter(){
 	auto start=time(0);
 	while(working){
 		this_thread::yield();
-		if(time(0)-start>30){
+		if(time(0)-start>60){
 			Cerr-"Killed by dfsan-rt";
 			sync();
 			abort();
