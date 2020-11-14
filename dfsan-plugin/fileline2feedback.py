@@ -127,7 +127,9 @@ def positive_feedback(a,b):
 
 #additional feedback
 
-for _ in range(2):
+for _ in range(200):
+	found=False
+	print(f'iter:{_}',file=feedlog)
 	toadd=defaultdict(set)
 	for src in edge:
 		for dst in edge[src]:
@@ -136,7 +138,8 @@ for _ in range(2):
 			_all_reachable_nodes_in_reversed_pruned(dst)
 			bridges=find_all_bridges_on_discovered_path(src)
 			for x in bridges:
-				if x[0]+','+x[1] in named_cons_all:
+				if (x[0] not in edge or x[1] not in edge[x[0]]) and x[0]+','+x[1] in named_cons_all:
+					found=True
 					print('bridge:',x[0]+','+x[1],src,dst,file=feedlog)
 					toadd[x[0]].add(x[1])
 					positive_feedback(*x)
@@ -149,8 +152,10 @@ for _ in range(2):
 		dfs0(x)
 		c=set(reachable)-set(edge[x])
 		if len(c):
+			found=True
 			print('dfs0:',x,c,file=feedlog)
 		edge[x]=list(set(edge[x])|set(reachable))
+	if not found:break
 
 #dump remaining graph and negative feedback
 for x in dupaths:
