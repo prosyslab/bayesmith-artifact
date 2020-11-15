@@ -167,13 +167,13 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 		binop,
 		ifstmt,
 		callexp,
-		vardecl,
+		declstmt,
 	}mtype;
 	const ImplicitCastExpr* s_ie;
 	const BinaryOperator* s_binop;
 	const IfStmt* s_ifstmt;
 	const CallExpr* s_callexp;
-	const VarDecl* s_vardecl;
+	const DeclStmt* s_declstmt;
 	static auto filter(set<Expr*>&& a,function<bool(Expr*)>f){
 		set<Expr*> rt;
 		for(auto&& x:a)if(f(x))rt.insert(x);
@@ -251,16 +251,13 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 		s_binop = Result.Nodes.getNodeAs<BinaryOperator>("binop");
 		if(s_binop)FS=s_binop,mtype=binop;
 		if(!FS)
-			if(s_ifstmt=Result.Nodes.getNodeAs<IfStmt>("ifstmt"))FS=s_ifstmt,mtype=ifstmt;
+			if(FS=s_ifstmt=Result.Nodes.getNodeAs<IfStmt>("ifstmt"))mtype=ifstmt;
 		if(!FS)
-			if(s_callexp=Result.Nodes.getNodeAs<CallExpr>("callexp"))FS=s_callexp,mtype=callexp;
+			if(FS=s_callexp=Result.Nodes.getNodeAs<CallExpr>("callexp"))mtype=callexp;
 		if(!FS)
-			if(s_ie=Result.Nodes.getNodeAs<ImplicitCastExpr>("ie"))FS=s_ie,mtype=ie;
+			if(FS=s_ie=Result.Nodes.getNodeAs<ImplicitCastExpr>("ie"))mtype=ie;
 		if(!FS){
-			if(s_vardecl=Result.Nodes.getNodeAs<VarDecl>("vardecl"))
-			{
-				//s_vardecl->getinit
-			}
+			if(FS=s_declstmt=Result.Nodes.getNodeAs<DeclStmt>("declstmt"))mtype=declstmt;
 		}
 		if(mtype==invalid)return;
 		if(!FS||!r.IsInMainFile(FS))return;
