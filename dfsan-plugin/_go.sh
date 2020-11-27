@@ -3,6 +3,7 @@ set -e
 clear
 make -j4
 export AHOME=$(pwd)
+export PHOME=$PWD/../
 INCLUDE=$(pwd)/../include
 WWS=$2
 export WORKDIR=/tmp/$WWS
@@ -18,6 +19,7 @@ ARCHIEVE=$APP.tar.gz
 down="python3 -m tclib download"
 configure='./configure'
 case $APP in
+	sdop-0.61) $down https://github.com/TianyiChen/PL-assets/releases/download/main/sdop_0.61.orig.tar.gz $ARCHIEVE any;;
 	curl-7.69.3) ARCHIEVE=curl-7.69.3.tar.xz
 		$down https://curl.haxx.se/download/curl-7.69.3.tar.xz $ARCHIEVE any;;
 	fribidi-1.0.7) ARCHIEVE=fribidi-1.0.7.tar.bz2
