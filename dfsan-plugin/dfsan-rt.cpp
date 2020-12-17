@@ -5,6 +5,13 @@
 #include <unistd.h>
 using namespace tianyichen::std;
 extern "C"  void dfsan_dump_labels(int fd);
+#ifdef DUMMY_COMPILER_RT_DFSAN
+void dfsan_dump_labels(int fd){}//dummy impl
+//asan
+#define DFG "/asan/"
+#else
+#define DFG "/dfg/"
+#endif
 namespace dfsan_rt{
 int pid;
 Logger log;
@@ -49,14 +56,18 @@ static void dump_target_state(int _argc, char* _argv[], char* _envp[]){
 __attribute__((section(".init_array"))) void (* p_dump_target_state)(int,char*[],char*[]) = &dump_target_state;
 char buffer[BUFSIZ];
 
+void set_process_id(){
+	pid=getpid();
+}
+
 struct TimeLimit{
 	TimeLimit(){
-		pid=getpid();
+		set_process_id();
 		thread(limiter).detach();
 		auto wd=getenv("WORKDIR");
 		if(!wd)return;
-		log.open(string{wd}+"/dfg/"+to_string(pid)+"san.log");
-		slog.open(string{wd}+"/dfg/"+to_string(pid)+"run.log");
+		log.open(string{wd}+DFG+to_string(pid)+"san.log");
+		slog.open(string{wd}+DFG+to_string(pid)+"run.log");
 		slog-"argv:";
 		for(int i=0;i<argc;++i)slog-argv[i];
 		string peek;
@@ -88,7 +99,7 @@ struct TimeLimit{
 		assert(working==0);
 		auto wd=getenv("WORKDIR");
 		if(!wd)return;
-		auto f=fopen((string{wd}+"/dfg/"+to_string(pid)+"dfg.txt").data(),"w");
+		auto f=fopen((string{wd}+DFG+to_string(pid)+"dfg.txt").data(),"w");
 		fprintf(f,"DFGRAPH %d\n",pid);fflush(f);//required to switch to fd
 		dfsan_dump_labels(fileno(f));//posix
 		fputs("END\n",f);

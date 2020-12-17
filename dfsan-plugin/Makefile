@@ -14,7 +14,8 @@ endif
 ICLANG=-isystem$(LLVM_VIRT)/include
 LCLANG=-L$(LLVM_VIRT)/lib -lclangToolingCore -lclangTooling -lclangFrontendTool -lclangFrontend -lclangDriver -lclangSerialization -lclangCodeGen -lclangParse -lclangSema -lclangStaticAnalyzerFrontend -lclangStaticAnalyzerCheckers -lclangStaticAnalyzerCore -lclangAnalysis -lclangARCMigrate -lclangRewrite -lclangRewriteFrontend -lclangEdit -lclangAST -lclangLex -lclangBasic -lclangASTMatchers -fno-rtti $(LCPP)
 
-all:dfsan-plugin.so plugin-test.so clang-dfsan libdfsan-rt.a interactive-feedback graphtun
+all:dfsan-plugin.so plugin-test.so clang-dfsan libdfsan-rt.a interactive-feedback graphtun \
+libasan-rt.a
 dfsan-plugin.so:dfsan-plugin.cpp #*.h
 	$(CPP) $(FLAGS) $(ICLANG) -shared $? -o $@ $(LCLANG)
 interactive-feedback:interactive-feedback.cpp
@@ -32,6 +33,8 @@ clang-dfsan:clang-dfsan.cpp
 	#ln -fs clang-dfsan cc
 libdfsan-rt.a: dfsan-rt.cpp
 	$(CPP) $(FLAGS) $(ICLANG) -DLLVM_DISABLE_ABI_BREAKING_CHECKS_ENFORCING=1 -shared $? -o $@ $(LCLANG)
+libasan-rt.a: dfsan-rt.cpp
+	$(CPP) $(FLAGS) $(ICLANG) -DLLVM_DISABLE_ABI_BREAKING_CHECKS_ENFORCING=1 -DDUMMY_COMPILER_RT_DFSAN -shared $? -o $@ $(LCLANG)
 clean:
 	echo $(PATH)
 	rm dfsan-plugin.so plugin-test.so clang-dfsan *.a
