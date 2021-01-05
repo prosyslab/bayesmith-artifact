@@ -6,7 +6,7 @@ export ASAN_OPTIONS=detect_leaks=0
 $configure
 #clang-11 -shared -fPIC libdfsanlabels.c -o libdfsanlabels.a
 # -fvisibility=hidden -fsanitize=safe-stack,cfi -flto -fcf-protection -fstack-protector-all
-export DFSAN_HEADPARA=" $DFSAN_HEADPARA -fsanitize=address -w -L$AHOME -lasan-rt"
+export DFSAN_HEADPARA=" $DFSAN_HEADPARA -fsanitize=address -w -I$INCLUDE -L$AHOME -lrt"
 > $WORKDIR/visited.txt;make clean;make $MAKEARGS
 make $MAKEARGS
 #python3 $AHOME/../dfsan-inject/applyPatch.py $WORKDIR/$APP

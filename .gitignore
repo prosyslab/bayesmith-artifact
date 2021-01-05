@@ -11,3 +11,4 @@ dfsan-inject/images/*
 *.out
 *.o
 *so
+*.a

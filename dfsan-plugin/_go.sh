@@ -28,7 +28,7 @@ case $APP in
 		ARCHIEVE=$APP.tar.xz; $down https://ftp.gnu.org/gnu/patch/patch-2.7.1.tar.xz $ARCHIEVE any;;
 	kilo-0.0.1) ARCHIEVE=kilo-0.0.1.zip;configure=''
 		$down https://github.com/antirez/kilo/archive/d65f4c92e8ed405937a7bac3248d24fa6b40eb6f.zip $ARCHIEVE any;;
-	cflow-1.5) ARCHIEVE=cflow-1.5.tar.bz2
+	cflow-1.5) ARCHIEVE=cflow-1.5.tar.bz2; APPBIN=$WORKDIR/cflow-1.5/src/cflow
 		$down https://ftp.gnu.org/gnu/cflow/cflow-1.5.tar.bz2 cflow-1.5.tar.bz2 any
 		echo 'c.l'>$WORKDIR/blacklist.txt;;
 	cflow-1.6) ARCHIEVE=cflow-1.6.tar.bz2
