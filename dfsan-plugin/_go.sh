@@ -43,7 +43,8 @@ case $APP in
 		MAKEARGS=' -i V=1';configure='./configure'
 		echo 'ASN1.c'>$WORKDIR/blacklist.txt;;
 	gnuplot-5.2.5) $down https://sourceforge.net/projects/gnuplot/files/gnuplot/5.2.5/gnuplot-5.2.5.tar.gz/download $ARCHIEVE 039db2cce62ddcfd31a6696fe576f4224b3bc3f919e66191dfe2cdb058475caa ;;
-	bc-1.06) $down https://ftp.gnu.org/gnu/bc/bc-1.06.tar.gz $ARCHIEVE any 
+	bc-1.06) $down https://ftp.gnu.org/gnu/bc/bc-1.06.tar.gz $ARCHIEVE any
+		APPBIN=bc-1.06/bc/bc
 		echo 'scan.c'>$WORKDIR/blacklist.txt;; #like a preprocessed file
 	vim-8.0)
 		;;
@@ -70,6 +71,7 @@ case $APP in
 		$down https://ftp.gnu.org/gnu/grep/grep-2.19.tar.xz $ARCHIEVE any ;;
 	sort-7.2) $down https://ftp.gnu.org/gnu/coreutils/coreutils-7.2.tar.gz coreutils-7.2.tar.gz any 
 		MAKEARGS="-i" # other binaries fail
+		APPBIN=coreutils-7.2/src/sort
 		APP=coreutils-7.2;ARCHIEVE=$APP.tar.gz	;;
 	readelf-2.24) $down https://ftp.gnu.org/gnu/binutils/binutils-2.24.tar.gz binutils-2.24.tar.gz any
 		MAKEARGS="-i"
