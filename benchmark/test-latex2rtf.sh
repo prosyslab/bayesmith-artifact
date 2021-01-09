@@ -1,1 +1,1 @@
-make test ||true
+make -i test ||true

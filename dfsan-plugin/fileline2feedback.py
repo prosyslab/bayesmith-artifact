@@ -13,7 +13,9 @@ nodes=json.loads(s.decode('utf-8','ignore'))['nodes']
 fileLine2node=defaultdict(list)
 sys.stdout=open(workdir+'/feedback.txt','w')
 feedlog=open(workdir+'/feedback.log','w')
+isSkipNode={}
 for x in nodes:
+	isSkipNode[x]=nodes[x]['cmd'][0]=='skip'
 	if 'G_-ENTRY' in x or nodes[x]['cmd'][0]!='skip':
 		fileLine2node[nodes[x]['loc']].append(x)
 edge=defaultdict(list)
@@ -113,6 +115,7 @@ for x in open(workdir+'PT.txt'):
 
 def positive_feedback(a,b):
 	global provided
+	assert a+','+b in named_cons_all
 	if (a,b) in provided:
 		return
 	provided.add((a,b))
@@ -138,6 +141,11 @@ for _ in range(200):
 			_all_reachable_nodes_in_reversed_pruned(dst)
 			bridges=find_all_bridges_on_discovered_path(src)
 			for x in bridges:
+				y,z=x
+				assert y+','+z in named_cons_all
+				if not isSkipNode[y] and not isSkipNode[z]:
+					#print('ASSERT',y,z,':',src,dst,file=sys.stderr)
+					pass
 				if (x[0] not in edge or x[1] not in edge[x[0]]) and x[0]+','+x[1] in named_cons_all:
 					found=True
 					print('bridge:',x[0]+','+x[1],src,dst,file=feedlog)
@@ -182,24 +190,9 @@ for x in dupaths:
 		assert 0<=conf<=1,'confidence'
 		feedbacks.append(f'O DUPath({a},{b}) false')
 		confids.append(f'DUPath({a},{b})\t{conf}')
-def get_sample_ratio():
-	try:
-		return float(os.environ['FEEDBACK_SAMPLE_RATIO'])
-	except:
-		return 1
-#FEEDBACKCAP=int(len(dupaths)*1)+1
-FEEDBACKCAP=int(get_sample_ratio()*len(feedbacks))+1
-def get_sample_seed():
-	try:
-		return int(os.environ['FEEDBACK_SAMPLE_SEED'])
-	except:
-		return 233
-random.seed(get_sample_seed())
-random.shuffle(feedbacks)
-random.seed(get_sample_seed())
-random.shuffle(confids)
+
 print('edge size',len(edge),file=sys.stderr)
 print('feedback available:',len(feedbacks),file=sys.stderr)
-for i in range(min(FEEDBACKCAP,len(feedbacks))):
+for i in len(feedbacks)):
 	print(feedbacks[i])
 	print(confids[i],file=confid)

@@ -1,0 +1,1 @@
+cd testing;yes c|./runtest

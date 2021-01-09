@@ -66,6 +66,7 @@ case $APP in
 	shntool-3.0.5) $down http://shnutils.freeshell.org/shntool/dist/src/shntool-3.0.5.tar.gz $ARCHIEVE c496d7c6079609d0b71cca5f1ff7202962bb7921c3fe0e6081ae5a143ce3b14b ;;
 	sed-4.3) $down https://ftp.gnu.org/gnu/sed/sed-4.3.tar.xz sed-4.3.tar.xz any
 		DFSAN_HEADPARA=' --rtlib=compiler-rt'
+		APPBIN=sed-4.3/sed/sed
 		ARCHIEVE=sed-4.3.tar.xz ;;
 	grep-2.19) ARCHIEVE=grep-2.19.tar.xz
 		$down https://ftp.gnu.org/gnu/grep/grep-2.19.tar.xz $ARCHIEVE any ;;
