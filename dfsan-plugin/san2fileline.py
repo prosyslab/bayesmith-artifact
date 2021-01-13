@@ -1,5 +1,5 @@
 import sys,os
-import json
+import json,random
 from collections import defaultdict,Counter
 from pathlib import Path
 import traceback
@@ -79,9 +79,7 @@ def find_all_srcs_of_label(lbl):
 
 total_runs=0
 def process(insid):
-	global total_runs
-	pos=set()
-	neg=Counter() #negative
+	global total_runs,sanlog
 	if load_dfgraph(insid)==None:
 		print('failed dfg',insid)
 		return
@@ -90,8 +88,23 @@ def process(insid):
 		print('failed slg',insid)
 		return
 	total_runs+=1
-	src=set()
 	print('run loaded',insid)
+	
+queue=[]
+processed=set()
+for filename in os.listdir(workdir+'dfg'):
+	if not os.path.isfile(workdir+'dfg/'+filename):continue
+	i=filename[:-7]
+	if i not in processed:
+		process(i)
+		if sanlog is not None and dfg is not None:
+			queue.append((sanlog,dfg))
+		processed.add(i)
+
+def process2(sanlog,dfg):
+	pos=set()
+	src=set()
+	neg=Counter() #negative
 	for x in sanlog:
 		if len(x)==2:#src
 			src.add(x[0])
@@ -110,18 +123,27 @@ def process(insid):
 			else:
 				neg[fileline[a]+' '+fileline[b]]+=1
 	return pos,neg
+def get_sample_ratio():
+	try:
+		return float(os.environ['TEST_SAMPLE_RATIO'])
+	except:
+		return 1
+def get_sample_seed():
+	try:
+		return int(os.environ['TEST_SAMPLE_SEED'])
+	except:
+		return 233
+random.seed(get_sample_seed())
+random.shuffle(queue)
 
-processed=set()
-for filename in os.listdir(workdir+'dfg'):
-	if not os.path.isfile(workdir+'dfg/'+filename):continue
-	i=filename[:-7]
-	if i not in processed:
-		_=process(i)
-		if _ is not None:
-			ppos,pneg=_
-			for x in ppos:pos[x]+=1
-			for x in pneg:neg[x]+=1
-		processed.add(i)
+queue=queue[:int(get_sample_ratio()*len(queue))+1]
+for x in queue:
+	sanlog,dfg=x
+	_=process2(sanlog,dfg)
+	if _ is not None:
+		ppos,pneg=_
+		for x in ppos:pos[x]+=1
+		for x in pneg:neg[x]+=1
 print('total_runs',total_runs)
 print('total_runs',total_runs,file=log)
 

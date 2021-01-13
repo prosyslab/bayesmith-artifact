@@ -30,7 +30,7 @@ pushd $BINGO
 	popd
 	./scripts/bnet/build-bnet.sh $PROBLEM_DIR noaugment_base $PROBLEM_DIR/rule-prob.txt
 	### @no feedback
-	echo "AC 1e-6 500 1000 100 ${RUNNAME}nofeedback-stats.txt ${RUNNAME}nofeedback-combined out"| ./scripts/bnet/driver.py $PROBLEM_DIR/bnet/noaugment_base/bnet-dict.out $PROBLEM_DIR/bnet/noaugment_base/factor-graph.fg $PROBLEM_DIR/base_queries.txt $PROBLEM_DIR/oracle_queries.txt >/dev/null 2>&1 &
+	#@ echo "AC 1e-6 500 1000 100 ${RUNNAME}nofeedback-stats.txt ${RUNNAME}nofeedback-combined out"| ./scripts/bnet/driver.py $PROBLEM_DIR/bnet/noaugment_base/bnet-dict.out $PROBLEM_DIR/bnet/noaugment_base/factor-graph.fg $PROBLEM_DIR/base_queries.txt $PROBLEM_DIR/oracle_queries.txt >/dev/null 2>&1 &
 popd
 # dummy feedbacks for workflow
 export INIT=''
@@ -55,6 +55,7 @@ export RANKV2_PT=$VANILLA_CI/benchmark/$APP/sparrow-out/$TYPE/bingo_combined/0.o
 # generate feedbacks
 python3 san2fileline.py $WORKDIR
 python3 fileline2feedback.py $WORKDIR $BINGO_CI/benchmark/$APP/sparrow-out/node.json $BINGO_CI/benchmark/$APP/sparrow-out/$TYPE/datalog/ $PROBLEM_DIR/bnet/noaugment_base/named_cons_all.txt.pruned.edbobsderived $PROBLEM_DIR/named_cons_all.txt
+#python3 fileline2feedback.py $WORKDIR $BINGO_CI/benchmark/$APP/sparrow-out/node.json $BINGO_CI/benchmark/$APP/sparrow-out/$TYPE/datalog/ $PROBLEM_DIR/named_cons_all.txt $PROBLEM_DIR/named_cons_all.txt
 # done with feedbacks
 pushd $PROBLEM_DIR
 cp $WORKDIR/feedback.txt $PROBLEM_DIR/feedback.txt
@@ -100,10 +101,10 @@ cd ../.. #bingo
 time bash -x  ./scripts/bnet/build-bnet.sh $PROBLEM_DIR noaugment_base $PROBLEM_DIR/rule-prob.txt||echo 'failed'
 echo "AC 1e-6 500 1000 100 ${RUNNAME}random-stats.txt ${RUNNAME}random-combined out" >> $PROBLEM_DIR/feedback.random
 ### @random
-cat $PROBLEM_DIR/feedback.random|./scripts/bnet/driver.py $PROBLEM_DIR/bnet/noaugment_base/bnet-dict.out $PROBLEM_DIR/bnet/noaugment_base/factor-graph.fg $PROBLEM_DIR/base_queries.txt $PROBLEM_DIR/oracle_queries.txt >/dev/null 2>&1 &
+# cat $PROBLEM_DIR/feedback.random|./scripts/bnet/driver.py $PROBLEM_DIR/bnet/noaugment_base/bnet-dict.out $PROBLEM_DIR/bnet/noaugment_base/factor-graph.fg $PROBLEM_DIR/base_queries.txt $PROBLEM_DIR/oracle_queries.txt >/dev/null 2>&1 &
 
 ### @wait
-wait
+#wait
 
 function waitla {
 	target=${1:-$(($(nproc)+4))}

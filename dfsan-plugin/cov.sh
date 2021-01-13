@@ -15,7 +15,7 @@ if false; then # dep asan
 	sort -u *.fl > $WORKDIR/covfl.txt
 else
 	#generally preferred, less dependencies
-	export DFSAN_HEADPARA=' -fprofile-instr-generate -fcoverage-mapping'
+	export SOURCE_COV=1
 	make -j8
 	export LLVM_PROFILE_FILE="$WORKDIR/cov/%p.praw"
 	. $AHOME/../benchmark/test-$APP.sh ||. $AHOME/../benchmark/make-check.sh
@@ -28,3 +28,13 @@ else
 fi
 }
 #python3 -m tclib telegram "covdone$APP"
+exit
+# for f in ./*.praw; do
+# llvm-profdata merge -sparse  $f -o  profdata &&llvm-cov report $APPBIN -instr-profile=profdata 2>/dev/null|grep sort. |grep -Pv "\t0.00\%"| while read line; do echo "$f $line"; done
+# done
+
+#y=''
+# for x in open('nz.txt'):
+# 	x=x.split()[0]
+# 	y+=x+' '
+# 	print(f'llvm-profdata merge -sparse  {y} -o  profdata &&llvm-cov report $APPBIN -instr-profile=profdata 2>/dev/null|grep sort. ')

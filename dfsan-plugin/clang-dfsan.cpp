@@ -1,6 +1,12 @@
 #include<bits/stdc++.h>
 #include<tianyichen/std.h>
 using namespace tianyichen::std;
+string_view get_outputname(int argc,char**argv){
+	for(int i=1;i<argc-1;++i){
+		if(!strcmp(argv[i],"-o"))return argv[i+1];
+	}
+	return {};
+}
 int main(int argc,char** argv){
 	Logger l("/tmp/clang_dfsan.log",ios::app);
 	ostringstream call;
@@ -8,6 +14,11 @@ int main(int argc,char** argv){
 	call<<(use_afl&&*use_afl=='1'?"afl-clang":"clang-11");
 	if(auto HEAD_PARA=getenv("DFSAN_HEADPARA");HEAD_PARA){
 		call<<HEAD_PARA;
+	}
+	if(getenv("SOURCE_COV")&&(
+		!getenv("COVBINFILTER")||
+		(getenv("COVBINFILTER")&&split(string_view{getenv("COVBINFILTER")},'/').back()==get_outputname(argc,argv)))){
+		call<<" -fprofile-instr-generate -fcoverage-mapping";
 	}
 	ostringstream linkargs;
 	for(int i=1;i<argc;++i){

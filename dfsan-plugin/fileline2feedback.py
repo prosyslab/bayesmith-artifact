@@ -193,6 +193,6 @@ for x in dupaths:
 
 print('edge size',len(edge),file=sys.stderr)
 print('feedback available:',len(feedbacks),file=sys.stderr)
-for i in len(feedbacks)):
+for i in range(len(feedbacks)):
 	print(feedbacks[i])
 	print(confids[i],file=confid)
