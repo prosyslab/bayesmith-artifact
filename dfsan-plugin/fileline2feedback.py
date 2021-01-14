@@ -127,6 +127,7 @@ def positive_feedback(a,b):
 	c=default_confidence[f'DUPath({a},{b})']**(1/3)
 	#print('dcin',f'DUPath({a},{b})',(f'DUPath({a},{b})' in default_confidence),('xacacac' in default_confidence),default_confidence[f'DUPath({a},{b})'],file=sys.stderr)
 	confids.append(f'DUPath({a},{b})\t{posconfidence[(a,b)]}')
+	assert 0<=posconfidence[(a,b)]<=1
 
 #additional feedback
 
@@ -174,7 +175,7 @@ for x in dupaths:
 	elif b in edgen[a]:
 		#if NEG_LIMIT==0:continue
 		if f'DUPath({a},{b})' not in default_confidence:
-			print('not in ' if f'DUEdge({a},{b})' not in default_confidence else 'in' ,f'DUPath({a},{b})',file=sys.stderr)
+			#print('not in ' if f'DUEdge({a},{b})' not in default_confidence else 'in' ,f'DUPath({a},{b})',file=sys.stderr)
 			pass
 		#if x in duedges:      
 		#	print('O DUEdge({},{}) false'.format(a,b))
@@ -185,7 +186,7 @@ for x in dupaths:
 		else:
 			cnt=confidence[(a,b)]
 			p=min(.98,default_confidence[f'DUPath({a},{b})'])
-			print(p,cnt,file=sys.stderr)
+			#print(p,cnt,file=sys.stderr)
 			conf=(1-p)/(1-p+p*(1-p)**cnt)
 		assert 0<=conf<=1,'confidence'
 		feedbacks.append(f'O DUPath({a},{b}) false')

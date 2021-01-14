@@ -70,10 +70,12 @@ case $APP in
 		DFSAN_HEADPARA=' --rtlib=compiler-rt'
 		export COVBINFILTER=1
 		export APPBIN=sed-4.3/sed/sed
+		export SOURCEMAIN=sed.c
 		ARCHIEVE=sed-4.3.tar.xz ;;
 	grep-2.19) ARCHIEVE=grep-2.19.tar.xz
 		export COVBINFILTER=1
 		export APPBIN=grep-2.19/src/grep
+		export SOURCEMAIN=grep.c
 		$down https://ftp.gnu.org/gnu/grep/grep-2.19.tar.xz $ARCHIEVE any ;;
 	sort-7.2) $down https://ftp.gnu.org/gnu/coreutils/coreutils-7.2.tar.gz coreutils-7.2.tar.gz any 
 		MAKEARGS="-i" # other binaries fail
@@ -85,6 +87,7 @@ case $APP in
 		MAKEARGS="-i"
 		export COVBINFILTER=1
 		export APPBIN=binutils-2.24/binutils/readelf
+		export SOURCEMAIN=readelf.c
 		APP=binutils-2.24;ARCHIEVE=$APP.tar.gz ;;
 	readelf-2.32) $down https://ftp.gnu.org/gnu/binutils/binutils-2.32.tar.gz binutils-2.32.tar.gz any
 		MAKEARGS="-i"
