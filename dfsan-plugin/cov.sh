@@ -21,18 +21,27 @@ else
 	. $AHOME/../benchmark/test-$APP.sh ||. $AHOME/../benchmark/make-check.sh
 	cd $WORKDIR
 	chmod -R 777 cov
-	set -x
-	llvm-profdata merge -sparse cov/*.praw -o cov/profdata
-	llvm-cov report $APPBIN -instr-profile=cov/profdata
-	llvm-cov report $APPBIN -instr-profile=cov/profdata > coverage.txt
+	#llvm-profdata merge -sparse cov/*.praw -o cov/profdata
+	#llvm-cov report $APPBIN -instr-profile=cov/profdata
+	#llvm-cov report $APPBIN -instr-profile=cov/profdata > coverage.txt
+	pushd cov
+	if [ -n "$SOURCEMAIN" ]; then
+		mkdir -p trash
+		for f in ./*.praw; do
+		llvm-profdata merge -sparse  $f -o  profdata &&llvm-cov report $WORKDIR/$APPBIN -instr-profile=profdata 2>/dev/null|grep $SOURCEMAIN |grep -P " 0.00\%"| while read line; do mv $f trash; done
+		done
+	fi
+	ls|wc -l
+	ls trash|wc -l
+	y=''
+	for f in ./*.praw; do
+		y="$y $f"
+		llvm-profdata merge -sparse  $y -o  profdata &&llvm-cov report $WORKDIR/$APPBIN -instr-profile=profdata 2>/dev/null|tail -n1 |awk '{print $NF}' >> covratio.txt
+	done
 fi
 }
 #python3 -m tclib telegram "covdone$APP"
 exit
-# for f in ./*.praw; do
-# llvm-profdata merge -sparse  $f -o  profdata &&llvm-cov report $APPBIN -instr-profile=profdata 2>/dev/null|grep sort. |grep -Pv "\t0.00\%"| while read line; do echo "$f $line"; done
-# done
-
 #y=''
 # for x in open('nz.txt'):
 # 	x=x.split()[0]

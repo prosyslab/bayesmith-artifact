@@ -16,9 +16,10 @@ int main(int argc,char** argv){
 		call<<HEAD_PARA;
 	}
 	if(getenv("SOURCE_COV")&&(
-		!getenv("COVBINFILTER")||
-		(getenv("COVBINFILTER")&&split(string_view{getenv("COVBINFILTER")},'/').back()==get_outputname(argc,argv)))){
+		1||!getenv("COVBINFILTER")||
+		split(string_view{getenv("COVBINFILTER")},'/').back()==get_outputname(argc,argv))){
 		call<<" -fprofile-instr-generate -fcoverage-mapping";
+		l+"instrumenting "-get_outputname(argc,argv);
 	}
 	ostringstream linkargs;
 	for(int i=1;i<argc;++i){

@@ -17,7 +17,7 @@ ARCHIEVE=$APP.tar.gz
 #cp /home/ubuntu/plwork/PL-working/dfsan-inject/task.txt $WORKDIR
 {
 down="python3 -m tclib download"
-configure='./configure'
+configure='./configure -q'
 case $APP in
 	sdop-0.61) $down https://github.com/TianyiChen/PL-assets/releases/download/main/sdop_0.61.orig.tar.gz $ARCHIEVE any;;
 	curl-7.69.3) ARCHIEVE=curl-7.69.3.tar.xz
@@ -79,6 +79,7 @@ case $APP in
 		MAKEARGS="-i" # other binaries fail
 		export COVBINFILTER=1
 		export APPBIN=coreutils-7.2/src/sort
+		export SOURCEMAIN=sort.c
 		APP=coreutils-7.2;ARCHIEVE=$APP.tar.gz	;;
 	readelf-2.24) $down https://ftp.gnu.org/gnu/binutils/binutils-2.24.tar.gz binutils-2.24.tar.gz any
 		MAKEARGS="-i"

@@ -132,11 +132,13 @@ def get_sample_seed():
 	try:
 		return int(os.environ['TEST_SAMPLE_SEED'])
 	except:
-		return 233
-random.seed(get_sample_seed())
-random.shuffle(queue)
+		return 0
+if get_sample_seed():
+	random.seed(get_sample_seed())
+	random.shuffle(queue)
 
 queue=queue[:int(get_sample_ratio()*len(queue))+1]
+total_runs=len(queue)
 for x in queue:
 	sanlog,dfg=x
 	_=process2(sanlog,dfg)
