@@ -18,7 +18,7 @@ else
 	export SOURCE_COV=1
 	make -j8
 	export LLVM_PROFILE_FILE="$WORKDIR/cov/%p.praw"
-	. $AHOME/../benchmark/test-$APP.sh ||. $AHOME/../benchmark/make-check.sh
+	$AHOME/../benchmark/test-$APP.sh || $AHOME/../benchmark/make-check.sh
 	cd $WORKDIR
 	chmod -R 777 cov
 	#llvm-profdata merge -sparse cov/*.praw -o cov/profdata
@@ -32,7 +32,9 @@ else
 		done
 	fi
 	ls|wc -l
-	ls trash|wc -l
+	if [ -n "$SOURCEMAIN" ]; then
+		ls trash|wc -l
+	fi
 	y=''
 	for f in ./*.praw; do
 		y="$y $f"

@@ -29,7 +29,7 @@ case $APP in
 		ARCHIEVE=$APP.tar.xz; $down https://ftp.gnu.org/gnu/patch/patch-2.7.1.tar.xz $ARCHIEVE any;;
 	kilo-0.0.1) ARCHIEVE=kilo-0.0.1.zip;configure=''
 		$down https://github.com/antirez/kilo/archive/d65f4c92e8ed405937a7bac3248d24fa6b40eb6f.zip $ARCHIEVE any;;
-	cflow-1.5) ARCHIEVE=cflow-1.5.tar.bz2; export APPBIN=$WORKDIR/cflow-1.5/src/cflow
+	cflow-1.5) ARCHIEVE=cflow-1.5.tar.bz2; export APPBIN=cflow-1.5/src/cflow
 		$down https://ftp.gnu.org/gnu/cflow/cflow-1.5.tar.bz2 cflow-1.5.tar.bz2 any
 		echo 'c.l'>$WORKDIR/blacklist.txt;;
 	cflow-1.6) ARCHIEVE=cflow-1.6.tar.bz2
@@ -43,6 +43,7 @@ case $APP in
 	gnuplot-5.2.5) $down https://sourceforge.net/projects/gnuplot/files/gnuplot/5.2.5/gnuplot-5.2.5.tar.gz/download $ARCHIEVE 039db2cce62ddcfd31a6696fe576f4224b3bc3f919e66191dfe2cdb058475caa ;;
 	libtasn1-4.3) $down https://ftp.gnu.org/gnu/libtasn1/libtasn1-4.3.tar.gz $ARCHIEVE any 
 		MAKEARGS=' -i V=1';configure='./configure'
+		export APPBIN=libtasn1-4.3/src/asn1Coding.o
 		echo 'ASN1.c'>$WORKDIR/blacklist.txt;;
 	gnuplot-5.2.5) $down https://sourceforge.net/projects/gnuplot/files/gnuplot/5.2.5/gnuplot-5.2.5.tar.gz/download $ARCHIEVE 039db2cce62ddcfd31a6696fe576f4224b3bc3f919e66191dfe2cdb058475caa ;;
 	bc-1.06) $down https://ftp.gnu.org/gnu/bc/bc-1.06.tar.gz $ARCHIEVE any
@@ -92,7 +93,8 @@ case $APP in
 	readelf-2.32) $down https://ftp.gnu.org/gnu/binutils/binutils-2.32.tar.gz binutils-2.32.tar.gz any
 		MAKEARGS="-i"
 		APP=binutils-2.32;ARCHIEVE=$APP.tar.gz ;;
-	tar-*) MAKEARGS='V=1'
+	tar-1.28) MAKEARGS='V=1'
+	export APPBIN=tar-1.28/src/tar
 	$down https://ftp.gnu.org/gnu/tar/$APP.tar.gz $APP.tar.gz any 
 		echo 'safe-read.c'>$WORKDIR/blacklist.txt;;
 	wget-1.12) configure='./configure --without-ssl'

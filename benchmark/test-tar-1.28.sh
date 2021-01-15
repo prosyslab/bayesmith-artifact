@@ -4,7 +4,7 @@ cd tests
 cd ../src/
 export APPBIN=$PWD/tar
 alias tar=./tar
-return
+exit
 set +e
 
 ### from busybox
