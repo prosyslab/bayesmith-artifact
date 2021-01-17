@@ -82,6 +82,7 @@ def process(insid):
 	global total_runs,sanlog
 	if load_dfgraph(insid)==None:
 		print('failed dfg',insid)
+		sanlog=None
 		return
 	sanlog=load_sanlog(insid)
 	if sanlog is None:

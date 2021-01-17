@@ -1,3 +1,3 @@
 . env.sh
 pushd /tmp
-zip -r ws.zip ${BENCHMARKi[@]}
+zip -r ws.zip ${BENCHMARKa[@]}
