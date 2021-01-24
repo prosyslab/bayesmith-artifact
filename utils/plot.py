@@ -28,10 +28,10 @@ for x in BENCHMARKS:
      \end{subfigure}
      \hfill""",file=ltx)
 	plt.clf()
-	plt.title(x)
+	#plt.title(x)
 	plt.plot(parseseries(BINGOPREFIX+x.split('-')[0]+'true-combined'),label='DynaBoost')
 	plt.plot(parseseries(f'{os.environ["VANILLA_CI"]}/benchmark/{x}/sparrow-out/{TYPE}/bingo_combined/'),label='Bingo',linestyle='dashed')
-	plt.xlabel('iterations')
-	plt.ylabel('rank of the bug')
+	plt.xlabel('Iteration number')
+	plt.ylabel('Rank of bug')
 	plt.legend()
 	plt.savefig(f'{OUTFOLDER}/{x}.png')
