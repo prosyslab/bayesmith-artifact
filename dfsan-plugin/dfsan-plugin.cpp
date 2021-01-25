@@ -133,7 +133,7 @@ anyOf(
 			unless(hasAncestor(binaryOperator()))
 		)
 	).bind("binop")
-	
+	//,declStmt(hasParent(compoundStmt())).bind("declstmt")
 	//,returnStmt().bind("return")
 	//,expr().bind("expr")
 	//,ifStmt().bind("ifstmt")
@@ -275,9 +275,27 @@ struct MyASTMatcherCallBack:MatchFinder::MatchCallback{
 		auto range=make_pair(interested.lower_bound({src_loc}),
 			interested.upper_bound({endLoc}));
 		for(auto it=range.first;it!=range.second;++it){
+			if(mtype==declstmt&&!(it->second>>2&1))continue;//unimplemented
 			if(mode==genSource){
 				if(it->second>>2&1){//uni source, same as above except uniq_name is const
 					if(mtype==ie)return;
+#if 0
+					if(mtype==declstmt){
+						plog+"VARDECL"-r.get_source(FS);
+						string instr;
+						for(auto x:s_declstmt->decls()){
+							if(!isa<VarDecl>(x)){
+								plog-"ASSERT_VarDecl";
+							}else{
+								//https://stackoverflow.com/a/9054913
+								auto vn=r.get_source(((VarDecl*)x)->getLocation());
+								instr+="dfsansrc(\"_SaN_bad00000\"),dfsan_set_label(\"_SaN_bad00000\",&"+vn+",sizeof("+vn+"));";
+							}
+						}
+						r.InsertTextAfterToken(FS->getEndLoc(),instr);
+						continue;
+					}
+#endif
 					//assert(lhs); //not ture can be MemberExpr->-ImplicitCastExpr->DeclRefExpr, e.g. png_ptr->zbuf_size
 					for(auto& varname:source_vars()){
 						plog+"source"<DUM(varname);

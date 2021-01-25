@@ -71,7 +71,7 @@ done
 set -x
 
 cd ../.. #bingo
-time bash -x  ./scripts/bnet/build-bnet.sh $PROBLEM_DIR noaugment_base $PROBLEM_DIR/rule-prob.txt||echo 'failed'
+time bash -x  ./scripts/bnet/build-bnet.sh $PROBLEM_DIR noaugment_base $PROBLEM_DIR/rule-prob.txt
 #./scripts/bnet/elim-inconsistent-fb.py $PROBLEM_DIR/bnet/noaugment_base/named_cons_all.txt.pruned.edbobsderived $PROBLEM_DIR/feedback.txt /dev/null | sponge $PROBLEM_DIR/feedback.txt
 echo "AC 1e-6 500 1000 100 ${RUNNAME}full-stats.txt ${RUNNAME}full-combined out" >> $PROBLEM_DIR/feedback.txt
 ### @full
@@ -98,7 +98,7 @@ done
 set -x
 
 cd ../.. #bingo
-time bash -x  ./scripts/bnet/build-bnet.sh $PROBLEM_DIR noaugment_base $PROBLEM_DIR/rule-prob.txt||echo 'failed'
+time bash -x  ./scripts/bnet/build-bnet.sh $PROBLEM_DIR noaugment_base $PROBLEM_DIR/rule-prob.txt
 echo "AC 1e-6 500 1000 100 ${RUNNAME}random-stats.txt ${RUNNAME}random-combined out" >> $PROBLEM_DIR/feedback.random
 ### @random
 # cat $PROBLEM_DIR/feedback.random|./scripts/bnet/driver.py $PROBLEM_DIR/bnet/noaugment_base/bnet-dict.out $PROBLEM_DIR/bnet/noaugment_base/factor-graph.fg $PROBLEM_DIR/base_queries.txt $PROBLEM_DIR/oracle_queries.txt >/dev/null 2>&1 &

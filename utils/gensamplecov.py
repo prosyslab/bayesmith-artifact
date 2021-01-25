@@ -5,6 +5,7 @@ workdir=sys.argv[2]+'/'
 typ=sys.argv[3]
 f=open(workdir+'cov/covratio.txt').readlines()
 total=len(f)
+print(total,len(glob(workdir+'cov/*.praw')),file=sys.stderr)
 assert total==len(glob(workdir+'cov/*.praw'))
 p=0
 for x in range(1,total+1):
