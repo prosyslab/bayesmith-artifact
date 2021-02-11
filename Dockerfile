@@ -11,6 +11,8 @@ DEBIAN_FRONTEND="noninteractive" apt install -y dejagnu \
 #binutil
 souffle ant python3-graph-tool \
 # ci-exp dependency
+time \
+#bc
 #r-base-dev libcurl4-openssl-dev r-cran-rjava \
 #R; R,git
 #libpcre3 libpcre3-dev libpcrecpp0v5 libssl-dev zlib1g-dev \

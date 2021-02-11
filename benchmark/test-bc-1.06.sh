@@ -1,11 +1,6 @@
-echo -n "55\n77\n33\n99\n-88\n66\n3344\n-5566\n0" |bc/bc Examples/ckbook.b
-bc/bc Examples/primes.b <<STDIN
-primes(109)
-primes(23)
-quit
-STDIN
-bc/bc Examples/twins.b <<STDIN
-twins(19)
-twins(23)
-quit
-STDIN
+pushd Test
+for file in array.b arrayp.b aryprm.b atan.b  checklib.b div.b exp.b fact.b jn.b ln.b mul.b raise.b signum sine.b sqrt1.b sqrt2.b sqrt.b testfn.b 
+do
+../bc/bc -l $file
+done
+popd
