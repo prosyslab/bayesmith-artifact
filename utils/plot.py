@@ -4,6 +4,7 @@ import sys,os
 import os.path
 import itertools
 def parseseries(pre):
+	print(pre)
 	rt=[]
 	for i in itertools.count():
 		f=pre+str(i)+'.out'
@@ -15,6 +16,7 @@ def parseseries(pre):
 			if x[2]=='TrueGround':
 				t+=int(x[0])
 		rt.append(t)
+	print(rt)
 	return rt
 BINGOPREFIX,OUTFOLDER,TYPE=sys.argv[1:4]
 BENCHMARKS=sys.argv[4:]
@@ -29,9 +31,11 @@ for x in BENCHMARKS:
      \hfill""",file=ltx)
 	plt.clf()
 	#plt.title(x)
-	plt.plot(parseseries(BINGOPREFIX+x.split('-')[0]+'true-combined'),label='DynaBoost')
-	plt.plot(parseseries(f'{os.environ["VANILLA_CI"]}/benchmark/{x}/sparrow-out/{TYPE}/bingo_combined/'),label='Bingo',linestyle='dashed')
-	plt.xlabel('Iteration number')
-	plt.ylabel('Rank of bug')
-	plt.legend()
-	plt.savefig(f'{OUTFOLDER}/{x}.png')
+	plt.rcParams['text.usetex'] = True
+	plt.rcParams.update({'font.size': 16})
+	plt.plot(parseseries(BINGOPREFIX+x.split('-')[0]+'true-combined'),label=r'$\textsc{DynaBoost}_\textsc{all}$')
+	plt.plot(parseseries(f'{os.environ["VANILLA_CI"]}/benchmark/{x}/sparrow-out/{TYPE}/bingo_combined/'),label=r'$\textsc{Bingo}_\textsc{zero}$',linestyle='dashed')
+	plt.xlabel('Iteration number',fontsize=16)
+	plt.ylabel('Rank of bug',fontsize=16)
+	plt.legend(prop={'size': 16})
+	plt.savefig(f'{OUTFOLDER}/{x}.pdf')
