@@ -29,5 +29,5 @@ ax1.hlines(bingo,0,100,linestyles='dotted',label=r'$\textsc{Bingo}_\textsc{zero}
 ax1.set_ylim(ymin=0)
 plt.xlabel('Fraction of test cases (%)',fontsize=16)
 plt.ylabel('Number of iterations',fontsize=16)
-plt.legend()
+#plt.legend()
 plt.savefig('/tmp/sampleplots/'+name+'.pdf')

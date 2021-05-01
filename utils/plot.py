@@ -37,5 +37,5 @@ for x in BENCHMARKS:
 	plt.plot(parseseries(f'{os.environ["VANILLA_CI"]}/benchmark/{x}/sparrow-out/{TYPE}/bingo_combined/'),label=r'$\textsc{Bingo}_\textsc{zero}$',linestyle='dashed')
 	plt.xlabel('Iteration number',fontsize=16)
 	plt.ylabel('Rank of bug',fontsize=16)
-	plt.legend(prop={'size': 16})
+	#plt.legend(prop={'size': 16})
 	plt.savefig(f'{OUTFOLDER}/{x}.pdf')

@@ -43,7 +43,7 @@ case $APP in
 	gnuplot-5.2.5) $down https://sourceforge.net/projects/gnuplot/files/gnuplot/5.2.5/gnuplot-5.2.5.tar.gz/download $ARCHIEVE 039db2cce62ddcfd31a6696fe576f4224b3bc3f919e66191dfe2cdb058475caa ;;
 	libtasn1-4.3) $down https://ftp.gnu.org/gnu/libtasn1/libtasn1-4.3.tar.gz $ARCHIEVE any 
 		MAKEARGS=' -i V=1';configure='./configure'
-		export APPBIN=libtasn1-4.3/src/asn1Coding.o
+		export APPBIN=libtasn1-4.3/tests/Test_parser
 		echo 'ASN1.c'>$WORKDIR/blacklist.txt;;
 	gnuplot-5.2.5) $down https://sourceforge.net/projects/gnuplot/files/gnuplot/5.2.5/gnuplot-5.2.5.tar.gz/download $ARCHIEVE 039db2cce62ddcfd31a6696fe576f4224b3bc3f919e66191dfe2cdb058475caa ;;
 	bc-1.06) $down https://ftp.gnu.org/gnu/bc/bc-1.06.tar.gz $ARCHIEVE any
@@ -61,12 +61,15 @@ case $APP in
 			command make -i -f scripts/unix.mak "$@"
 			popd
 		}
+		export APPBIN=optipng-0.5.3/src/optipng
 		configure='' ;;
 	urjtag-0.8) $down https://master.dl.sourceforge.net/project/urjtag/urjtag/0.8/urjtag-0.8.tar.gz $ARCHIEVE 47684f0552fe90aae1d1afbc4264433ec467edab1b7e6b37145bf783d956345b 
 		echo 'svf_flex.c'>$WORKDIR/blacklist.txt;;
 	latex2rtf-2.1.1) $down https://master.dl.sourceforge.net/project/latex2rtf/latex2rtf-unix/2.1.1/latex2rtf-2.1.1beta8.tar.gz $ARCHIEVE 6e0c9da83af5e13ab732227792367f25ffcedbfab22b74911a269e2470383554
+		export APPBIN=latex2rtf/latex2rtf
 		APP=latex2rtf configure='';;
-	shntool-3.0.5) $down http://shnutils.freeshell.org/shntool/dist/src/shntool-3.0.5.tar.gz $ARCHIEVE c496d7c6079609d0b71cca5f1ff7202962bb7921c3fe0e6081ae5a143ce3b14b ;;
+	shntool-3.0.5) APPBIN=shntool-3.0.5/src/shntool
+		$down http://shnutils.freeshell.org/shntool/dist/src/shntool-3.0.5.tar.gz $ARCHIEVE c496d7c6079609d0b71cca5f1ff7202962bb7921c3fe0e6081ae5a143ce3b14b ;;
 	sed-4.3) $down https://ftp.gnu.org/gnu/sed/sed-4.3.tar.xz sed-4.3.tar.xz any
 		DFSAN_HEADPARA=' --rtlib=compiler-rt'
 		export COVBINFILTER=1
