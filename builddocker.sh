@@ -1,1 +1,1 @@
-docker build --network=host -t dynamicbingo:latest .
+docker build --shm-size=4G --network=host -t dynaboost:latest .

@@ -11,5 +11,5 @@ echo 'Dynamic'
 for x in ${BENCHMARKa[@]};do
 echo -n "$x "
 read -d '-' -a shortname <<<"$x"
-python3 falsegenstat.py $BINGO/1110${shortname}true-combined;
+python3 falsegenstat.py $BINGO/$1${shortname}true-combined;
 done
