@@ -1,4 +1,3 @@
-PREFIX=0829
 ./runbingo.sh bc-1.06 /tmp/bc-1.06/ interval ${PREFIX}bc >/dev/null 2>/dev/null &
 ./runbingo.sh cflow-1.5 /tmp/cflow-1.5/ interval ${PREFIX}cflow >/dev/null 2>/dev/null &
 ./runbingo.sh grep-2.19 /tmp/grep-2.19/ interval ${PREFIX}grep > /dev/null 2> /dev/null &

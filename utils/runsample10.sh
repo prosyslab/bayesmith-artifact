@@ -1,6 +1,6 @@
 #$1 app name
 #example: sort-7.2
-#sudo chmod -R 777 /tmp/$1
+sudo chmod -R 777 /tmp/$1
 taint=false
 mkdir -p /tmp/$1/dfg/disabled/
 export SKIP_NOFEEDBACK=1
