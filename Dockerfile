@@ -38,9 +38,7 @@ eval $(opam env) ;make;sudo mv $(readlink -f bin/sparrow) /usr/bin/sparrow ; rm 
 RUN mkdir llvm && cd /dev/shm && wget https://github.com/TianyiChen/llvm-build/releases/download/48a8c7dc/clang11-virtualroot.tar.gz && tar -xzf clang11-virtualroot.tar.gz -C ~/llvm/ && \
 wget https://github.com/TianyiChen/PL-assets/releases/download/main/fse2021-workspace.zip && unzip fse2021-workspace.zip -d /tmp
 COPY --chown=ubuntu:ubuntu . dynaboost
-RUN mv dynaboost/bingo-ci-experiment . ; mv dynaboost/vanilla-experiment . ; pushd dynaboost; . init.sh; cd dfsan-plugin; make -j4
-RUN git clone --single-branch --branch DynamicBingo https://github.com/difflog-project/bingo && cd bingo && scripts/build.sh
-RUN git clone --recurse-submodules https://github.com/nichrome-project/nichrome.git && cd nichrome && git checkout cc4eafa3c58e1175134392ffe7fe2e2ffb6b233f && cd main && ant && cd libsrc; pushd libdai; mv  Makefile.LINUX  Makefile.conf;popd; make -j8
-#RUN cd dynaboost && . init.sh && cd dfsan-plugin && ./go.sh grep-2.19 grep-2.19 1 0
-
-# htop
+RUN mv dynaboost/bingo-ci-experiment . ; mv dynaboost/vanilla-experiment .
+RUN git clone --single-branch --branch DynamicBingo https://github.com/difflog-project/bingo && cd bingo && scripts/build.sh; \
+cd ~; git clone --recurse-submodules https://github.com/nichrome-project/nichrome.git && cd nichrome && git checkout cc4eafa3c58e1175134392ffe7fe2e2ffb6b233f && cd main && ant && cd libsrc; pushd libdai; mv  Makefile.LINUX  Makefile.conf;popd; make -j8
+RUN pushd dynaboost; . init.sh; cd dfsan-plugin; make -j4

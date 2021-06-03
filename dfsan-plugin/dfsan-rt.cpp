@@ -42,7 +42,6 @@ void limiter(){
 		if(time(0)-start>120){
 			Cerr-"Killed by dfsan-rt";
 			sync();
-			abort();
 			exit(1);
 		}
 	}
