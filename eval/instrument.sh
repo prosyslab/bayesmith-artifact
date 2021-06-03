@@ -1,4 +1,4 @@
-. ../init.sh
+. env.sh
 cd $AHOME
 if [[ " ${BENCHMARKi[@]} " =~ " ${name} " ]]; then
 	./go.sh $1 $1 1 0

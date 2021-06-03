@@ -1,4 +1,4 @@
-. ../init.sh
+. env.sh
 cd $UHOME
 # benchmark, [interval/taint]
 if [[ " ${BENCHMARKi[@]} " =~ " ${name} " ]]; then

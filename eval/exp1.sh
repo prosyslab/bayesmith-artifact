@@ -1,4 +1,4 @@
-. ../init.sh
+. env.sh
 cd $AHOME
 read -d '-' -a shortname <<<"$1"
 if [[ " ${BENCHMARKi[@]} " =~ " ${name} " ]]; then
