@@ -1,6 +1,6 @@
 LLVM_ROOT=$PWD/../llvm/
-export AHOME=$PWD/dynaboost/dfsan-plugin
-export UHOME=$PWD/dynaboost/utils
+export AHOME=$PWD/dfsan-plugin
+export UHOME=$PWD/utils
 
 ln -s $LLVM_ROOT /tmp/llvm-project
 if [ -f /.dockerenv ]; then
