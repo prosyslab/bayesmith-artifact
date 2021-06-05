@@ -1,7 +1,7 @@
 . env.sh
 cd $AHOME
 if [[ " ${BENCHMARKi[@]} " =~ " $1 " ]]; then
-	./go.sh $1 $1 1 0
+	echo ''|./go.sh $1 $1 1 0
 else
-	for i in {0..19};do ./go.sh $1 $1 20 $i;done
+	for i in {0..19};do echo ''|./go.sh $1 $1 20 $i;done
 fi

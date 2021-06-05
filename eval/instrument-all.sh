@@ -1,2 +1,2 @@
 cd $AHOME
-./go_all.sh
+echo ''|./go_all.sh

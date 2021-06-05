@@ -1,7 +1,7 @@
 LLVM_ROOT=$PWD/../llvm/
 export AHOME=$PWD/dfsan-plugin
 export UHOME=$PWD/utils
-
+ulimit -c 0
 ln -s $LLVM_ROOT /tmp/llvm-project
 if [ -f /.dockerenv ]; then
 	:
