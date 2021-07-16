@@ -1,4 +1,4 @@
-python3 -m tclib download http://corpus.canterbury.ac.nz/resources/cantrbry.zip  ../cantrbry.zip e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+python3 -m tclib download http://corpus.canterbury.ac.nz/resources/cantrbry.zip  ../cantrbry.zip c44b686dfc137e74aba4db0540e5d6568cb09e270ba8f8411d2f9df24f39a1a6
 mkdir tests
 pushd tests
 unp ../../cantrbry.zip
