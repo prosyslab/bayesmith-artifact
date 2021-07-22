@@ -1,0 +1,13 @@
+.*.sw?
+
+sparrow-out
+
+rule-prob.txt
+prune-cons
+prune-cons-unopt
+
+__pycache__
+
+.*DS_Store
+
+result
