@@ -1,0 +1,211 @@
+.type Node <: symbol
+
+.decl Alarm(v0: Node, v1: Node)
+.decl AlarmDerefExp(v0: Node, v1: Node)
+.decl AlarmMemchr(v0: Node, v1: Node, v2: Node)
+.decl AlarmStrcat(v0: Node, v1: Node, v2: Node)
+.decl AlarmStrcpy(v0: Node, v1: Node, v2: Node)
+.decl AlarmStrncpy(v0: Node, v1: Node, v2: Node, v3: Node)
+.decl Assign(v0: Node, v1: Node, v2: Node)
+.decl Assume(v0: Node, v1: Node)
+.decl BinOpExp(v0: Node, v1: Node, v2: Node, v3: Node)
+.decl CastExp(v0: Node, v1: Node)
+.decl DUEdge(v0: Node, v1: Node)
+.decl DUPath(v0: Node, v1: Node)
+.decl FalseBranch(v0: Node, v1: Node)
+.decl FalseCond(v0: Node)
+.decl LibCall(v0: Node, v1: Node)
+.decl LoopHead(v0: Node)
+.decl LvalExp(v0: Node, v1: Node)
+.decl SparrowAlarm(v0: Node, v1: Node, v2: Node)
+.decl TDUPath(v0: Node, v1: Node)
+.decl TrueBranch(v0: Node, v1: Node)
+.decl TrueCond(v0: Node)
+
+.input AlarmDerefExp
+.input AlarmMemchr
+.input AlarmStrcat
+.input AlarmStrcpy
+.input AlarmStrncpy
+.input Assign
+.input Assume
+.input BinOpExp
+.input CastExp
+.input DUEdge
+.input FalseBranch
+.input FalseCond
+.input LibCall
+.input LoopHead
+.input LvalExp
+.input SparrowAlarm
+.input TrueBranch
+.input TrueCond
+.output Alarm
+.output DUPath
+.output TDUPath
+.decl Deriv_Alarm10(v0: Node, v1: Node, v2: Node, v3: Node)
+.decl Deriv_Alarm14(v0: Node, v1: Node, v2: Node, v3: Node)
+.decl Deriv_Alarm15(v0: Node, v1: Node, v2: Node)
+.decl Deriv_Alarm16(v0: Node, v1: Node, v2: Node, v3: Node)
+.decl Deriv_Alarm17(v0: Node, v1: Node, v2: Node, v3: Node, v4: Node)
+.decl Deriv_Alarm18(v0: Node, v1: Node, v2: Node, v3: Node, v4: Node)
+.decl Deriv_Alarm23(v0: Node, v1: Node, v2: Node, v3: Node)
+.decl Deriv_Alarm24(v0: Node, v1: Node, v2: Node, v3: Node)
+.decl Deriv_Alarm25(v0: Node, v1: Node, v2: Node, v3: Node, v4: Node)
+.decl Deriv_Alarm26(v0: Node, v1: Node, v2: Node, v3: Node, v4: Node, v5: Node)
+.decl Deriv_Alarm27(v0: Node, v1: Node, v2: Node, v3: Node, v4: Node, v5: Node)
+.decl Deriv_Alarm4(v0: Node, v1: Node, v2: Node, v3: Node)
+.decl Deriv_Alarm7(v0: Node, v1: Node, v2: Node, v3: Node)
+.decl Deriv_Alarm8(v0: Node, v1: Node, v2: Node, v3: Node)
+.decl Deriv_Alarm9(v0: Node, v1: Node, v2: Node, v3: Node)
+.decl Deriv_DUPath0(v0: Node, v1: Node)
+.decl Deriv_DUPath1(v0: Node, v1: Node)
+.decl Deriv_DUPath11(v0: Node, v1: Node, v2: Node)
+.decl Deriv_DUPath12(v0: Node, v1: Node, v2: Node)
+.decl Deriv_DUPath13(v0: Node, v1: Node, v2: Node)
+.decl Deriv_DUPath19(v0: Node, v1: Node, v2: Node)
+.decl Deriv_DUPath2(v0: Node, v1: Node)
+.decl Deriv_DUPath20(v0: Node, v1: Node, v2: Node)
+.decl Deriv_DUPath21(v0: Node, v1: Node, v2: Node, v3: Node)
+.decl Deriv_DUPath22(v0: Node, v1: Node, v2: Node, v3: Node)
+.decl Deriv_DUPath3(v0: Node, v1: Node, v2: Node)
+.decl Deriv_DUPath5(v0: Node, v1: Node, v2: Node)
+.decl Deriv_DUPath6(v0: Node, v1: Node, v2: Node)
+.decl Deriv_TDUPath28(v0: Node, v1: Node)
+.decl Deriv_TDUPath29(v0: Node, v1: Node)
+.decl Deriv_TDUPath30(v0: Node, v1: Node)
+.decl Deriv_TDUPath31(v0: Node, v1: Node, v2: Node)
+.decl Deriv_TDUPath32(v0: Node, v1: Node, v2: Node)
+.decl Deriv_TDUPath33(v0: Node, v1: Node, v2: Node)
+.decl Deriv_TDUPath34(v0: Node, v1: Node, v2: Node)
+.decl Deriv_TDUPath35(v0: Node, v1: Node, v2: Node)
+.decl Deriv_TDUPath36(v0: Node, v1: Node, v2: Node)
+.decl Deriv_TDUPath37(v0: Node, v1: Node, v2: Node)
+.decl Deriv_TDUPath38(v0: Node, v1: Node, v2: Node)
+.decl Deriv_TDUPath39(v0: Node, v1: Node, v2: Node, v3: Node)
+.decl Deriv_TDUPath40(v0: Node, v1: Node, v2: Node, v3: Node)
+
+.output Deriv_Alarm10
+.output Deriv_Alarm14
+.output Deriv_Alarm15
+.output Deriv_Alarm16
+.output Deriv_Alarm17
+.output Deriv_Alarm18
+.output Deriv_Alarm23
+.output Deriv_Alarm24
+.output Deriv_Alarm25
+.output Deriv_Alarm26
+.output Deriv_Alarm27
+.output Deriv_Alarm4
+.output Deriv_Alarm7
+.output Deriv_Alarm8
+.output Deriv_Alarm9
+.output Deriv_DUPath0
+.output Deriv_DUPath1
+.output Deriv_DUPath11
+.output Deriv_DUPath12
+.output Deriv_DUPath13
+.output Deriv_DUPath19
+.output Deriv_DUPath2
+.output Deriv_DUPath20
+.output Deriv_DUPath21
+.output Deriv_DUPath22
+.output Deriv_DUPath3
+.output Deriv_DUPath5
+.output Deriv_DUPath6
+.output Deriv_TDUPath28
+.output Deriv_TDUPath29
+.output Deriv_TDUPath30
+.output Deriv_TDUPath31
+.output Deriv_TDUPath32
+.output Deriv_TDUPath33
+.output Deriv_TDUPath34
+.output Deriv_TDUPath35
+.output Deriv_TDUPath36
+.output Deriv_TDUPath37
+.output Deriv_TDUPath38
+.output Deriv_TDUPath39
+.output Deriv_TDUPath40
+
+DUPath(v6, v7) :- DUEdge(v6, v7).
+DUPath(v6, v7) :- FalseBranch(v6, v7).
+DUPath(v6, v7) :- TrueBranch(v6, v7).
+TDUPath(v6, v7) :- DUPath(v6, v7), DUEdge(v6, v7).
+TDUPath(v6, v7) :- DUPath(v6, v7), FalseBranch(v6, v7).
+TDUPath(v6, v7) :- DUPath(v6, v7), TrueBranch(v6, v7).
+DUPath(v6, v7) :- DUPath(v6, v8), FalseCond(v8), FalseBranch(v8, v7).
+Alarm(v6, v7) :- TDUPath(v6, v7), SparrowAlarm(v6, v7, v12), AlarmDerefExp(v12, v13), LvalExp(v13, _).
+DUPath(v6, v7) :- DUPath(v6, v8), TrueCond(v8), TrueBranch(v8, v7), Assume(v7, _).
+DUPath(v6, v7) :- DUPath(v6, v8), TrueCond(v8), TrueBranch(v8, v7), !Assume(v7, _).
+TDUPath(v6, v7) :- DUPath(v6, v7), TDUPath(v6, v8), FalseCond(v8), FalseBranch(v8, v7).
+Alarm(v6, v7) :- TDUPath(v6, v7), SparrowAlarm(v6, v7, v12), !AlarmDerefExp(v12, _), AlarmMemchr(v12, v48, _), CastExp(v48, _).
+Alarm(v6, v7) :- TDUPath(v6, v7), SparrowAlarm(v6, v7, v12), !AlarmDerefExp(v12, _), AlarmMemchr(v12, v48, _), !CastExp(v48, _).
+Alarm(v6, v7) :- TDUPath(v6, v7), SparrowAlarm(v6, v7, v12), AlarmDerefExp(v12, v13), BinOpExp(v13, _, _, _), !LvalExp(v13, _).
+Alarm(v6, v7) :- TDUPath(v6, v7), SparrowAlarm(v6, v7, v12), AlarmDerefExp(v12, v13), !BinOpExp(v13, _, _, _), !LvalExp(v13, _).
+DUPath(v6, v7) :- DUPath(v6, v8), SparrowAlarm(v6, _, _), Assign(v8, _, _), LoopHead(v8), DUEdge(v8, v7).
+DUPath(v6, v7) :- DUPath(v6, v8), SparrowAlarm(v6, _, _), Assign(v8, _, _), !LoopHead(v8), DUEdge(v8, v7).
+DUPath(v6, v7) :- DUPath(v6, v8), SparrowAlarm(v6, _, _), !Assign(v8, _, _), LoopHead(v8), DUEdge(v8, v7).
+TDUPath(v6, v7) :- DUPath(v6, v7), TDUPath(v6, v8), TrueCond(v8), TrueBranch(v8, v7), Assume(v7, _).
+TDUPath(v6, v7) :- DUPath(v6, v7), TDUPath(v6, v8), TrueCond(v8), TrueBranch(v8, v7), !Assume(v7, _).
+Alarm(v6, v7) :- TDUPath(v6, v7), SparrowAlarm(v6, v7, v12), !AlarmDerefExp(v12, _), !AlarmMemchr(v12, _, _), AlarmStrcat(v12, v2249, _), !CastExp(v2249, _).
+TDUPath(v6, v7) :- DUPath(v6, v7), TDUPath(v6, v8), SparrowAlarm(v6, _, _), Assign(v8, _, _), LoopHead(v8), DUEdge(v8, v7).
+TDUPath(v6, v7) :- DUPath(v6, v7), TDUPath(v6, v8), SparrowAlarm(v6, _, _), Assign(v8, _, _), !LoopHead(v8), DUEdge(v8, v7).
+TDUPath(v6, v7) :- DUPath(v6, v7), TDUPath(v6, v8), SparrowAlarm(v6, _, _), !Assign(v8, _, _), LoopHead(v8), DUEdge(v8, v7).
+Alarm(v6, v7) :- TDUPath(v6, v7), SparrowAlarm(v6, v7, v12), !AlarmDerefExp(v12, _), !AlarmMemchr(v12, _, _), !AlarmStrcat(v12, _, _), !AlarmStrcpy(v12, _, _), !AlarmStrncpy(v12, _, _, _).
+Alarm(v6, v7) :- TDUPath(v6, v7), SparrowAlarm(v6, v7, v12), !AlarmDerefExp(v12, _), !AlarmMemchr(v12, _, _), !AlarmStrcat(v12, _, _), AlarmStrncpy(v12, v101, _, _), !CastExp(v101, _).
+Alarm(v6, v7) :- TDUPath(v6, v7), SparrowAlarm(v6, v7, v12), !AlarmDerefExp(v12, _), !AlarmMemchr(v12, _, _), AlarmStrcat(v12, v2249, v2418), CastExp(v2249, _), CastExp(v2418, _).
+Alarm(v6, v7) :- TDUPath(v6, v7), SparrowAlarm(v6, v7, v12), !AlarmDerefExp(v12, _), !AlarmMemchr(v12, _, _), AlarmStrcat(v12, v2249, v2418), CastExp(v2249, _), !CastExp(v2418, _).
+DUPath(v6, v7) :- DUPath(v6, v8), SparrowAlarm(v6, _, _), !Assign(v8, _, _), Assume(v8, _), !LibCall(v8, _), !LoopHead(v8), DUEdge(v8, v7).
+DUPath(v6, v7) :- DUPath(v6, v8), SparrowAlarm(v6, _, _), !Assign(v8, _, _), !Assume(v8, _), !LibCall(v8, _), !LoopHead(v8), DUEdge(v8, v7).
+DUPath(v6, v7) :- DUPath(v6, v8), SparrowAlarm(v6, _, _), !Assign(v8, _, _), !LoopHead(v8), DUEdge(v8, v7), LibCall(v8, v2754), LvalExp(v2754, _).
+DUPath(v6, v7) :- DUPath(v6, v8), SparrowAlarm(v6, _, _), !Assign(v8, _, _), !LoopHead(v8), DUEdge(v8, v7), LibCall(v8, v2754), !LvalExp(v2754, _).
+Alarm(v6, v7) :- TDUPath(v6, v7), SparrowAlarm(v6, v7, v12), !AlarmDerefExp(v12, _), !AlarmMemchr(v12, _, _), !AlarmStrcat(v12, _, _), !AlarmStrncpy(v12, _, _, _), AlarmStrcpy(v12, v3818, _), CastExp(v3818, _).
+Alarm(v6, v7) :- TDUPath(v6, v7), SparrowAlarm(v6, v7, v12), !AlarmDerefExp(v12, _), !AlarmMemchr(v12, _, _), !AlarmStrcat(v12, _, _), !AlarmStrncpy(v12, _, _, _), AlarmStrcpy(v12, v3818, _), !CastExp(v3818, _).
+Alarm(v6, v7) :- TDUPath(v6, v7), SparrowAlarm(v6, v7, v12), !AlarmDerefExp(v12, _), !AlarmMemchr(v12, _, _), !AlarmStrcat(v12, _, _), AlarmStrncpy(v12, v101, v146, _), CastExp(v101, _), !CastExp(v146, _).
+TDUPath(v6, v7) :- DUPath(v6, v7), TDUPath(v6, v8), SparrowAlarm(v6, _, _), !Assign(v8, _, _), Assume(v8, _), !LibCall(v8, _), !LoopHead(v8), DUEdge(v8, v7).
+TDUPath(v6, v7) :- DUPath(v6, v7), TDUPath(v6, v8), SparrowAlarm(v6, _, _), !Assign(v8, _, _), !Assume(v8, _), !LibCall(v8, _), !LoopHead(v8), DUEdge(v8, v7).
+TDUPath(v6, v7) :- DUPath(v6, v7), TDUPath(v6, v8), SparrowAlarm(v6, _, _), !Assign(v8, _, _), !LoopHead(v8), DUEdge(v8, v7), LibCall(v8, v2754), LvalExp(v2754, _).
+TDUPath(v6, v7) :- DUPath(v6, v7), TDUPath(v6, v8), SparrowAlarm(v6, _, _), !Assign(v8, _, _), !LoopHead(v8), DUEdge(v8, v7), LibCall(v8, v2754), !LvalExp(v2754, _).
+Alarm(v6, v7) :- TDUPath(v6, v7), SparrowAlarm(v6, v7, v12), !AlarmDerefExp(v12, _), !AlarmMemchr(v12, _, _), !AlarmStrcat(v12, _, _), CastExp(v101, _), AlarmStrncpy(v12, v101, v146, v2507), CastExp(v146, _), CastExp(v2507, _).
+Alarm(v6, v7) :- TDUPath(v6, v7), SparrowAlarm(v6, v7, v12), !AlarmDerefExp(v12, _), !AlarmMemchr(v12, _, _), !AlarmStrcat(v12, _, _), CastExp(v101, _), AlarmStrncpy(v12, v101, v146, v2507), CastExp(v146, _), !CastExp(v2507, _).
+Deriv_DUPath0(v6, v7) :- DUEdge(v6, v7).
+Deriv_DUPath1(v6, v7) :- FalseBranch(v6, v7).
+Deriv_DUPath2(v6, v7) :- TrueBranch(v6, v7).
+Deriv_TDUPath28(v6, v7) :- DUPath(v6, v7), DUEdge(v6, v7).
+Deriv_TDUPath29(v6, v7) :- DUPath(v6, v7), FalseBranch(v6, v7).
+Deriv_TDUPath30(v6, v7) :- DUPath(v6, v7), TrueBranch(v6, v7).
+Deriv_DUPath3(v6, v7, v8) :- DUPath(v6, v8), FalseCond(v8), FalseBranch(v8, v7).
+Deriv_Alarm4(v6, v7, v12, v13) :- TDUPath(v6, v7), SparrowAlarm(v6, v7, v12), AlarmDerefExp(v12, v13), LvalExp(v13, _).
+Deriv_DUPath5(v6, v7, v8) :- DUPath(v6, v8), TrueCond(v8), TrueBranch(v8, v7), Assume(v7, _).
+Deriv_DUPath6(v6, v7, v8) :- DUPath(v6, v8), TrueCond(v8), TrueBranch(v8, v7), !Assume(v7, _).
+Deriv_TDUPath31(v6, v7, v8) :- DUPath(v6, v7), TDUPath(v6, v8), FalseCond(v8), FalseBranch(v8, v7).
+Deriv_Alarm10(v6, v7, v12, v13) :- TDUPath(v6, v7), SparrowAlarm(v6, v7, v12), AlarmDerefExp(v12, v13), !BinOpExp(v13, _, _, _), !LvalExp(v13, _).
+Deriv_Alarm7(v6, v7, v12, v48) :- TDUPath(v6, v7), SparrowAlarm(v6, v7, v12), !AlarmDerefExp(v12, _), AlarmMemchr(v12, v48, _), CastExp(v48, _).
+Deriv_Alarm8(v6, v7, v12, v48) :- TDUPath(v6, v7), SparrowAlarm(v6, v7, v12), !AlarmDerefExp(v12, _), AlarmMemchr(v12, v48, _), !CastExp(v48, _).
+Deriv_Alarm9(v6, v7, v12, v13) :- TDUPath(v6, v7), SparrowAlarm(v6, v7, v12), AlarmDerefExp(v12, v13), BinOpExp(v13, _, _, _), !LvalExp(v13, _).
+Deriv_DUPath11(v6, v7, v8) :- DUPath(v6, v8), SparrowAlarm(v6, _, _), Assign(v8, _, _), LoopHead(v8), DUEdge(v8, v7).
+Deriv_DUPath12(v6, v7, v8) :- DUPath(v6, v8), SparrowAlarm(v6, _, _), Assign(v8, _, _), !LoopHead(v8), DUEdge(v8, v7).
+Deriv_DUPath13(v6, v7, v8) :- DUPath(v6, v8), SparrowAlarm(v6, _, _), !Assign(v8, _, _), LoopHead(v8), DUEdge(v8, v7).
+Deriv_TDUPath32(v6, v7, v8) :- DUPath(v6, v7), TDUPath(v6, v8), TrueCond(v8), TrueBranch(v8, v7), Assume(v7, _).
+Deriv_TDUPath33(v6, v7, v8) :- DUPath(v6, v7), TDUPath(v6, v8), TrueCond(v8), TrueBranch(v8, v7), !Assume(v7, _).
+Deriv_Alarm14(v6, v7, v12, v2249) :- TDUPath(v6, v7), SparrowAlarm(v6, v7, v12), !AlarmDerefExp(v12, _), !AlarmMemchr(v12, _, _), AlarmStrcat(v12, v2249, _), !CastExp(v2249, _).
+Deriv_TDUPath34(v6, v7, v8) :- DUPath(v6, v7), TDUPath(v6, v8), SparrowAlarm(v6, _, _), Assign(v8, _, _), LoopHead(v8), DUEdge(v8, v7).
+Deriv_TDUPath35(v6, v7, v8) :- DUPath(v6, v7), TDUPath(v6, v8), SparrowAlarm(v6, _, _), Assign(v8, _, _), !LoopHead(v8), DUEdge(v8, v7).
+Deriv_TDUPath36(v6, v7, v8) :- DUPath(v6, v7), TDUPath(v6, v8), SparrowAlarm(v6, _, _), !Assign(v8, _, _), LoopHead(v8), DUEdge(v8, v7).
+Deriv_Alarm15(v6, v7, v12) :- TDUPath(v6, v7), SparrowAlarm(v6, v7, v12), !AlarmDerefExp(v12, _), !AlarmMemchr(v12, _, _), !AlarmStrcat(v12, _, _), !AlarmStrcpy(v12, _, _), !AlarmStrncpy(v12, _, _, _).
+Deriv_Alarm16(v6, v7, v12, v101) :- TDUPath(v6, v7), SparrowAlarm(v6, v7, v12), !AlarmDerefExp(v12, _), !AlarmMemchr(v12, _, _), !AlarmStrcat(v12, _, _), AlarmStrncpy(v12, v101, _, _), !CastExp(v101, _).
+Deriv_Alarm17(v6, v7, v12, v2249, v2418) :- TDUPath(v6, v7), SparrowAlarm(v6, v7, v12), !AlarmDerefExp(v12, _), !AlarmMemchr(v12, _, _), AlarmStrcat(v12, v2249, v2418), CastExp(v2249, _), CastExp(v2418, _).
+Deriv_Alarm18(v6, v7, v12, v2249, v2418) :- TDUPath(v6, v7), SparrowAlarm(v6, v7, v12), !AlarmDerefExp(v12, _), !AlarmMemchr(v12, _, _), AlarmStrcat(v12, v2249, v2418), CastExp(v2249, _), !CastExp(v2418, _).
+Deriv_DUPath19(v6, v7, v8) :- DUPath(v6, v8), SparrowAlarm(v6, _, _), !Assign(v8, _, _), Assume(v8, _), !LibCall(v8, _), !LoopHead(v8), DUEdge(v8, v7).
+Deriv_DUPath20(v6, v7, v8) :- DUPath(v6, v8), SparrowAlarm(v6, _, _), !Assign(v8, _, _), !Assume(v8, _), !LibCall(v8, _), !LoopHead(v8), DUEdge(v8, v7).
+Deriv_DUPath21(v6, v7, v8, v2754) :- DUPath(v6, v8), SparrowAlarm(v6, _, _), !Assign(v8, _, _), !LoopHead(v8), DUEdge(v8, v7), LibCall(v8, v2754), LvalExp(v2754, _).
+Deriv_DUPath22(v6, v7, v8, v2754) :- DUPath(v6, v8), SparrowAlarm(v6, _, _), !Assign(v8, _, _), !LoopHead(v8), DUEdge(v8, v7), LibCall(v8, v2754), !LvalExp(v2754, _).
+Deriv_Alarm23(v6, v7, v12, v3818) :- TDUPath(v6, v7), SparrowAlarm(v6, v7, v12), !AlarmDerefExp(v12, _), !AlarmMemchr(v12, _, _), !AlarmStrcat(v12, _, _), !AlarmStrncpy(v12, _, _, _), AlarmStrcpy(v12, v3818, _), CastExp(v3818, _).
+Deriv_Alarm24(v6, v7, v12, v3818) :- TDUPath(v6, v7), SparrowAlarm(v6, v7, v12), !AlarmDerefExp(v12, _), !AlarmMemchr(v12, _, _), !AlarmStrcat(v12, _, _), !AlarmStrncpy(v12, _, _, _), AlarmStrcpy(v12, v3818, _), !CastExp(v3818, _).
+Deriv_Alarm25(v6, v7, v12, v101, v146) :- TDUPath(v6, v7), SparrowAlarm(v6, v7, v12), !AlarmDerefExp(v12, _), !AlarmMemchr(v12, _, _), !AlarmStrcat(v12, _, _), AlarmStrncpy(v12, v101, v146, _), CastExp(v101, _), !CastExp(v146, _).
+Deriv_TDUPath37(v6, v7, v8) :- DUPath(v6, v7), TDUPath(v6, v8), SparrowAlarm(v6, _, _), !Assign(v8, _, _), Assume(v8, _), !LibCall(v8, _), !LoopHead(v8), DUEdge(v8, v7).
+Deriv_TDUPath38(v6, v7, v8) :- DUPath(v6, v7), TDUPath(v6, v8), SparrowAlarm(v6, _, _), !Assign(v8, _, _), !Assume(v8, _), !LibCall(v8, _), !LoopHead(v8), DUEdge(v8, v7).
+Deriv_TDUPath39(v6, v7, v8, v2754) :- DUPath(v6, v7), TDUPath(v6, v8), SparrowAlarm(v6, _, _), !Assign(v8, _, _), !LoopHead(v8), DUEdge(v8, v7), LibCall(v8, v2754), LvalExp(v2754, _).
+Deriv_TDUPath40(v6, v7, v8, v2754) :- DUPath(v6, v7), TDUPath(v6, v8), SparrowAlarm(v6, _, _), !Assign(v8, _, _), !LoopHead(v8), DUEdge(v8, v7), LibCall(v8, v2754), !LvalExp(v2754, _).
+Deriv_Alarm26(v6, v7, v12, v101, v146, v2507) :- TDUPath(v6, v7), SparrowAlarm(v6, v7, v12), !AlarmDerefExp(v12, _), !AlarmMemchr(v12, _, _), !AlarmStrcat(v12, _, _), CastExp(v101, _), AlarmStrncpy(v12, v101, v146, v2507), CastExp(v146, _), CastExp(v2507, _).
+Deriv_Alarm27(v6, v7, v12, v101, v146, v2507) :- TDUPath(v6, v7), SparrowAlarm(v6, v7, v12), !AlarmDerefExp(v12, _), !AlarmMemchr(v12, _, _), !AlarmStrcat(v12, _, _), CastExp(v101, _), AlarmStrncpy(v12, v101, v146, v2507), CastExp(v146, _), !CastExp(v2507, _).
