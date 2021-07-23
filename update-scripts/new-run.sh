@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-# Usage: ./run.sh [program] [interval | taint] [reuse]
-# ./run.sh benchmark/optipng-0.5.2.c
+# Usage: ./run.sh [program] [interval | taint] [reuse] [baseline]
+# ./run.sh benchmark/optipng-0.5.2.c taint
 
 set -e
 
@@ -90,6 +90,10 @@ fi
 
 mkdir -p $OUTPUT_DIR/$ANALYSIS/bnet
 touch rule-prob.txt
+
+if [[ "$@" =~ "baseline" ]]; then
+  PGAM=""
+fi
 
 ########################################################################################################################
 # 2. Run Sparrow
