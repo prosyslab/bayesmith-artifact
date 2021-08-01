@@ -1,0 +1,5 @@
+1. Download the docker image from the following URL: TODO
+
+2. Load the docker image:
+
+  $ [sudo] docker load < bayesmith-docker.tar.gz
