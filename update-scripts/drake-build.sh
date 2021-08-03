@@ -14,8 +14,8 @@ popd
 
 echo "Build Bingo"
 pushd bingo
-opam install linenoise
-make -j
+opam install -y linenoise
+eval $(opam env) && make -j
 popd
 pushd bingo/prune-cons
 make -j

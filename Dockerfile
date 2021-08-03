@@ -28,15 +28,18 @@ htop texlive-latex-extra cm-super dvipng && pip3 install matplotlib
 USER ubuntu
 WORKDIR /home/ubuntu
 
+ENV OPAMYES=1
+
 # build sparrow
 RUN sudo add-apt-repository -y ppa:avsm/ppa && \
 sudo apt install -y ocaml opam make m4 git && pushd /tmp && git clone https://github.com/prosyslab/sparrow.git && \
 cd sparrow && git checkout e53e846f4eb2a1a4c410461452264a7d242f410a && \
-sed -i 's/opam init /opam init --disable-sandboxing /g' build.sh; \
-echo 'eval $(opam env)' >> ~/.bashrc && source ~/.bashrc; \
-sed -i '/opam install depext/d' build.sh; \
-yes|./build.sh; opam install clangml.4.1.0 ocamlgraph.1.8.8; \
-make -j; sudo mv $(readlink -f bin/sparrow) /usr/bin/sparrow
+sed -i 's/opam init /opam init --disable-sandboxing /g' build.sh && \
+echo 'eval $(opam env)' >> ~/.bashrc && source ~/.bashrc && \
+sed -i '/opam install depext/d' build.sh && \
+sed -i 's/opam depext/opam install --depext-only/g' build.sh && \
+yes|./build.sh; opam install -y clangml.4.1.0 ocamlgraph.1.8.8 && \
+eval $(opam env) && make -j; sudo mv $(readlink -f bin/sparrow) /usr/bin/sparrow
 
 # build dynaboost
 RUN mkdir llvm && cd /dev/shm && wget https://github.com/TianyiChen/llvm-build/releases/download/48a8c7dc/clang11-virtualroot.tar.gz && tar -xzf clang11-virtualroot.tar.gz -C ~/llvm/ && \
@@ -58,8 +61,8 @@ RUN sudo apt-get update && \
 RUN cd ~ && git clone https://github.com/petablox/pldi19-artifact.git drake
 
 # build drake
+RUN mv dynaboost/update-scripts .; mv dynaboost/setup.sh .; ./setup.sh
 RUN pushd drake; ./build.sh; popd
 
-RUN mv dynaboost/update-scripts .; mv dynaboost/setup.sh .; ./setup.sh
 
 # TODO: git clone bayesmith && build bayesmith
