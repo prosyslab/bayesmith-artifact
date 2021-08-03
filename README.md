@@ -104,7 +104,8 @@ cd bayesmith
 
 One may do the following to build BayeSmith:
 
-- delete `opam install depext` from `sparrow`
+- delete `opam install depext` from `sparrow`, then change `opam depext ...` to `opam install --depext-only ...`
+- install `clang` using [`install-llvm-toolchain.sh`](https://github.com/prosyslab/sysadmin/blob/master/install-llvm-toolchain.sh)
 
 ## Run
 
