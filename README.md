@@ -1,6 +1,6 @@
 # BayeSmith-artifact
 
-## Directory Structure
+## 1. Directory Structure
 #### `~/datalog` - Learned rules (Datalog)
 1. `BufferOverflow.dl` and `IntegerOverflow.dl` are the **initial** rules used for the interval analysis and taint analysis, respectively.
 2. `BufferOverflow.<PROGRAM>.dl` and `IntegerOverflow.<PROGRAM>.dl` are the **learned** rules for `<PROGRAM>`, which is one of the benchmarks.
@@ -30,7 +30,7 @@ Programs used for evaluation can be found here.
 
 #### `~/bayesmith/script` - Debug scripts
 
-## Reproducing the results
+## 2. Reproducing the results
 #### System Requirements
 
 To run the experiments that were reported in the paper, we used a 64-core (Intel Xeon Processor Gold 6226R, 2.90 Ghz) machine with 128 GB of RAM with the 20.04 version of Ubuntu Linux. We recommend to run the experiments with at least 10-core machine with 32 GB of RAM.
