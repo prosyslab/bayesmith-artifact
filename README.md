@@ -41,7 +41,7 @@ docker load < bayesmith.tar.gz
 docker run -it bayesmith
 ```
 
-### Running static analysis (optional)
+### c. Running static analysis (optional)
 ```sh
 cd bayesmith
 script/pldi19/run-all.sh
@@ -51,7 +51,7 @@ It needs to be done only once for the entire benchmark
 Note that the analysis results are already shipped, so this step is optional.
 It roughly takes an hour to finish.
 
-### Learning Bayesian networks
+### d. Learning Bayesian networks
 ```sh
 bingo/learn -reuse -analysis_type [ interval | taint ] <BENCH_NAME>
 ```
@@ -59,10 +59,10 @@ e.g. `bingo/learn -reuse -analysis_type interval sort`
 The learned datalog rules (`.dl` file) will be generated under `learn-out`.
 
 One may run the learning process with the following options:
-- `-debug` runs on debug mode. It produces verbose logs and takes more time.
+- `-debug` turns on on debug mode. It produces verbose logs and takes more time.
 - `-out_dir <DIRNAME>` changes the name of the output directory (default: `learn-out`).
 
-### Running Bingo with the learned Bayesian networks
+### e. Running Bingo with the learned Bayesian networks
 ```sh
 bingo/learn -test -analysis_type [ interval | taint ] -out_dir test-out <BENCH_NAME>
 ```
@@ -76,7 +76,7 @@ One may run test with the following options:
 - `-out_dir <DIRNAME>` changes the name of the output directory (default: `test-out`).
 - `-timestamp <TS>` gives a custom timestamp (default: current time). This is useful for drawing ranking plots.
 
-### Plots
+### f. Plots
 
 ```sh
 $ cd bayesmith
