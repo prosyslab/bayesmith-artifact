@@ -41,15 +41,21 @@ docker load < bayesmith.tar.gz
 docker run -it bayesmith
 ```
 
-### c. Running static analysis (optional)
+### c. Running static analysis and baseline Bingo (optional)
 ```sh
 cd bayesmith
-script/pldi19/run-all.sh
+script/bingo/run-all.sh
 ```
 BayeSmith runs with static analysis results.
-It needs to be done only once for the entire benchmark
-Note that the analysis results are already shipped, so this step is optional.
+It needs to be done only once for the entire benchmark.
+When the analysis is done, it runs Bingo based on the results.
+Note that the analysis and baseline Bingo results are already shipped, so this step is optional.
 It roughly takes an hour to finish.
+
+Then, run the following command to check the Bingo results (Column Bingo_M, Table 2):
+```sh
+script/bingo/report.sh baseline
+```
 
 ### d. Learning Bayesian networks
 ```sh
@@ -66,16 +72,24 @@ e.g. `bingo/learn -test -analysis_type interval -dl_from learn-out/sort/rule-fin
 
 The number of iterations will be printed in stdout and logged in a file (`test.log`) under `test-out/<PROGRAM>`.
 
-### f. Running baselines (Bingo and its variants)
+### f. Running other baselines (Table 2)
 TODO
 
 ### g. Running Drake and DynaBoost
 TODO
 
-### h. Plots
+### h. Learning with different training set
+TODO
+
+### i. Comparing sizes of Bayesian neworks
+
+### j. Comparing magnitude of false generalizations (FGs)
+We compare the impact of FGs occurred between before and after the learning.
+
+### k. Plots
 
 ```sh
 cd bayesmith
-./script/plots/rank-plot.sh baseline bayesmith -p   # Figure 6
-./script/plots/bar-plot.py    # Figure 5
+./script/rank-history-plot/plot-all.sh baseline final -p   # Figure 6
+./script/comparison-plot/bar-plot.py    # Figure 5
 ```
