@@ -53,33 +53,29 @@ It roughly takes an hour to finish.
 
 ### d. Learning Bayesian networks
 ```sh
-bingo/learn -reuse -analysis_type [ interval | taint ] <BENCH_NAME>
+bingo/learn -reuse -analysis_type [ interval | taint ] <PROGRAM>
 ```
 e.g. `bingo/learn -reuse -analysis_type interval sort`
-The learned datalog rules (`.dl` file) will be generated under `learn-out`.
-
-One may run the learning process with the following options:
-- `-debug` turns on on debug mode. It produces verbose logs and takes more time.
-- `-out_dir <DIRNAME>` changes the name of the output directory (default: `learn-out`).
+The learned datalog rule (`rule-final.dl` file) will be generated under `learn-out/<PROGRAM>`.
 
 ### e. Running Bingo with the learned Bayesian networks
 ```sh
-bingo/learn -test -analysis_type [ interval | taint ] -out_dir test-out <BENCH_NAME>
+bingo/learn -test -analysis_type [ interval | taint ] -dl_from <DL_FILE> <PROGRAM>
 ```
-e.g. `bingo/learn -test -analysis_type interval -out_dir test-out -dl_from ~/datalog/BufferOverflow.sort.dl sort`
+e.g. `bingo/learn -test -analysis_type interval -dl_from learn-out/sort/rule-final.dl sort`
 
-Logs (`learn.log`) and output (`.dl` file) will be generated under `test-out` (by default).
+The number of iterations will be printed in stdout and logged in a file (`test.log`) under `test-out/<PROGRAM>`.
 
-One may run test with the following options:
-- `-dl_from <DATALOG_FILE>` runs test with the specified datalog rule file.
-- `-rule_prob_from <RULE_PROB_TXT_FILE>` runs test with custom rule weights.
-- `-out_dir <DIRNAME>` changes the name of the output directory (default: `test-out`).
-- `-timestamp <TS>` gives a custom timestamp (default: current time). This is useful for drawing ranking plots.
+### f. Running baselines (Bingo and its variants)
+TODO
 
-### f. Plots
+### g. Running Drake and DynaBoost
+TODO
+
+### h. Plots
 
 ```sh
-$ cd bayesmith
-$ ./script/plot.sh <BINGO_TIMESTAMP> <BAYESMITH_TIMESTAMP> -p   # Figure 6
-$ ./bar-plot.sh   # Figure 5
+cd bayesmith
+./script/plots/rank-plot.sh baseline bayesmith -p   # Figure 6
+./script/plots/bar-plot.py    # Figure 5
 ```
