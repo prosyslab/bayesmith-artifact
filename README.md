@@ -30,11 +30,11 @@ Programs used for evaluation can be found here.
 ### h. `bayesmith/script` - Debug scripts
 
 ## 2. Reproducing the results
-### System Requirements
+### a. System Requirements
 
 To run the experiments that were reported in the paper, we used a 64-core (Intel Xeon Processor Gold 6226R, 2.90 Ghz) machine with 128 GB of RAM with the 20.04 version of Ubuntu Linux. We recommend to run the experiments with at least 10-core machine with 32 GB of RAM.
 
-### Building the docker image
+### b. Building the docker image
 To build the BayeSmith docker image, run the following command:
 ```sh
 docker build . -t bayesmith --shm-size 4G
@@ -47,7 +47,7 @@ docker load < bayesmith.tar.gz
 docker run -it bayesmith
 ```
 
-### Running static analysis (optional)
+### c. Running static analysis (optional)
 ```sh
 cd bayesmith
 script/pldi19/run-all.sh
@@ -55,7 +55,7 @@ script/pldi19/run-all.sh
 
 BayeSmith learns based on static analysis results. It needs to be done only once for the entire benchmark. Note that it is already done, so this is optional. It roughly takes an hour to finish.
 
-### Learning Bayesian networks
+### d. Learning Bayesian networks
 ```sh
 bingo/learn -reuse -analysis_type [ interval | taint ] <BENCH_NAME>
 ```
@@ -68,7 +68,7 @@ One may run learning with the following options:
 - `-debug` runs on debug mode. It produces verbose logs and takes more time.
 - `-out_dir <DIRNAME>` changes the name of the output directory (default: `learn-out`).
 
-### Running Bingo with the learned Bayesian network
+### e. Running Bingo with the learned Bayesian network
 
 ```sh
 bingo/learn -test -analysis_type [ interval | taint ] -out_dir test-out <BENCH_NAME>
@@ -84,7 +84,7 @@ One may run test with the following options:
 - `-out_dir <DIRNAME>` changes the name of the output directory (default: `test-out`).
 - `-timestamp <TS>` gives a custom timestamp (default: current time). This is useful for drawing ranking plots.
 
-### Plots
+### f. Plots
 
 ```sh
 $ cd bayesmith
