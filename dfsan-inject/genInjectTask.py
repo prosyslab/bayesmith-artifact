@@ -9,10 +9,10 @@ print(sys.argv,file=sys.stderr)
 print(troot,file=sys.stderr)
 if 'urjtag' in sys.argv[1] or 'shntool' in sys.argv[1] or 'latex2rtf' in sys.argv[1] or 'optipng' in sys.argv[1] \
 or 'sdop-0.61' in sys.argv:
-	alarms=open(troot+'taint/datalog/DUPath.csv').readlines()
+	alarms=open(troot+'taint/bnet/DUPath.csv').readlines()
 	duedges=open(troot+'taint/datalog/DUEdge.facts').readlines()
 else:
-	alarms=open(troot+'interval/datalog/DUPath.csv').readlines()
+	alarms=open(troot+'interval/bnet/DUPath.csv').readlines()
 	duedges=open(troot+'interval/datalog/DUEdge.facts').readlines()
 
 s=open(troot+'node.json','rb').read()
