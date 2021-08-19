@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+!/usr/bin/env bash
 
 export PROBLEM_DIR=$1    # The dir containing the bnet to be read.
                          # example: pjbench/dacapo/benchmarks/luindex/petablox_output_mln-datarace-problem
