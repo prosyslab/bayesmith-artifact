@@ -64,7 +64,7 @@ bingo/learn -reuse -analysis_type [ interval | taint ] <PROGRAM>
 ```
 e.g. `bingo/learn -reuse -analysis_type interval sort`
 
-The learned datalog rule (`rule-final.dl` file) will be generated under `learn-out/<PROGRAM>`.
+The learned datalog rule (`rule-final.dl` file) will be generated under `learn-out/sort`.
 
 ### e. Running Bingo with the learned Bayesian networks
 ```sh
@@ -72,7 +72,7 @@ bingo/learn -test -timestamp final -analysis_type [ interval | taint ] -dl_from 
 ```
 e.g. `bingo/learn -test -timestamp final -analysis_type interval -dl_from learn-out/sort/rule-final.dl sort`
 
-The number of interactions will be printed in stdout and logged in a file (`test.log`) under `test-out/<PROGRAM>`.
+The number of interactions will be printed in stdout and logged in a file (`test.log`) under `test-out/sort`.
 To run with the learned Bayesian networks reported in the paper, set `-dl_from` option as the following:
 - Interval analysis: `-dl_from ~/datalog/BufferOverflow.<PROGRAM>.dl`
 - Taint analysis: `-dl_from ~/datalog/IntegerOverflow.<PROGRAM>.dl`
@@ -172,7 +172,7 @@ bingo/learn -reuse -analysis_type [ interval | taint ] <PROGRAM_1> .. <PROGRAM_N
 ```
 e.g. `bingo/learn -reuse -analysis_type interval sort grep`
 
-The learned rule, `rule-final.dl` can be found in `learn-out-sort-grep`.
+The learned rule, `rule-final.dl` will be generated under `learn-out/sort-grep`.
 
 One can run BayeSmith with leave-N-out settings by specifing N programs.
 `BayeSmith_80` uses about 80% of benchmarks as training data, i.e. N = 2.
