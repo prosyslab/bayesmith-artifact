@@ -64,7 +64,7 @@ elif [[ "$BASE" =~ tar.+ ]]; then
     -filter_allocsite hash -filter_allocsite main -filter_allocsite quote \
     -filter_allocsite hol -filter_allocsite header -filter_allocsite xmemdup \
     -filter_allocsite xmalloc -filter_allocsite dump"
-  PGAM=tarr
+  PGAM=tar
 elif [[ "$BASE" =~ cflow.+ ]]; then
   OPT="$OPT_DEFAULT -inline alloc -unsound_alloc -filter_function yy -filter_file c\.l"
   PGAM=cflow
@@ -91,7 +91,7 @@ fi
 mkdir -p $OUTPUT_DIR/$ANALYSIS/bnet
 touch rule-prob.txt
 
-if [[ "$@" =~ "baseline" ]]; then
+if [[ ! "$@" =~ "--bayesmith" ]]; then
   PGAM=""
 fi
 
@@ -145,19 +145,12 @@ if [[ -f "$BENCHMARK_DIR/label.json" ]]; then
   START_TIME=$SECONDS
   echo "Running Bingo"
   # Generate $BENCHMARK_DIR/sparrow-out/datalog/GroundTruth.facts from $BENCHMARK_DIR/label.json
-  bingo/generate-ground-truth.py $BENCHMARK_DIR $ANALYSIS
-  cat $OUTPUT_DIR/$ANALYSIS/datalog/GroundTruth.facts \
-    | sed 's/^/Alarm(/' \
-    | sed 's/\t/,/' | sed 's/$/)/g' \
-    > $OUTPUT_DIR/$ANALYSIS/bnet/GroundTruth.txt
+  bingo/generate-ground-truth.py $BENCHMARK_DIR $ANALYSIS bnet
   bingo/accmd $OUTPUT_DIR/$ANALYSIS $OUTPUT_DIR/$ANALYSIS/bnet/Alarm.txt \
     $OUTPUT_DIR/$ANALYSIS/bnet/GroundTruth.txt /dev/null 500 "" /dev/null bnet
   ELAPSED_TIME=$(($SECONDS - $START_TIME))
   echo "Bingo completes ($ELAPSED_TIME sec)"
   script/auc.py $OUTPUT_DIR/$ANALYSIS/bingo_stats.txt $OUTPUT_DIR/$ANALYSIS/bnet/Alarm.txt
-#  bingo/print_bnet.py $OUTPUT_DIR/$ANALYSIS/bnet/named_cons_all.txt.cep \
-#    $OUTPUT_DIR/$ANALYSIS/bnet/Alarm.txt $OUTPUT_DIR/$ANALYSIS/bnet/GroundTruth.txt \
-#    $OUTPUT_DIR/$ANALYSIS/bnet/graph.svg
 else
   NUM_ALARMS=`wc -l $OUTPUT_DIR/$ANALYSIS/bnet/Alarm.txt | cut -f 1 -d ' '`
   echo "Total alarms: $NUM_ALARMS"

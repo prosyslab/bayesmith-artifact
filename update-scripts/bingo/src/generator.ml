@@ -22,13 +22,13 @@ let main argv =
   | "interval" ->
       ( if Array.length argv > 5 then
         let pgm = argv.(5) in
-        Datalog.of_file (dl_file_dir ^ "TBufferOverflow.dl." ^ pgm) ""
+        Datalog.of_file (dl_file_dir ^ "TBufferOverflow." ^ pgm ^ ".dl") ""
       else Datalog.make Buffer_rules.buffer_overflow_rules )
       |> BNet.generate_named_cons sparrow_out_dir analysis_type bnet_dir
   | "taint" ->
       ( if Array.length argv > 5 then
         let pgm = argv.(5) in
-        Datalog.of_file (dl_file_dir ^ "TIntegerOverflow.dl." ^ pgm) ""
+        Datalog.of_file (dl_file_dir ^ "TIntegerOverflow." ^ pgm ^ ".dl") ""
       else Datalog.make Integer_rules.integer_overflow_rules )
       |> BNet.generate_named_cons sparrow_out_dir analysis_type bnet_dir
   | _ -> assert false
