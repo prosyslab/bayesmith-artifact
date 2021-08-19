@@ -172,6 +172,8 @@ bingo/learn -reuse -analysis_type [ interval | taint ] <PROGRAM_1> .. <PROGRAM_N
 ```
 e.g. `bingo/learn -reuse -analysis_type interval sort grep`
 
+The learned rule, `rule-final.dl` can be found in `learn-out-sort-grep`.
+
 One can run BayeSmith with leave-N-out settings by specifing N programs.
 `BayeSmith_80` uses about 80% of benchmarks as training data, i.e. N = 2.
 We repeated ten times per analysis to report the numbers in `BayeSmith_80` column, Table 4.
