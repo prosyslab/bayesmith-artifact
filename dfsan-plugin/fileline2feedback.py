@@ -5,6 +5,7 @@ from collections import deque
 workdir=sys.argv[1]+'/'
 nodefile=sys.argv[2]
 datalog=sys.argv[3]
+bnet=os.path.join(os.path.dirname(os.path.dirname(datalog)),'bnet')
 prunedname_cons=sys.argv[4]
 named_cons_all=open(sys.argv[5]).read()
 init='INIT' in os.environ
@@ -39,7 +40,7 @@ for x in open(workdir+'/sanfl.txt'):
 duedges=set(open(datalog+'DUEdge.facts').readlines())
 
 confid=open(workdir+'/observed-queries.txt','w')
-dupaths=open(datalog+'DUPath.csv').readlines()
+dupaths=open(os.path.join(bnet,'DUPath.csv')).readlines()
 
 # merge edges to larger paths
 def dfs0(x):
