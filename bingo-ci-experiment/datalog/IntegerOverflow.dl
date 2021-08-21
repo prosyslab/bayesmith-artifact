@@ -1,75 +1,75 @@
-.type Node
+.type Node <: symbol
 
-.decl DUEdge(n:Node, m:Node)
-.decl TrueCond(n:Node)
-.decl FalseCond(n:Node)
-.decl TrueBranch(n:Node, m:Node)
-.decl FalseBranch(n:Node, m:Node)
-.decl Alarm(n:Node, m:Node)
-
-.decl DUPath(n:Node, m:Node)
-.decl Deriv_DUPath0(n:Node, m:Node)
-.decl Deriv_DUPath1(n:Node, m:Node)
-.decl Deriv_DUPath2(n:Node, m:Node)
-.decl Deriv_DUPath3(n:Node, m:Node, k:Node)
-.decl Deriv_DUPath4(n:Node, m:Node, k:Node)
-.decl Deriv_DUPath5(n:Node, m:Node, k:Node)
-
-.decl TDUPath(n:Node, m:Node)
-.decl Deriv_TDUPath0(n:Node, m:Node)
-.decl Deriv_TDUPath1(n:Node, m:Node)
-.decl Deriv_TDUPath2(n:Node, m:Node)
-.decl Deriv_TDUPath3(n:Node, m:Node, k:Node)
-.decl Deriv_TDUPath4(n:Node, m:Node, k:Node)
-.decl Deriv_TDUPath5(n:Node, m:Node, k:Node)
+.decl Alarm(v0: Node, v1: Node)
+.decl DUEdge(v0: Node, v1: Node)
+.decl DUPath(v0: Node, v1: Node)
+.decl FalseBranch(v0: Node, v1: Node)
+.decl FalseCond(v0: Node)
+.decl SparrowAlarm(v0: Node, v1: Node, v2: Node)
+.decl TDUPath(v0: Node, v1: Node)
+.decl TrueBranch(v0: Node, v1: Node)
+.decl TrueCond(v0: Node)
 
 .input DUEdge
-.input TrueCond
-.input FalseCond
-.input TrueBranch
 .input FalseBranch
-.input Alarm
-
+.input FalseCond
+.input SparrowAlarm
+.input TrueBranch
+.input TrueCond
+.output Alarm
 .output DUPath
+.output TDUPath
+.decl Deriv_Alarm3(v0: Node, v1: Node)
+.decl Deriv_DUPath0(v0: Node, v1: Node)
+.decl Deriv_DUPath1(v0: Node, v1: Node)
+.decl Deriv_DUPath2(v0: Node, v1: Node)
+.decl Deriv_DUPath4(v0: Node, v1: Node, v2: Node)
+.decl Deriv_DUPath5(v0: Node, v1: Node, v2: Node)
+.decl Deriv_DUPath6(v0: Node, v1: Node, v2: Node)
+.decl Deriv_TDUPath10(v0: Node, v1: Node, v2: Node)
+.decl Deriv_TDUPath11(v0: Node, v1: Node, v2: Node)
+.decl Deriv_TDUPath12(v0: Node, v1: Node, v2: Node)
+.decl Deriv_TDUPath7(v0: Node, v1: Node)
+.decl Deriv_TDUPath8(v0: Node, v1: Node)
+.decl Deriv_TDUPath9(v0: Node, v1: Node)
+
+.output Deriv_Alarm3
 .output Deriv_DUPath0
 .output Deriv_DUPath1
 .output Deriv_DUPath2
-.output Deriv_DUPath3
 .output Deriv_DUPath4
 .output Deriv_DUPath5
+.output Deriv_DUPath6
+.output Deriv_TDUPath10
+.output Deriv_TDUPath11
+.output Deriv_TDUPath12
+.output Deriv_TDUPath7
+.output Deriv_TDUPath8
+.output Deriv_TDUPath9
 
-.output TDUPath
-.output Deriv_TDUPath0
-.output Deriv_TDUPath1
-.output Deriv_TDUPath2
-.output Deriv_TDUPath3
-.output Deriv_TDUPath4
-.output Deriv_TDUPath5
-
-DUPath(x,y) :- DUEdge(x,y).
-DUPath(x,y) :- TrueBranch(x,y).
-DUPath(x,y) :- FalseBranch(x,y).
-DUPath(x,y) :- DUEdge(x,z), DUPath(z,y), Alarm(_,y).
-DUPath(x,y) :- TrueCond(x), TrueBranch(x,z), DUPath(z,y).
-DUPath(x,y) :- FalseCond(x), FalseBranch(x,z), DUPath(z,y).
-
-TDUPath(x, y) :- DUPath(x, y), DUEdge(x, y).
-TDUPath(x, y) :- DUPath(x, y), TrueBranch(x, y).
-TDUPath(x, y) :- DUPath(x, y), FalseBranch(x, y).
-TDUPath(x, y) :- DUPath(x, y), DUEdge(x, z), TDUPath(z, y), Alarm(_, y).
-TDUPath(x, y) :- DUPath(x, y), TrueCond(x), TrueBranch(x, z), TDUPath(z, y).
-TDUPath(x, y) :- DUPath(x, y), FalseCond(x), FalseBranch(x, z), TDUPath(z, y).
-
-Deriv_DUPath0(x,y) :- DUEdge(x,y).
-Deriv_DUPath1(x,y) :- TrueBranch(x,y).
-Deriv_DUPath2(x,y) :- FalseBranch(x,y).
-Deriv_DUPath3(x,z,y) :- DUEdge(x,z), DUPath(z,y), Alarm(_,y).
-Deriv_DUPath4(x,z,y) :- TrueCond(x), TrueBranch(x,z), DUPath(z,y).
-Deriv_DUPath5(x,z,y) :- FalseCond(x), FalseBranch(x,z), DUPath(z,y).
-
-Deriv_TDUPath0(x, y) :- DUPath(x, y), DUEdge(x, y).
-Deriv_TDUPath1(x, y) :- DUPath(x, y), TrueBranch(x, y).
-Deriv_TDUPath2(x, y) :- DUPath(x, y), FalseBranch(x, y).
-Deriv_TDUPath3(x, z, y) :- DUPath(x, y), DUEdge(x, z), TDUPath(z, y), Alarm(_, y).
-Deriv_TDUPath4(x, z, y) :- DUPath(x, y), TrueCond(x), TrueBranch(x, z), TDUPath(z, y).
-Deriv_TDUPath5(x, z, y) :- DUPath(x, y), FalseCond(x), FalseBranch(x, z), TDUPath(z, y).
+DUPath(v6, v7) :- DUEdge(v6, v7).
+DUPath(v6, v7) :- FalseBranch(v6, v7).
+DUPath(v6, v7) :- TrueBranch(v6, v7).
+Alarm(v6, v7) :- TDUPath(v6, v7), SparrowAlarm(v6, v7, _).
+TDUPath(v6, v7) :- DUPath(v6, v7), DUEdge(v6, v7).
+TDUPath(v6, v7) :- DUPath(v6, v7), FalseBranch(v6, v7).
+TDUPath(v6, v7) :- DUPath(v6, v7), TrueBranch(v6, v7).
+DUPath(v6, v7) :- DUEdge(v6, v8), DUPath(v8, v7), SparrowAlarm(_, v7, _).
+DUPath(v6, v7) :- FalseCond(v6), FalseBranch(v6, v8), DUPath(v8, v7).
+DUPath(v6, v7) :- TrueCond(v6), TrueBranch(v6, v8), DUPath(v8, v7).
+TDUPath(v6, v7) :- DUPath(v6, v7), DUEdge(v6, v8), TDUPath(v8, v7), SparrowAlarm(_, v7, _).
+TDUPath(v6, v7) :- DUPath(v6, v7), FalseCond(v6), FalseBranch(v6, v8), TDUPath(v8, v7).
+TDUPath(v6, v7) :- DUPath(v6, v7), TrueCond(v6), TrueBranch(v6, v8), TDUPath(v8, v7).
+Deriv_DUPath0(v6, v7) :- DUEdge(v6, v7).
+Deriv_DUPath1(v6, v7) :- FalseBranch(v6, v7).
+Deriv_DUPath2(v6, v7) :- TrueBranch(v6, v7).
+Deriv_Alarm3(v6, v7) :- TDUPath(v6, v7), SparrowAlarm(v6, v7, _).
+Deriv_TDUPath7(v6, v7) :- DUPath(v6, v7), DUEdge(v6, v7).
+Deriv_TDUPath8(v6, v7) :- DUPath(v6, v7), FalseBranch(v6, v7).
+Deriv_TDUPath9(v6, v7) :- DUPath(v6, v7), TrueBranch(v6, v7).
+Deriv_DUPath4(v6, v7, v8) :- DUEdge(v6, v8), DUPath(v8, v7), SparrowAlarm(_, v7, _).
+Deriv_DUPath5(v6, v7, v8) :- FalseCond(v6), FalseBranch(v6, v8), DUPath(v8, v7).
+Deriv_DUPath6(v6, v7, v8) :- TrueCond(v6), TrueBranch(v6, v8), DUPath(v8, v7).
+Deriv_TDUPath10(v6, v7, v8) :- DUPath(v6, v7), DUEdge(v6, v8), TDUPath(v8, v7), SparrowAlarm(_, v7, _).
+Deriv_TDUPath11(v6, v7, v8) :- DUPath(v6, v7), FalseCond(v6), FalseBranch(v6, v8), TDUPath(v8, v7).
+Deriv_TDUPath12(v6, v7, v8) :- DUPath(v6, v7), TrueCond(v6), TrueBranch(v6, v8), TDUPath(v8, v7).

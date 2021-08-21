@@ -86,7 +86,7 @@ time ./scripts/bnet/driver.py $PROBLEM_DIR/bnet/noaugment_base/bnet-dict.out $PR
 ### random true baseline
 truelines=$(wc -l< $PROBLEM_DIR/feedbacktrue.txt)
 popd
-python3 randommark.py $BINGO_CI/benchmark/$APP/sparrow-out/$TYPE/datalog/DUPath.csv $WORKDIR $truelines
+python3 randommark.py $BINGO_CI/benchmark/$APP/sparrow-out/$TYPE/bnet/DUPath.csv $WORKDIR $truelines
 pushd $PROBLEM_DIR
 cp $WORKDIR/feedback.random $PROBLEM_DIR/feedback.random
 cp $WORKDIR/observed-queries.random $PROBLEM_DIR/observed-queries.txt
