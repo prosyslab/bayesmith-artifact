@@ -200,6 +200,6 @@ It generates `bnet-size.csv` showing the size of Bayesian networks before and af
 
 - Rank plots (Figure 6)
   ```sh
-  script/rank-history-plot/plot-all.sh baseline final -p
+  script/rank-history-plot/plot-all.sh baseline final
   ```
   It generates plots comparing ranking performance of Bingo and BayeSmith in `script/rank-history-plot/images-final`.
