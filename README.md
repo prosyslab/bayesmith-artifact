@@ -36,7 +36,7 @@ Programs used for evaluation can be found here.
 To run the experiments that were reported in the paper, we used a 64-core (Intel Xeon Processor Gold 6226R, 2.90 Ghz) machine with 128 GB of RAM with the 20.04 version of Ubuntu Linux. We recommend to run the experiments with at least 10-core machine with 32 GB of RAM.
 
 ### b. Loading docker image
-To launch a BayeSmith docker container, run the following commands:
+**(TODO: Add descriptions for where/how to downlaod tar.gz file)** To launch a BayeSmith docker container, run the following commands:
 ```sh
 docker load < bayesmith.tar.gz
 docker run -it bayesmith
