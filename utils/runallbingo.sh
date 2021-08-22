@@ -16,3 +16,5 @@ fi
 ./runbingo.sh optipng-0.5.3 /tmp/optipng-0.5.3/ taint ${PREFIX}optipng $BAYESMITH_OPT >/dev/null 2>/dev/null &
 ./runbingo.sh latex2rtf-2.1.1 /tmp/latex2rtf-2.1.1/ taint ${PREFIX}latex2rtf $BAYESMITH_OPT >/dev/null 2>/dev/null &
 ./runbingo.sh shntool-3.0.5 /tmp/shntool-3.0.5/ taint ${PREFIX}shntool $BAYESMITH_OPT >/dev/null 2>/dev/null &
+
+wait
