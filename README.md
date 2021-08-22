@@ -157,6 +157,7 @@ The last column reports the number of interactions.
   cd ~/bingo-ci-experiment
   ./run_all.sh
   cd ~/dynaboost/eval
+  ./instrument-all.sh
   ./run-all.sh
   ```
 
