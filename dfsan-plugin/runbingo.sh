@@ -11,6 +11,10 @@ if (( $# < 4 )); then
 	echo 'wrong usage!'
 	exit 1
 fi
+SUFFIX="true"
+if [[ "$@" =~ "--bayesmith" ]]; then
+  SUFFIX="bayesmith"
+fi
 export PYTHONHASHSEED=0
 mkdir -p $BINGO/examples/$APP
 export PROBLEM_DIR=$BINGO/examples/$APP
@@ -54,7 +58,7 @@ echo -e "BP 1e-6 500 1000 100\nPT $WORKDIR/PT.txt"|./scripts/bnet/driver.py $PRO
 popd
 # rankv2
 #export RANKV2_PT=$WORKDIR/PT.txt
-export RANKV2_PT=$VANILLA_CI/benchmark/$APP/sparrow-out/$TYPE/bingo_combined/0.out
+export RANKV2_PT=$BINGO_CI/benchmark/$APP/sparrow-out/$TYPE/bingo_combined/init.out
 # generate feedbacks
 python3 san2fileline.py $WORKDIR
 python3 fileline2feedback.py $WORKDIR $BINGO_CI/benchmark/$APP/sparrow-out/node.json $BINGO_CI/benchmark/$APP/sparrow-out/$TYPE/datalog/ $PROBLEM_DIR/bnet/noaugment_base/named_cons_all.txt.pruned.edbobsderived $PROBLEM_DIR/named_cons_all.txt
@@ -80,7 +84,7 @@ echo "AC 1e-6 500 1000 100 ${RUNNAME}full-stats.txt ${RUNNAME}full-combined out"
 ### @full
 #cat $PROBLEM_DIR/feedback.txt|./scripts/bnet/driver.py $PROBLEM_DIR/bnet/noaugment_base/bnet-dict.out $PROBLEM_DIR/bnet/noaugment_base/factor-graph.fg $PROBLEM_DIR/base_queries.txt $PROBLEM_DIR/oracle_queries.txt &
 grep ' true' $PROBLEM_DIR/feedback.txt > $PROBLEM_DIR/feedbacktrue.txt
-echo "AC 1e-6 500 1000 100 ${RUNNAME}true-stats.txt ${RUNNAME}true-combined out" >> $PROBLEM_DIR/feedbacktrue.txt
+echo "AC 1e-6 500 1000 100 ${RUNNAME}${SUFFIX}-stats.txt ${RUNNAME}${SUFFIX}-combined out" >> $PROBLEM_DIR/feedbacktrue.txt
 ### @true
 time ./scripts/bnet/driver.py $PROBLEM_DIR/bnet/noaugment_base/bnet-dict.out $PROBLEM_DIR/bnet/noaugment_base/factor-graph.fg $PROBLEM_DIR/base_queries.txt $PROBLEM_DIR/oracle_queries.txt <$PROBLEM_DIR/feedbacktrue.txt >/dev/null  2>&1 &
 ### random true baseline

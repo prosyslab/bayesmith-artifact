@@ -153,13 +153,17 @@ The last column reports the number of interactions.
   ```sh
   cd ~/dynaboost
   source init.sh
-  cd eval
-  ./instrument-all.sh
+  cd ~/bingo-ci-experiment
+  ./run_all.sh
+  cd ~/dynaboost/eval
   ./run-all.sh
   ```
 
   To run DynaBoost with learned models by BayeSmith, run the following commands:
   ```sh
+  cd ~/bingo-ci-experiment
+  ./run_all.sh --bayesmith
+  cd ~/dynaboost/eval
   ./run-all.sh --bayesmith
   ```
 
