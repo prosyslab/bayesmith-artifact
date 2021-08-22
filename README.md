@@ -12,7 +12,8 @@ The plots represent the ranks of true alarms (*Y*) changing over user interactio
 
 ### c. `bayesmith` - Main implementations
 The implementation of Bayesian structure learning algorithm together and the modified version of Bayesian alarm ranking system are here.
-- `src`: Main program for learning algorithm (e.g. `learn.ml`, `bNet.ml`, `datalog.ml`)
+- `sparrow`: Sparrow static analyzer
+- `bingo/src`: Main program for learning algorithm (e.g. `learn.ml`, `bNet.ml`, `datalog.ml`)
 
 ### d. `bayesmith/bin` - Main scripts
 - `run.py`: Analyze (Sparrow) and run Bingo for input program
