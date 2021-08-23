@@ -59,13 +59,13 @@ Note that the analysis and baseline Bingo results are already shipped, so this s
 It roughly takes an hour to finish.
 
 Then, run the following command to check the Bingo results (column Bingo_M, Table 2):
-```sh
+```
 script/bingo/report.sh baseline
 ```
 The last column reports the number of interactions.
 
 ### Learning Bayesian networks
-```sh
+```
 bingo/learn -reuse -analysis_type [ interval | taint ] <PROGRAM>
 ```
 e.g. `bingo/learn -reuse -analysis_type interval sort`
@@ -73,7 +73,7 @@ e.g. `bingo/learn -reuse -analysis_type interval sort`
 The learned datalog rule (`rule-final.dl` file) will be generated under `learn-out/sort`.
 
 ### Running Bingo with the learned Bayesian networks
-```sh
+```
 bingo/learn -test -timestamp final -analysis_type [ interval | taint ] -dl_from <DL_FILE> <PROGRAM>
 ```
 e.g. `bingo/learn -test -timestamp final -analysis_type interval -dl_from learn-out/sort/rule-final.dl sort`
@@ -84,7 +84,7 @@ To run with the learned Bayesian networks reported in the paper, set `-dl_from` 
 - Taint analysis: `-dl_from ~/datalog/IntegerOverflow.<PROGRAM>.dl`
 
 Then, run the following command to check the results of learned models (column BayeSmith, Table 2):
-```sh
+```
 script/bingo/report.sh final
 ```
 The last column reports the number of interactions.
@@ -94,7 +94,7 @@ The last column reports the number of interactions.
 
   It runs EM algorithm to find optimal weights while prserving the rules.
   We set timeout of 12 hours for convergence.
-  ```sh
+  ```
   script/bingo/run-em.sh [ interval | taint ] <PROGRAM>
   ```
   e.g. `script/bingo/run-em.sh interval sort`
@@ -103,12 +103,12 @@ The last column reports the number of interactions.
   The number of interactions is `#(lines of the result file) - 1`.
 
   To run over entire benchmarks, user can run the following command:
-  ```sh
+  ```
   script/bingo/run-em-all.sh
   ```
 
   Run the following command to check the overall results of weight learning (column Bingo_EM, Table 2):
-  ```sh
+  ```
   script/bingo/report.sh em
   ```
   Note that we repeated five times for each program and reported the average in the paper.
@@ -117,7 +117,7 @@ The last column reports the number of interactions.
 ### Running Bingo_U
   It uses pre-refined rules that are derived by uniformly unrolling all the components of the initial rules by once.
   The rules are `BufferOverflow.unroll.dl` (interval) and `IntegerOverflow.unroll.dl` (taint) in `~/bayesmith/datalog`.
-  ```sh
+  ```
   script/bingo/run-unroll.sh [ interval | taint ] <PROGRAM>
   ```
   e.g. `script/bingo/run-unroll.sh interval sort`
@@ -126,19 +126,19 @@ The last column reports the number of interactions.
   The number of interactions is `#(lines of the result file) - 1`.
 
   To run over entire benchmarks, user can run the following command:
-  ```sh
+  ```
   script/bingo/run-unroll-all.sh
   ```
 
   Run the following command to check the overall results of uniformly refined models (column Bingo_U, Table 2):
-  ```sh
+  ```
   script/bingo/report.sh unroll
   ```
 
 ### Running Drake 
 
   To run Drake only, run the following commands:
-  ```sh
+  ```
   cd ~/drake
   . setenv
   ./run_all.sh
@@ -146,7 +146,7 @@ The last column reports the number of interactions.
   ```
 
   To run Drake with learned models by BayeSmith, run the following commands:
-  ```sh
+  ```
   ./run_all.sh --bayesmith
   ./delta_all.sh sound 0.001 --bayesmith
   ```
@@ -154,7 +154,7 @@ The last column reports the number of interactions.
 ### Running DynaBoost
 
   To run DynaBoost only, run the following commands:
-  ```sh
+  ```
   cd ~/dynaboost
   source init.sh
   cd ~/bingo-ci-experiment
@@ -165,7 +165,7 @@ The last column reports the number of interactions.
   ```
 
   To run DynaBoost with learned models by BayeSmith, run the following commands:
-  ```sh
+  ```
   cd ~/bingo-ci-experiment
   ./run_all.sh --bayesmith
   cd ~/dynaboost/eval
@@ -176,13 +176,13 @@ The comparison results for each application can be obtained as bar plots (Figure
 To obtain the plots, see [section k](#k-plots).
 
 ## 5. Comparing magnitude of false generalizations (Table 3)
-```sh
+```
 script/bnet/fg.sh
 ```
 It generates `bnet-fg.csv` showing the negative impact of false generalizations before and after the learning.
 
 ## 6. Learning with different training set (Table 4)
-```sh
+```
 bingo/learn -reuse -analysis_type [ interval | taint ] <PROGRAM_1> .. <PROGRAM_N>
 ```
 e.g. `bingo/learn -reuse -analysis_type interval sort grep`
