@@ -14,35 +14,35 @@ docker run -it bayesmith
 ---
 ## 2. Directory structure
 ```
-├── README.md                         <- The top-level README (this file).
+├─ README.md                                <- The top-level README (this file).
 │
-├── datalog                           <- Learned Datalog rules
-│   ├── BufferOverflow.dl             <- The initial rule used for the interval analysis
-│   ├── IntegerOverflow.dl            <- The initial rule used for the taint analysis
-│   ├── BufferOverflow.<PROGRAM>.dl   <- The learned rules for the interval analysis of <PROGRAM> which is one of the benchmarks
-│   ├── IntegerOverflow.<PROGRAM>.dl  <- The learned rules for the taint analysis of <PROGRAM> which is one of the benchmarks
-│   ├── TBufferOverflow.<PROGRAM>.dl  <- The modified versions of learned rules for the interval analysis in a way that considers feedback from dynamic analysis (FSE 2021)
-│   └── TIntegerOverflow.<PROGRAM>.dl <- The modified versions of learned rules for the taint analysis in a way that considers feedback from dynamic analysis (FSE 2021)
+├─ datalog                                  <- Learned Datalog rules
+│  ├─ BufferOverflow.dl                     <- The initial rule used for the interval analysis
+│  ├─ IntegerOverflow.dl                    <- The initial rule used for the taint analysis
+│  ├─ BufferOverflow.<PROGRAM>.dl           <- The learned rules for the interval analysis of <PROGRAM> which is one of the benchmarks
+│  ├─ IntegerOverflow.<PROGRAM>.dl          <- The learned rules for the taint analysis of <PROGRAM> which is one of the benchmarks
+│  ├─ TBufferOverflow.<PROGRAM>.dl          <- The modified versions of learned rules for the interval analysis in a way that considers feedback from dynamic analysis (FSE 2021)
+│  └─ TIntegerOverflow.<PROGRAM>.dl         <- The modified versions of learned rules for the taint analysis in a way that considers feedback from dynamic analysis (FSE 2021)
 │
-├── rank-plots                        
-│   └── <PROGRAM>.pdf                 <- Plots showing the ranking performanece for <PROGRAM> (Figure 6)
+├─ rank-plots                        
+│  └─ <PROGRAM>.pdf                         <- Plots showing the ranking performanece for <PROGRAM> (Figure 6)
 │
-├── bayesmith                         <- Main implementation
-│   ├── sparrow                       <- The Sparrow static analyzer
-│   │
-│   ├── bin                           
-│   │   └── run.py                    <- Script for running Sparrow and Bingo
-│   │
-│   ├── bingo                         <- Modules for learning and alarm ranking algorithms
-│   │
-│   └── benchmarks                              <- Benchmark programs used in our experiments
-│       └── <PROGRAM>/<VERSION>
-│           ├── sparrow/<PROGRAM>-<VERSION>.c   <- Preprocessed version of the program
-│           └── label.json                      <- Bug label of the program
+├─ bayesmith                                <- Main implementation
+│  ├─ sparrow                               <- The Sparrow static analyzer
+│  │
+│  ├─ bin                           
+│  │   └─ run.py                            <- Script for running Sparrow and Bingo
+│  │
+│  ├─ bingo                                 <- Modules for learning and alarm ranking algorithms
+│  │
+│  └─ benchmarks                            <- Benchmark programs used in our experiments
+│     └─ <PROGRAM>/<VERSION>
+│        ├─ sparrow/<PROGRAM>-<VERSION>.c   <- Preprocessed version of the program
+│        └─ label.json                      <- Bug label of the program
 │ 
-├── dynaboost                         <- Implementation for Dynaboost adapted from FSE 2021
-├── drake                             <- Implementation for Drake adapted from PLDI 2019
-└── script                            <- Scripts for debugging
+├─ dynaboost                                <- Implementation for Dynaboost adapted from FSE 2021
+├─ drake                                    <- Implementation for Drake adapted from PLDI 2019
+└─ script                                   <- Scripts for debugging
 ```
 ---
 ## 3. Reproducing the main results
