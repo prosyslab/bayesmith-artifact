@@ -31,15 +31,14 @@ docker run -it bayesmith
 │   ├── sparrow                       <- The Sparrow static analyzer
 │   │
 │   ├── bin                           
-│   │   ├── run.py                    <- Script for running Sparrow and Bingo
-│   │   └── plot.sh                   <- Script for producing plots (Figure 6)
+│   │   └── run.py                    <- Script for running Sparrow and Bingo
 │   │
 │   ├── bingo                         <- Modules for learning and alarm ranking algorithms
 │   │
-│   └── benchmarks                    <- Benchmark programs used in our experiments
-│       └── <PROGRAM>/<VERSION>       <- Script for running Sparrow and Bingo
-│           ├── sparrow/<PROGRAM>.c   <- Preprocess version of the program
-│           └── label.json            <- Bug label of the program
+│   └── benchmarks                              <- Benchmark programs used in our experiments
+│       └── <PROGRAM>/<VERSION>
+│           ├── sparrow/<PROGRAM>-<VERSION>.c   <- Preprocessed version of the program
+│           └── label.json                      <- Bug label of the program
 │ 
 ├── dynaboost                         <- Implementation for Dynaboost adapted from FSE 2021
 ├── drake                             <- Implementation for Drake adapted from PLDI 2019
@@ -193,6 +192,7 @@ script/bnet/size.sh
 script/bnet/fg.sh
 ```
 It generates `bnet-fg.csv` showing the negative impact of false generalizations before and after the learning.
+
 ---
 ## 6. Learning with different training set (Table 4)
 ```
@@ -202,7 +202,7 @@ e.g. `bingo/learn -reuse -analysis_type interval sort grep`
 
 The learned rule, `rule-final.dl` will be generated under `learn-out/sort-grep`.
 
-One can run BayeSmith with leave-N-out settings by specifing N programs.
-`BayeSmith_80` uses about 80% of benchmarks as training data, i.e. N = 2.
+One can run BayeSmith with leave-N-out settings by specifying N programs.
+`BayeSmith_80` uses about 80% of the benchmarks as training data, i.e. N = 2.
 We repeated ten times per analysis to report the numbers in `BayeSmith_80` column, Table 4.
 Those combinations tried by us can be found in `bayesmith-80-combi.txt`.
