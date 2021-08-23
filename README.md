@@ -1,52 +1,54 @@
 # BayeSmith-artifact
 
-## Getting Started
-#### System requirements
+## 1. Getting Started
+### System requirements
 
 To run the experiments that were reported in the paper, we used a 64-core (Intel Xeon Processor Gold 6226R, 2.90 Ghz) machine with 128 GB of RAM with the 20.04 version of Ubuntu Linux. We recommend to run the experiments with at least 10-core machine with 32 GB of RAM.
 
-#### Loading docker image
+### Loading docker image
 To launch a BayeSmith docker container, run the following commands:
 ```
 docker load < bayesmith.tar.gz
 docker run -it bayesmith
 ```
 
-## 1. Directory structure
-### a. `datalog` - Learned Datalog rules
-- `BufferOverflow.dl`, `IntegerOverflow.dl`: **initial** rules used for the interval analysis and taint analysis, respectively.
-- `BufferOverflow.<PROGRAM>.dl`, `IntegerOverflow.<PROGRAM>.dl`: **learned** rules for `<PROGRAM>`, which is one of the benchmarks.
-- `TBufferOverflow.<PROGRAM>.dl`, `TIntegerOverflow.<PROGRAM>.dl`: **modified** version of learned rules(*2*) in a way that considers feedback from dynamic instrumentation (FSE 2021).
-
-### b. `rank-plots` - Rank plots
-Each file named `<PROGRAM>.pdf` is a plot showing the ranking performance for `<PROGRAM>` (Figure 6).
-The plots represent the ranks of true alarms (*Y*) changing over user interactions (*X*).
-
-### c. `bayesmith` - Main implementations
-The implementation of Bayesian structure learning algorithm together and the modified version of Bayesian alarm ranking system are here.
-- `sparrow`: Sparrow static analyzer
-- `bingo/src`: Main program for learning algorithm (e.g. `learn.ml`, `bNet.ml`, `datalog.ml`)
-
-### d. `bayesmith/bin` - Main scripts
-- `run.py`: Analyze (Sparrow) and run Bingo for input program
-- `plot.sh`: Plot rank changes comparison between before and after the learning procedure for benchmarks (Figure 6)
-
-### e. `bayesmith/benchmarks` - Benchmarks
-Programs used for evaluation can be found here.
-- `<PROGRAM>/<VERSION>/sparrow/*.c`: Program source code
-- `<PROGRAM>/<VERSION>/label.json`: Bug label for the program
-
-### f. `dynaboost` - Implementation for DynaBoost adapted from FSE 2021
-
-### g. `drake` - Implementation for Drake adapted from PLDI 2019
-
-### h. `bayesmith/script` - Debug scripts
-
-## 2. Reproducing the results
+## 2. Directory structure
+```
+├── README.md                         <- The top-level README (this file).
+│
+├── datalog                           <- Learned Datalog rules
+│   ├── BufferOverflow.dl             <- The initial rule used for the interval analysis
+│   ├── IntegerOverflow.dl            <- The initial rule used for the taint analysis
+│   ├── BufferOverflow.<PROGRAM>.dl   <- The learned rules for the interval analysis of <PROGRAM> which is one of the benchmarks
+│   ├── IntegerOverflow.<PROGRAM>.dl  <- The learned rules for the taint analysis of <PROGRAM> which is one of the benchmarks
+│   ├── TBufferOverflow.<PROGRAM>.dl  <- The modified versions of learned rules in a way that considers feedback from dynamic analysis (FSE 2021)
+│   └── TIntegerOverflow.<PROGRAM>.dl <- The modified versions of learned rules in a way that considers feedback from dynamic analysis (FSE 2021)
+│
+├── rank-plots                        
+│   └── <PROGRAM>.pdf                 <- Plots showing the ranking performanece for <PROGRAM> (Figure 6)
+│
+├── bayesmith                         <- Main implementation
+│   ├── sparrow                       <- The Sparrow static analyzer
+│   │
+│   ├── bin                           
+│   │   ├── run.py                    <- Script for running Sparrow and Bingo
+│   │   └── plot.sh                   <- Script for producing plots (Figure 6)
+│   │
+│   ├── bingo                         <- Modules for learning and alarm ranking algorithms
+│   │
+│   └── benchmarks                    <- Benchmark programs used in our experiments
+│       └── <PROGRAM>/<VERSION>       <- Script for running Sparrow and Bingo
+│           ├── sparrow/<PROGRAM>.c   <- Preprocess version of the program
+│           └── label.json            <- Bug label of the program
+│ 
+├── dynaboost                         <- Implementation for Dynaboost adapted from FSE 2021
+├── drake                             <- Implementation for Drake adapted from PLDI 2019
+└── script                            <- Scripts for debugging
 ```
 
-### c. Running static analysis and baseline Bingo (optional)
-```sh
+## 3. Reproducing the main results
+### Running static analysis and baseline Bingo (optional)
+```
 cd bayesmith
 script/bingo/run-all.sh
 ```
@@ -62,7 +64,7 @@ script/bingo/report.sh baseline
 ```
 The last column reports the number of interactions.
 
-### d. Learning Bayesian networks
+### Learning Bayesian networks
 ```sh
 bingo/learn -reuse -analysis_type [ interval | taint ] <PROGRAM>
 ```
@@ -70,7 +72,7 @@ e.g. `bingo/learn -reuse -analysis_type interval sort`
 
 The learned datalog rule (`rule-final.dl` file) will be generated under `learn-out/sort`.
 
-### e. Running Bingo with the learned Bayesian networks
+### Running Bingo with the learned Bayesian networks
 ```sh
 bingo/learn -test -timestamp final -analysis_type [ interval | taint ] -dl_from <DL_FILE> <PROGRAM>
 ```
@@ -87,8 +89,8 @@ script/bingo/report.sh final
 ```
 The last column reports the number of interactions.
 
-### f. Running other baselines (Table 2)
-- Bingo_EM
+## 4. Reproducing the results of the baselines (Table 2)
+### Running Bingo_EM
 
   It runs EM algorithm to find optimal weights while prserving the rules.
   We set timeout of 12 hours for convergence.
@@ -112,8 +114,7 @@ The last column reports the number of interactions.
   Note that we repeated five times for each program and reported the average in the paper.
   The numbers may differ from the paper because of the randomness in initial weights.
 
-- Bingo_U
-
+### Running Bingo_U
   It uses pre-refined rules that are derived by uniformly unrolling all the components of the initial rules by once.
   The rules are `BufferOverflow.unroll.dl` (interval) and `IntegerOverflow.unroll.dl` (taint) in `~/bayesmith/datalog`.
   ```sh
@@ -134,8 +135,7 @@ The last column reports the number of interactions.
   script/bingo/report.sh unroll
   ```
 
-### g. Running Drake and DynaBoost
-- Drake
+### Running Drake 
 
   To run Drake only, run the following commands:
   ```sh
@@ -151,7 +151,7 @@ The last column reports the number of interactions.
   ./delta_all.sh sound 0.001 --bayesmith
   ```
 
-- DynaBoost
+### Running DynaBoost
 
   To run DynaBoost only, run the following commands:
   ```sh
@@ -175,7 +175,13 @@ The last column reports the number of interactions.
 The comparison results for each application can be obtained as bar plots (Figure 5).
 To obtain the plots, see [section k](#k-plots).
 
-### h. Learning with different training set (Table 4)
+## 5. Comparing magnitude of false generalizations (Table 3)
+```sh
+script/bnet/fg.sh
+```
+It generates `bnet-fg.csv` showing the negative impact of false generalizations before and after the learning.
+
+## 6. Learning with different training set (Table 4)
 ```sh
 bingo/learn -reuse -analysis_type [ interval | taint ] <PROGRAM_1> .. <PROGRAM_N>
 ```
@@ -188,19 +194,14 @@ One can run BayeSmith with leave-N-out settings by specifing N programs.
 We repeated ten times per analysis to report the numbers in `BayeSmith_80` column, Table 4.
 Those combinations tried by us can be found in `bayesmith-80-combi.txt`.
 
-### i. Comparing magnitude of false generalizations (Table 3)
-```sh
-script/bnet/fg.sh
-```
-It generates `bnet-fg.csv` showing the negative impact of false generalizations before and after the learning.
-
-### j. Comparing sizes of Bayesian networks (Table 5)
+## 7. Summarizing the experimental results
+#### Comparing sizes of Bayesian networks (Table 5)
 ```sh
 script/bnet/size.sh
 ```
 It generates `bnet-size.csv` showing the size of Bayesian networks before and after the learning.
 
-### k. Plots
+#### Plots
 - Bar plots (Figure 5)
   ```sh
   script/comparison-plot/bar-plot.py
