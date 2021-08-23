@@ -11,7 +11,7 @@ To launch a BayeSmith docker container, run the following commands:
 docker load < bayesmith.tar.gz
 docker run -it bayesmith
 ```
-
+---
 ## 2. Directory structure
 ```
 ├── README.md                         <- The top-level README (this file).
@@ -45,7 +45,7 @@ docker run -it bayesmith
 ├── drake                             <- Implementation for Drake adapted from PLDI 2019
 └── script                            <- Scripts for debugging
 ```
-
+---
 ## 3. Reproducing the main results
 ### Running static analysis and baseline Bingo (optional)
 ```
@@ -83,12 +83,23 @@ To run with the learned Bayesian networks reported in the paper, set `-dl_from` 
 - Interval analysis: `-dl_from ~/datalog/BufferOverflow.<PROGRAM>.dl`
 - Taint analysis: `-dl_from ~/datalog/IntegerOverflow.<PROGRAM>.dl`
 
-Then, run the following command to check the results of learned models (column BayeSmith, Table 2):
+### Summarzing the results
+The following command shows the performance of learned models (column BayeSmith, Table 2):
 ```
 script/bingo/report.sh final
 ```
 The last column reports the number of interactions.
 
+The following command generates plots comparing the ranking performance of Bingo and BayeSmith in `script/rank-history-plot/images-final`.
+```sh
+script/rank-history-plot/plot-all.sh baseline final
+```
+
+The following generates `bnet-size.csv` showing the size of Bayesian networks before and after the learning (Table 5).
+```sh
+script/bnet/size.sh
+```
+---
 ## 4. Reproducing the results of the baselines (Table 2)
 ### Running Bingo_EM
 
@@ -172,15 +183,17 @@ The last column reports the number of interactions.
   ./run-all.sh --bayesmith
   ```
 
-The comparison results for each application can be obtained as bar plots (Figure 5).
-To obtain the plots, see [section k](#k-plots).
-
+  The following command generates `drake-bayesmith.pdf` and `dynaboost-bayesmith.pdf` showing the effectiveness of BayeSmith in each application (Figure 5).
+  ```sh
+  script/comparison-plot/bar-plot.py
+  ```
+---
 ## 5. Comparing magnitude of false generalizations (Table 3)
 ```
 script/bnet/fg.sh
 ```
 It generates `bnet-fg.csv` showing the negative impact of false generalizations before and after the learning.
-
+---
 ## 6. Learning with different training set (Table 4)
 ```
 bingo/learn -reuse -analysis_type [ interval | taint ] <PROGRAM_1> .. <PROGRAM_N>
@@ -193,23 +206,3 @@ One can run BayeSmith with leave-N-out settings by specifing N programs.
 `BayeSmith_80` uses about 80% of benchmarks as training data, i.e. N = 2.
 We repeated ten times per analysis to report the numbers in `BayeSmith_80` column, Table 4.
 Those combinations tried by us can be found in `bayesmith-80-combi.txt`.
-
-## 7. Summarizing the experimental results
-#### Comparing sizes of Bayesian networks (Table 5)
-```sh
-script/bnet/size.sh
-```
-It generates `bnet-size.csv` showing the size of Bayesian networks before and after the learning.
-
-#### Plots
-- Bar plots (Figure 5)
-  ```sh
-  script/comparison-plot/bar-plot.py
-  ```
-  It generates `drake-bayesmith.pdf` and `dynaboost-bayesmith.pdf` showing the effectiveness of BayeSmith in each application.
-
-- Rank plots (Figure 6)
-  ```sh
-  script/rank-history-plot/plot-all.sh baseline final
-  ```
-  It generates plots comparing ranking performance of Bingo and BayeSmith in `script/rank-history-plot/images-final`.
