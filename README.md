@@ -25,7 +25,7 @@ docker run -it bayesmith
 │  └─ TIntegerOverflow.<PROGRAM>.dl         <- The modified versions of learned rules for the taint analysis in a way that considers feedback from dynamic analysis (FSE 2021)
 │
 ├─ rank-plots                        
-│  └─ <PROGRAM>.pdf                         <- Plots showing the ranking performanece for <PROGRAM> (Figure 6)
+│  └─ <PROGRAM>.pdf                         <- Plots showing the ranking performance for <PROGRAM> (Figure 6)
 │
 ├─ bayesmith                                <- Main implementation
 │  ├─ sparrow                               <- The Sparrow static analyzer
@@ -82,7 +82,7 @@ To run with the learned Bayesian networks reported in the paper, set `-dl_from` 
 - Interval analysis: `-dl_from ~/datalog/BufferOverflow.<PROGRAM>.dl`
 - Taint analysis: `-dl_from ~/datalog/IntegerOverflow.<PROGRAM>.dl`
 
-### Summarzing the results
+### Summarizing the results
 The following command shows the performance of learned models (column BayeSmith, Table 2):
 ```
 script/bingo/report.sh final
@@ -102,8 +102,8 @@ script/bnet/size.sh
 ## 4. Reproducing the results of the baselines (Table 2)
 ### Running Bingo_EM
 
-  It runs EM algorithm to find optimal weights while prserving the rules.
-  We set timeout of 12 hours for convergence.
+  It runs an EM algorithm to find optimal weights while preserving the rules.
+  We set a timeout of 12 hours for convergence.
   ```
   script/bingo/run-em.sh [ interval | taint ] <PROGRAM>
   ```
