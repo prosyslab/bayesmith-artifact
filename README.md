@@ -19,8 +19,10 @@ docker run -it bayesmith
 ├─ datalog                                  <- Learned Datalog rules
 │  ├─ BufferOverflow.dl                     <- The initial rule used for the interval analysis
 │  ├─ IntegerOverflow.dl                    <- The initial rule used for the taint analysis
-│  ├─ BufferOverflow.<PROGRAM>.dl           <- The learned rules for the interval analysis of <PROGRAM> which is one of the benchmarks
-│  ├─ IntegerOverflow.<PROGRAM>.dl          <- The learned rules for the taint analysis of <PROGRAM> which is one of the benchmarks
+│  ├─ BufferOverflow.<PROGRAM>.dl           <- The learned rules for the interval analysis 
+│  │                                           of <PROGRAM> which is one of the benchmarks
+│  ├─ IntegerOverflow.<PROGRAM>.dl          <- The learned rules for the taint analysis 
+│  │                                           of <PROGRAM> which is one of the benchmarks
 │  ├─ TBufferOverflow.<PROGRAM>.dl          <- The modified versions of learned rules for the interval analysis in a way that considers feedback from dynamic analysis (FSE 2021)
 │  └─ TIntegerOverflow.<PROGRAM>.dl         <- The modified versions of learned rules for the taint analysis in a way that considers feedback from dynamic analysis (FSE 2021)
 │
