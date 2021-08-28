@@ -46,6 +46,7 @@ RUN mkdir llvm && cd /dev/shm && wget https://github.com/TianyiChen/llvm-build/r
 wget https://github.com/TianyiChen/PL-assets/releases/download/main/fse2021-workspace.zip && unzip fse2021-workspace.zip -d /tmp
 COPY --chown=ubuntu:ubuntu . dynaboost
 RUN rm -rf dynaboost/.git; mv dynaboost/bingo-ci-experiment .; mv dynaboost/datalog .; mv dynaboost/rank-plots .
+RUN mv dynaboost/README.md .; mv dynaboost/LICENSE .; mv dynaboost/STATUS .; mv dynaboost/INSTALL .
 RUN pushd bingo-ci-experiment/bingo/prune-cons; make -j; popd
 
 # build bingo and nichrome

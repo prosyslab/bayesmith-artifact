@@ -2,4 +2,4 @@
 
 2. Load the docker image:
 
-  $ [sudo] docker load < bayesmith-docker.tar.gz
+  $ [sudo] docker load < bayesmith.tar.gz

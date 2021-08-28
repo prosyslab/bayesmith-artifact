@@ -11,3 +11,4 @@ dfsan-inject/images/*
 *so
 *.a
 *.tar.gz
+*.pdf
