@@ -1,4 +1,3 @@
-# TODO: remove .git or .gitmodules
 FROM ubuntu:18.04
 RUN apt update&&apt install -y sudo wget software-properties-common&&add-apt-repository ppa:ubuntu-toolchain-r/test && apt update && apt install -y g++-10 unp lzip python3-pip && python3 -m pip install tclib==0.0.3
 RUN adduser --disabled-password --gecos '' ubuntu&&adduser ubuntu sudo&&echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
@@ -23,7 +22,9 @@ libtool m4 automake mcpp bison libsqlite3-dev libboost-dev
 # sparrow
 RUN apt install -y ant nano vim git bc libboost-dev libboost-program-options-dev libboost-test-dev libgmp-dev \
 # plot and utils
-htop texlive-latex-extra cm-super dvipng && pip3 install matplotlib
+htop texlive-latex-extra cm-super dvipng
+RUN pip3 install --upgrade pip
+RUN python3 -m pip install matplotlib
 
 USER ubuntu
 WORKDIR /home/ubuntu
@@ -68,6 +69,9 @@ RUN rm -rf drake/.git
 RUN mv dynaboost/update-scripts .; mv dynaboost/setup.sh .; ./setup.sh
 RUN pushd drake; ./build.sh; popd
 
+# download libstdc++6.0.25 and set LD_LIBRARY_PATH env var
+RUN mkdir tmp; pushd tmp; wget http://archive.ubuntu.com/ubuntu/pool/main/g/gcc-8/libstdc++6_8-20180414-1ubuntu2_amd64.deb; ar x libstdc++6_8-20180414-1ubuntu2_amd64.deb; tar -xvf data.tar.xz; popd
+RUN echo 'export LD_LIBRARY_PATH=/home/ubuntu/tmp/usr/lib/x86_64-linux-gnu' >> ~/.bashrc && source ~/.bashrc
 
 # TODO: git clone bayesmith && build bayesmith
 

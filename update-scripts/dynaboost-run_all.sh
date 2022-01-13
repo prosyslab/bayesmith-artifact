@@ -26,7 +26,6 @@ interval_benchmarks=(
   "cflow-1.5"
   "grep-2.19"
   "gzip-1.2.4a"
-  "libtasn1-4.3"
   "patch-2.7.1"
   "readelf-2.24"
   "sed-4.3"
