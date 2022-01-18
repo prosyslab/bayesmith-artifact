@@ -1,7 +1,5 @@
-We would like to apply for the following badges:
+We claim for the following badges:
 
-Functional: We have provided snapshots of our implementation that lead to the results presented in the paper.
+- Reusable: We have distinguished the benchmarks from source code and scripts so that one may configure and use their own benchmarks for any purpose.
 
-Reusable: We have distinguished the benchmarks from source code and scripts so that one may configure and use their own benchmarks for any purpose.
-
-Available: We have made the artifact openly available under an open-source license (BSD License 2.0).
+- Available: We have made the artifact openly available under an open-source license (BSD License 2.0).

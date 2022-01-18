@@ -1,5 +1,7 @@
-1. Download the docker image from the following URL: TODO
+1. Download the zip file (bayesmith-artifact.zip) from the following url: https://doi.org/10.5281/zenodo.5324064
 
-2. Load the docker image:
+2. Unzip the file and obtain the tarball (bayesmith.tar.gz) that contains Docker image.
+
+3. Load the docker image:
 
   $ [sudo] docker load < bayesmith.tar.gz
