@@ -1,5 +1,5 @@
 We claim for the following badges:
 
-- Reusable: We have distinguished the benchmarks from source code and scripts so that one may configure and use their own benchmarks for any purpose.
+- Functional: We provide snapshots of our implementation and benchmarks that demonstrates the results in the paper.
 
-- Available: We have made the artifact openly available under an open-source license (BSD License 2.0).
+- Available: We make the artifact openly available under an open-source license (BSD License 2.0).
