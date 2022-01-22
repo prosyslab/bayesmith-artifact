@@ -72,9 +72,10 @@ RUN pushd drake; ./build.sh; popd
 # download libstdc++6.0.25 and set LD_LIBRARY_PATH env var
 RUN mkdir tmp; pushd tmp; wget http://archive.ubuntu.com/ubuntu/pool/main/g/gcc-8/libstdc++6_8-20180414-1ubuntu2_amd64.deb; ar x libstdc++6_8-20180414-1ubuntu2_amd64.deb; tar -xvf data.tar.xz; popd
 RUN echo 'export LD_LIBRARY_PATH=/home/ubuntu/tmp/usr/lib/x86_64-linux-gnu' >> ~/.bashrc && source ~/.bashrc
+RUN sudo update-scripts/install-llvm.sh
 
-# TODO: git clone bayesmith && build bayesmith
+# build bayesmith
+RUN git clone https://github.com/prosyslab/bayesmith.git && cd bayesmith && git submodule update --init --recursive && mv ../update-scripts/new-sparrow-build.sh sparrow/build.sh && eval $(opam env) && ./build.sh
+RUN rm -rf bayesmith/.git
+RUN cd bayesmith && export LD_LIBRARY_PATH=/home/ubuntu/tmp/usr/lib/x86_64-linux-gnu && script/bingo/run-all.sh && script/bingo/run-all.sh --skip-analysis --skip-compress
 
-# run the following commands:
-# - script/bingo/run_all.sh
-# - script/bingo/run_all.sh --skip-analysis --skip-compress
