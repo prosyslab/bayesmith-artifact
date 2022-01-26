@@ -1,4 +1,10 @@
-# BayeSmith-artifact
+# BayeSmith: Learning Probabilistic Models for Static Analysis Alarms (Paper Artifact)
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5890313.svg)](https://doi.org/10.5281/zenodo.5890313)
+
+
+A research artifact submitted to ICSE 2022.
+The corresponding paper is *Learning Probabilistic Models for Static Analysis Alarms, H. Kim, M. Raghothaman, K. Heo*.
 
 ## 1. Getting started
 ### System requirements
@@ -66,7 +72,7 @@ docker run -it bayesmith
 └─ script                            <- Scripts for debugging
 ```
 ---
-## 3. Reproducing the main results
+## 3. Preliminaries (column Alarm and Bingo_M, Table 2)
 ### Running static analysis and baseline Bingo (optional)
 ```
 cd bayesmith
@@ -84,13 +90,15 @@ script/bingo/report.sh baseline
 ```
 The last column reports the number of interactions.
 
+---
+## 4. Reproducing the main results (column BayeSmith, Table 2)
 ### Learning Bayesian networks
 ```
 bingo/learn -reuse -analysis_type [ interval | taint ] <PROGRAM>
 ```
 e.g. `bingo/learn -reuse -analysis_type interval sort`
 
-The learned datalog rule (`rule-final.dl` file) will be generated under `learn-out/sort`.
+The learned Datalog rule (`rule-final.dl` file) will be generated under `learn-out/sort`.
 
 ### Running Bingo with the learned Bayesian networks
 ```
@@ -120,7 +128,7 @@ The following generates `bnet-size.csv` showing the size of Bayesian networks be
 script/bnet/size.sh
 ```
 ---
-## 4. Reproducing the results of the baselines (Table 2)
+## 5. Reproducing the Bingo baselines (column Bingo_EM and Bingo_U, Table 2)
 ### Running Bingo_EM
 
   It runs an EM algorithm to find optimal weights while preserving the rules.
@@ -165,7 +173,8 @@ script/bnet/size.sh
   ```
   script/bingo/report.sh unroll
   ```
-
+---
+## 6. Reproducing the results with Drake and DynaBoost (Figure 5)
 ### Running Drake 
 
   To run Drake only, run the following commands:
@@ -208,14 +217,14 @@ script/bnet/size.sh
   script/comparison-plot/bar-plot.py
   ```
 ---
-## 5. Comparing magnitude of false generalizations (Table 3)
+## 7. Comparing magnitude of false generalizations (Table 3)
 ```
 script/bnet/fg.sh
 ```
 It generates `bnet-fg.csv` showing the negative impact of false generalizations before and after the learning.
 
 ---
-## 6. Learning with different training set (Table 4)
+## 8. Learning with different training sets (Table 4)
 ```
 bingo/learn -reuse -analysis_type [ interval | taint ] <PROGRAM_1> .. <PROGRAM_N>
 ```
