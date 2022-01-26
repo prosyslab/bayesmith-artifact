@@ -1,0 +1,3 @@
+[submodule "bayesmith"]
+	path = bayesmith
+	url = https://github.com/prosyslab/bayesmith.git
