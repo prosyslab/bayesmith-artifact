@@ -3,25 +3,20 @@ RUN apt update&&apt install -y sudo wget software-properties-common&&add-apt-rep
 RUN adduser --disabled-password --gecos '' ubuntu&&adduser ubuntu sudo&&echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 SHELL ["/bin/bash", "-c"]
 USER root
+
+# dynaboost dependencies
 RUN cd /dev/shm && wget https://github.com/souffle-lang/souffle/releases/download/2.0.2/souffle_2.0.2-1_amd64.deb ; \
 echo deb "[ arch=amd64 ] https://downloads.skewed.de/apt bionic main">>/etc/apt/sources.list; \
 apt-key adv --keyserver keys.openpgp.org --recv-key 612DEFB798507F25 &&apt-get update; \
 DEBIAN_FRONTEND="noninteractive" apt install -y dejagnu \
-#binutil
 ./souffle_2.0.2-1_amd64.deb ant python3-graph-tool \
-# ci-exp dependency
 time \
-#bc
-#r-base-dev libcurl4-openssl-dev r-cran-rjava \
-# apache
 flex libssl-dev \
-# bc, wget
 texinfo help2man \
-# makeinfo,libtasn1-4.3
 libtool m4 automake mcpp bison libsqlite3-dev libboost-dev
-# sparrow
+
+# sparrow dependencies and utils
 RUN apt install -y ant nano vim git bc libboost-dev libboost-program-options-dev libboost-test-dev libgmp-dev \
-# plot and utils
 htop texlive-latex-extra cm-super dvipng
 RUN pip3 install --upgrade pip
 RUN python3 -m pip install matplotlib
