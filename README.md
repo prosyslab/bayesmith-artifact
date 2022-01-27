@@ -177,7 +177,7 @@ It generates `bnet-size.csv` as the numbers reported in Table 5.
 ### Running Bingo_U
   The following command runs Bingo using a pre-refined set of rules that are derived by uniformly unrolling all the components
   of the initial set of rules by once (Bingo_U).
-  ```
+  ```sh
   # run Bingo_U for one benchmark
   script/bingo/run-unroll.sh [ interval | taint ] <PROGRAM>
   # run Bingo_U for all benchmarks
@@ -203,47 +203,72 @@ It generates `bnet-size.csv` as the numbers reported in Table 5.
 ### Running Drake 
 
   To run Drake only, run the following commands:
-  ```
+  ```sh
   cd ~/drake
   . setenv
+  # run Drake for one benchmark
+  ./run_single.sh <PROGRAM>
+  ./delta_single.sh sound 0.001 <PROGRAM>
+  # run Drake for all benchmarks
   ./run_all.sh
   ./delta_all.sh sound 0.001
   ```
+  <!-- TODO: add example -->
+
   It takes about 12 hours to finish.
 
   To run Drake with learned models by BayeSmith, run the following commands:
-  ```
+  ```sh
+  # run Drake with learned models for one benchmark
+  ./run_single.sh --bayesmith <PROGRAM>
+  ./delta_single.sh sound 0.001 --bayesmith <PROGRAM>
+  # run Drake with learned models for all benchmarks
   ./run_all.sh --bayesmith
   ./delta_all.sh sound 0.001 --bayesmith
   ```
-  It takes about 6 hours to finish.
+  <!-- TODO: add example -->
 
-  TODO: add for signle benchmark
+  It takes about 6 hours to finish.
 
 ### Running DynaBoost
 
   To run DynaBoost only, run the following commands:
-  ```
+  ```sh
   cd ~/dynaboost
   source init.sh
+  # run DynaBoost for one benchmark
+  cd ~/bingo-ci-experiment
+  ./run_single.sh <PROGRAM>
+  cd ~/dynaboost/eval
+  ./instrument.sh <PROGRAM>
+  ./run-single.sh <PROGRAM>
+  # run DynaBoost for all benchmarks
   cd ~/bingo-ci-experiment
   ./run_all.sh
   cd ~/dynaboost/eval
   ./instrument-all.sh
   ./run-all.sh
   ```
+  <!-- TODO: add example -->
+
   It takes about 18 hours to finish.
 
   To run DynaBoost with learned models by BayeSmith, run the following commands:
-  ```
+  ```sh
+  # run DynaBoost with learned models for one benchmark
+  cd ~/bingo-ci-experiment
+  ./run_single.sh --bayesmith <PROGRAM>
+  cd ~/dynaboost/eval
+  ./run-single.sh --bayesmith <PROGRAM>
+  # run DynaBoost with learned models for all benchmarks
   cd ~/bingo-ci-experiment
   ./run_all.sh --bayesmith
   cd ~/dynaboost/eval
   ./run-all.sh --bayesmith
   ```
-  It takes about 12 hours to finish.
+  <!-- TODO: add example -->
 
-  TODO: add for signle benchmark
+  It takes about 12 hours to finish.
 
   The following command generates `drake-bayesmith.pdf` and `dynaboost-bayesmith.pdf`, showing the effectiveness of BayeSmith in each application (Figure 5).
   ```sh
