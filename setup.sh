@@ -19,6 +19,9 @@ cp ~/update-scripts/new-run.sh ~/drake/run.sh
 # Update run_all.sh
 cp ~/update-scripts/dynaboost-run_all.sh ~/bingo-ci-experiment/run_all.sh
 cp ~/update-scripts/dynaboost-run_single.sh ~/bingo-ci-experiment/run_single.sh
+cp ~/update-scripts/dynaboost-runsinglebingo.sh ~/dynaboost/utils/runsinglebingo.sh
+cp ~/update-scripts/dynaboost-run-single.sh ~/dynaboost/eval/run-single.sh
+
 cp ~/update-scripts/drake-run_all.sh ~/drake/run_all.sh
 cp ~/update-scripts/drake-run_single.sh ~/drake/run_single.sh
 

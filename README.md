@@ -266,7 +266,7 @@ It generates `bnet-size.csv` as the numbers reported in Table 5.
   cd ~/bingo-ci-experiment
   ./run_single.sh <PROGRAM> --bayesmith
   cd ~/dynaboost/eval
-  ./run-single.sh <PROGRAM>  --bayesmith
+  ./run-single.sh <PROGRAM> --bayesmith
   # run DynaBoost with learned models for all benchmarks
   cd ~/bingo-ci-experiment
   ./run_all.sh --bayesmith
