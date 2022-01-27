@@ -147,6 +147,7 @@ The following command compares the size of Bayesian networks before and after th
 script/bnet/size.sh
 ```
 It generates `bnet-size.csv` as the numbers reported in Table 5.
+
 ---
 ## 5. Reproducing the Bingo baselines (column Bingo_EM and Bingo_U in Table 2)
 ### Running Bingo_EM
