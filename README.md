@@ -2,24 +2,24 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.5890313.svg)](https://doi.org/10.5281/zenodo.5890313)
 
-A research artifact submitted to ICSE 2022.
-The corresponding paper is *Learning Probabilistic Models for Static Analysis Alarms, H. Kim, M. Raghothaman, K. Heo*.
+This is the artifact of the paper *Learning Probabilistic Models for Static Analysis Alarms* to appear in ICSE 2022.
 
 ## 1. Getting started
 ### System requirements
-To run the experiments that were reported in the paper, we used a 64-core (Intel Xeon Processor Gold 6226R, 2.90 Ghz) machine with 128 GB of RAM with the 20.04 version of Ubuntu Linux. We recommend to run the experiments with at least 10-core machine with 32 GB of RAM.
+To run the experiments in the paper, we used a 64-core (Intel Xeon Processor Gold 6226R, 2.90 Ghz) machine
+with 128 GB of RAM and Ubuntu 20.04. We recommend to run the experiments with at least 10-core machine with 32 GB of RAM.
 
 ### Loading Docker image
-To launch a BayeSmith Docker container, run the following commands:
+We provide the artifact as a Docker image. To launch the BayeSmith Docker image, run the following commands:
 ```
 docker load < bayesmith.tar.gz
 docker run -it bayesmith
 ```
 It takes about 10 minutes to load the image.
 
-### Results shipped altogether
-The data obtained from the commands below that run either learning or inference are shipped in the Docker image.
-In each section, we report the duration for those commands if manually executed.
+### Notice
+Most of the experiments take long time. For convinience, all the data obtained from the instructions below are already shipped
+in the Docker image. Also, we report the approximated running time of each instruction.
 
 ---
 ## 2. Directory structure
@@ -76,15 +76,30 @@ In each section, we report the duration for those commands if manually executed.
 └─ script                            <- Scripts for debugging
 ```
 ---
-## 3. Preliminaries (column Alarm and Bingo_M, Table 2)
-### Running static analysis and baseline Bingo
+## 3. Preliminaries (column Alarm in Table 2)
+BayeSmith is based on static analysis results. The following command runs our static analyzer, Sparrow
+on a benchmark program:
+```
+TODO: give a command for one program
+```
+The following command runs Sparrow on the entire set of benchmarks:
+```
+TODO
+```
+TODO: how long?
+
+---
+## 4. Running the baseline Bingo (column Bingo_M, Table 2)
+Once you get the analysis results, run the following command to have the baseline Bingo results:
 ```
 cd bayesmith
+# run bingo for one benchmark
+TODO
+# run bingo for all benchmarks
 script/bingo/run-all.sh
 ```
-BayeSmith runs with static analysis results.
-It needs to be done only once for the entire benchmark.
-When the analysis is done, it runs Bingo based on the results.
+
+((CLEAN UP))
 Note that the analysis and baseline Bingo results are already shipped, so this step is optional.
 It takes 3-4 hours to finish.
 
@@ -95,29 +110,36 @@ script/bingo/report.sh baseline
 The last column reports the number of interactions.
 
 ---
-## 4. Reproducing the main results (column BayeSmith, Table 2)
+## 5. Reproducing the main results (column BayeSmith, Table 2)
 ### Learning Bayesian networks
+The following command runs BayeSmith for a certain type of analysis (`interval` or `taint`) and a program.
 ```
 bingo/learn -reuse -analysis_type [ interval | taint ] <PROGRAM>
 ```
-e.g. `bingo/learn -reuse -analysis_type interval sort`
+For example, `bingo/learn -reuse -analysis_type interval sort` launches a learning task for the interval
+analysis for `sort` (i.e., all the other benchmark programs are used for training).
 
-The learned Datalog rule (`rule-final.dl` file) will be generated under `learn-out/sort`.
-In the case of `sort`, it takes about 6 hours to finish.
-In the worst case, it takes at most 12 hours to complete.
+The learned Datalog rule (`rule-final.dl` file) with the above command will be generated under `learn-out/sort`.
+In the case of `sort`, it takes about 6 hours to finish. In the worst case, it takes around 12 hours.
+
+The pre-shipped Datalog rules are located in the following paths:
+- Interval analysis: `~/datalog/BufferOverflow.<PROGRAM>.dl`
+- Taint analysis: `-dl_from ~/datalog/IntegerOverflow.<PROGRAM>.dl`
 
 ### Running Bingo with the learned Bayesian networks
+The following command runs Bingo with the learned rules. 
 ```
 bingo/learn -test -timestamp final -analysis_type [ interval | taint ] -dl_from <DL_FILE> <PROGRAM>
 ```
-e.g. `bingo/learn -test -timestamp final -analysis_type interval -dl_from learn-out/sort/rule-final.dl sort`
-
-The number of interactions will be printed in stdout and logged in a file (`test.log`) under `test-out/sort`.
-To run with the learned Bayesian networks reported in the paper, set `-dl_from` option as the following:
-- Interval analysis: `-dl_from ~/datalog/BufferOverflow.<PROGRAM>.dl`
-- Taint analysis: `-dl_from ~/datalog/IntegerOverflow.<PROGRAM>.dl`
-In the case of `sort`, it takes about 30 min. to finish.
-In the worst case, it takes at most an hour to complete.
+For example, you can run Bingo for `sort` with the learned rule with the following command:
+```
+# run Bingo with the rule generated by yourself 
+bingo/learn -test -timestamp final -analysis_type interval -dl_from learn-out/sort/rule-final.dl sort
+# run Bingo with the pre-shipped rule
+bingo/learn -test -timestamp final -analysis_type interval -dl_from ~/datalog/BufferOverflow.sort.dl sort
+```
+The number of interactions will be printed in `stdout` and the log file (`test-out/sort/test.log`).
+In the case of `sort`, it takes about 30 min. to finish. In the worst case, it takes at most an hour to complete.
 
 ### Summarizing the results
 The following command shows the performance of learned models (column BayeSmith, Table 2):
