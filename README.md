@@ -223,13 +223,13 @@ It generates `bnet-size.csv` as the numbers reported in Table 5.
   To run Drake with learned models by BayeSmith, run the following commands:
   ```sh
   # run Drake with learned models for one benchmark
-  ./run_single.sh --bayesmith <PROGRAM>
-  ./delta_single.sh sound 0.001 --bayesmith <PROGRAM>
+  ./run_single.sh <PROGRAM> --bayesmith
+  ./delta_single.sh sound 0.001 <PROGRAM> --bayesmith
   # run Drake with learned models for all benchmarks
   ./run_all.sh --bayesmith
   ./delta_all.sh sound 0.001 --bayesmith
   ```
-  For example, `./run_single.sh --bayesmith sort && ./delta_single.sh sound 0.001 --bayesmith sort` runs Drake with learned model for `sort`.
+  For example, `./run_single.sh sort --bayesmith && ./delta_single.sh sound 0.001 sort --bayesmith` runs Drake with learned model for `sort`.
   The result will be stored in `benchmark/sort-7.2/sparrow-out/interval/bingo_delta_sem-eps_strong_0.001_bayesmith_stats.txt`.
   The number of interactions is `#(lines of the result file) - 1`.
   In the case of `sort`, it takes about an hour.
