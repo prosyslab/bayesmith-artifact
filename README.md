@@ -215,7 +215,8 @@ It generates `bnet-size.csv` as the numbers reported in Table 5.
   ./delta_all.sh sound 0.001
   ```
   For example, `./run_single.sh sort && ./delta_single.sh sound 0.001 sort` runs Drake for `sort`.
-  The results will be stored in `result/sort.delta.sound.0.001.log`.
+  The result will be stored in `benchmark/sort-7.2/sparrow-out/interval/bingo_delta_sem-eps_strong_0.001_stats.txt`.
+  The number of interactions is `#(lines of the result file) - 1`.
   In the case of `sort`, it takes about an hour.
   Running all benchmarks takes about 12 hours to finish.
 
@@ -229,7 +230,8 @@ It generates `bnet-size.csv` as the numbers reported in Table 5.
   ./delta_all.sh sound 0.001 --bayesmith
   ```
   For example, `./run_single.sh --bayesmith sort && ./delta_single.sh sound 0.001 --bayesmith sort` runs Drake with learned model for `sort`.
-  The results will be stored in `result/sort.delta.sound.0.001.bayesmith.log`.
+  The result will be stored in `benchmark/sort-7.2/sparrow-out/interval/bingo_delta_sem-eps_strong_0.001_bayesmith_stats.txt`.
+  The number of interactions is `#(lines of the result file) - 1`.
   In the case of `sort`, it takes about an hour.
   Running all benchmarks takes about 6 hours to finish.
 
