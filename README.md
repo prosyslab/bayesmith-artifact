@@ -264,16 +264,16 @@ It generates `bnet-size.csv` as the numbers reported in Table 5.
   ```sh
   # run DynaBoost with learned models for one benchmark
   cd ~/bingo-ci-experiment
-  ./run_single.sh --bayesmith <PROGRAM>
+  ./run_single.sh <PROGRAM> --bayesmith
   cd ~/dynaboost/eval
-  ./run-single.sh --bayesmith <PROGRAM>
+  ./run-single.sh <PROGRAM>  --bayesmith
   # run DynaBoost with learned models for all benchmarks
   cd ~/bingo-ci-experiment
   ./run_all.sh --bayesmith
   cd ~/dynaboost/eval
   ./run-all.sh --bayesmith
   ```
-  For example, `cd ~/bingo-ci-experiment && ./run_single.sh --bayesmith sort; cd ~/dynaboost/eval ./run-single.sh --bayesmith sort` runs DynaBoost with learned model for `sort`.
+  For example, `cd ~/bingo-ci-experiment && ./run_single.sh sort --bayesmith; cd ~/dynaboost/eval && ./run-single.sh sort --bayesmith` runs DynaBoost with learned model for `sort`.
   The results will be stored in `~/bingo/sortbayesmith-stats.txt`.
   The number of interactions is `#(lines of the result file) - 1`.
   In the case of `sort`, it takes about an hour.
