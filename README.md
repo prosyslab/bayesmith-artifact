@@ -110,7 +110,7 @@ script/bingo/report.sh baseline
 The last column reports the number of interactions.
 
 ---
-## 5. Reproducing the main results (column BayeSmith, Table 2)
+## 5. Reproducing the main results (column BayeSmith in Table 2)
 ### Learning Bayesian networks
 The following command runs BayeSmith for a certain type of analysis (`interval` or `taint`) and a program.
 ```
