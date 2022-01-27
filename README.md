@@ -176,7 +176,7 @@ It generates `bnet-size.csv` as the numbers reported in Table 5.
   The numbers may differ from those reported in the paper because of the randomness in initial weights.
 
 ### Running Bingo_U
-  The following command runs Bingo using a pre-refined set of rules that are derived by uniformly unrolling all the components
+  The following command runs Bingo using a refined set of rules that are derived by uniformly unrolling all the components
   of the initial set of rules by once (Bingo_U).
   ```sh
   # run Bingo_U for one benchmark
@@ -191,7 +191,7 @@ It generates `bnet-size.csv` as the numbers reported in Table 5.
   In the case of `sort`, it takes about 30 min. to finish.
   Running all benchmarks takes about 2 hours to complete.
 
-  The shipped Datalog rules for pre-refined models are located in the following paths:
+  The shipped Datalog rules for refined models are located in the following paths:
   - Interval analysis: `~/bayesmith/datalog/BufferOverflow.unroll.dl`
   - Taint analysis: `~/bayesmith/datalog/IntegerOverflow.unroll.dl`
 
