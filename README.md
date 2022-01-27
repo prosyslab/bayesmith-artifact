@@ -214,9 +214,10 @@ It generates `bnet-size.csv` as the numbers reported in Table 5.
   ./run_all.sh
   ./delta_all.sh sound 0.001
   ```
-  <!-- TODO: add example -->
-
-  It takes about 12 hours to finish.
+  For example, `./run_single.sh sort && ./delta_single.sh sound 0.001 sort` runs Drake for `sort`.
+  The results will be stored in `result/sort.delta.sound.0.001.log`.
+  In the case of `sort`, it takes about an hour.
+  Running all benchmarks takes about 12 hours to finish.
 
   To run Drake with learned models by BayeSmith, run the following commands:
   ```sh
@@ -227,9 +228,10 @@ It generates `bnet-size.csv` as the numbers reported in Table 5.
   ./run_all.sh --bayesmith
   ./delta_all.sh sound 0.001 --bayesmith
   ```
-  <!-- TODO: add example -->
-
-  It takes about 6 hours to finish.
+  For example, `./run_single.sh --bayesmith sort && ./delta_single.sh sound 0.001 --bayesmith sort` runs Drake with learned model for `sort`.
+  The results will be stored in `result/sort.delta.sound.0.001.bayesmith.log`.
+  In the case of `sort`, it takes about an hour.
+  Running all benchmarks takes about 6 hours to finish.
 
 ### Running DynaBoost
 
@@ -241,7 +243,7 @@ It generates `bnet-size.csv` as the numbers reported in Table 5.
   cd ~/bingo-ci-experiment
   ./run_single.sh <PROGRAM>
   cd ~/dynaboost/eval
-  ./instrument.sh <PROGRAM>
+  ./instrument.sh <PROGRAM>-<VERSION>
   ./run-single.sh <PROGRAM>
   # run DynaBoost for all benchmarks
   cd ~/bingo-ci-experiment
@@ -250,9 +252,10 @@ It generates `bnet-size.csv` as the numbers reported in Table 5.
   ./instrument-all.sh
   ./run-all.sh
   ```
-  <!-- TODO: add example -->
-
-  It takes about 18 hours to finish.
+  For example, `cd ~/bingo-ci-experiment && ./run_single.sh sort; cd ~/dynaboost/eval && ./instrument.sh sort-7.2; ./run-single.sh sort` runs DynaBoost for `sort`.
+  The results will be stored in `~/bingo/sorttrue-stats.txt`.
+  In the case of `sort`, it takes about two hours.
+  Running all benchmarks takes about 18 hours to finish.
 
   To run DynaBoost with learned models by BayeSmith, run the following commands:
   ```sh
@@ -267,9 +270,10 @@ It generates `bnet-size.csv` as the numbers reported in Table 5.
   cd ~/dynaboost/eval
   ./run-all.sh --bayesmith
   ```
-  <!-- TODO: add example -->
-
-  It takes about 12 hours to finish.
+  For example, `cd ~/bingo-ci-experiment && ./run_single.sh --bayesmith sort; cd ~/dynaboost/eval ./run-single.sh --bayesmith sort` runs DynaBoost with learned model for `sort`.
+  The results will be stored in `~/bingo/sortbayesmith-stats.txt`.
+  In the case of `sort`, it takes about an hour.
+  Running all benchmarks takes about 12 hours to finish.
 
   The following command generates `drake-bayesmith.pdf` and `dynaboost-bayesmith.pdf`, showing the effectiveness of BayeSmith in each application (Figure 5).
   ```sh

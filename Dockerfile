@@ -36,7 +36,6 @@ wget https://github.com/TianyiChen/PL-assets/releases/download/main/fse2021-work
 COPY --chown=ubuntu:ubuntu . dynaboost
 RUN rm -rf dynaboost/.git; mv dynaboost/bingo-ci-experiment .; mv dynaboost/datalog .; mv dynaboost/rank-plots .
 RUN mv dynaboost/README.md .; mv dynaboost/LICENSE .; mv dynaboost/STATUS .; mv dynaboost/INSTALL .; mv dynaboost/REQUIREMENTS .
-RUN pushd bingo-ci-experiment/bingo/prune-cons; make -j; popd
 
 # build bingo and nichrome
 RUN git clone --single-branch --branch DynamicBingo https://github.com/difflog-project/bingo && cd bingo && scripts/build.sh; \
@@ -56,6 +55,7 @@ RUN rm -rf drake/.git
 # build drake
 RUN mv dynaboost/update-scripts .; mv dynaboost/setup.sh .; ./setup.sh
 RUN pushd drake; ./build.sh; popd
+RUN pushd bingo-ci-experiment/bingo/prune-cons; make -j; popd
 
 # download libstdc++6.0.25 and set LD_LIBRARY_PATH env var
 RUN mkdir tmp; pushd tmp; wget http://archive.ubuntu.com/ubuntu/pool/main/g/gcc-8/libstdc++6_8-20180414-1ubuntu2_amd64.deb; ar x libstdc++6_8-20180414-1ubuntu2_amd64.deb; tar -xvf data.tar.xz; popd
