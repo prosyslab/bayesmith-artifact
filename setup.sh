@@ -18,7 +18,9 @@ cp ~/update-scripts/new-run.sh ~/drake/run.sh
 
 # Update run_all.sh
 cp ~/update-scripts/dynaboost-run_all.sh ~/bingo-ci-experiment/run_all.sh
+cp ~/update-scripts/dynaboost-run_single.sh ~/bingo-ci-experiment/run_single.sh
 cp ~/update-scripts/drake-run_all.sh ~/drake/run_all.sh
+cp ~/update-scripts/drake-run_single.sh ~/drake/run_single.sh
 
 # Copy learned rules
 cp ~/datalog/TBufferOverflow.*.dl ~/datalog/TIntegerOverflow.*.dl ~/bingo-ci-experiment/datalog
@@ -26,6 +28,7 @@ cp ~/datalog/BufferOverflow.*.dl ~/datalog/IntegerOverflow.*.dl ~/drake/datalog
 
 # Update build script in Drake
 cp ~/update-scripts/delta.sh ~/drake/delta.sh
+cp ~/update-scripts/delta_single.sh ~/drake/delta_single.sh
 cp ~/update-scripts/delta_all.sh ~/drake/delta_all.sh
 cp ~/update-scripts/delta/sem-eps.sh ~/drake/delta/sem-eps.sh
 cp ~/update-scripts/drake-build.sh ~/drake/build.sh

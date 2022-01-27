@@ -45,7 +45,7 @@ function run_interval() {
   work=("$@")
   for p in "${work[@]}"; do
     echo $p
-    ./run.sh benchmark/$p/$p.c interval $REUSE $OPT_BAYESMITH >&result/$p.batch.log
+    ./run.sh benchmark/$p/$p.c interval $REUSE $OPT_BAYESMITH >& result/$p.batch.log &
   done
 }
 
@@ -53,9 +53,10 @@ function run_taint() {
   work=("$@")
   for p in "${work[@]}"; do
     echo $p
-    ./run.sh benchmark/$p/$p.c taint $REUSE $OPT_BAYESMITH >&result/$p.batch.log
+    ./run.sh benchmark/$p/$p.c taint $REUSE $OPT_BAYESMITH >& result/$p.batch.log &
   done
 }
 
 run_taint ${taint_benchmarks[@]}
 run_interval ${interval_benchmarks[@]}
+wait
