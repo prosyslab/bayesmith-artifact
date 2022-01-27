@@ -256,6 +256,7 @@ It generates `bnet-size.csv` as the numbers reported in Table 5.
   ```
   For example, `cd ~/bingo-ci-experiment && ./run_single.sh sort; cd ~/dynaboost/eval && ./instrument.sh sort-7.2; ./run-single.sh sort` runs DynaBoost for `sort`.
   The results will be stored in `~/bingo/sorttrue-stats.txt`.
+  The number of interactions is `#(lines of the result file) - 1`.
   In the case of `sort`, it takes about two hours.
   Running all benchmarks takes about 18 hours to finish.
 
@@ -274,6 +275,7 @@ It generates `bnet-size.csv` as the numbers reported in Table 5.
   ```
   For example, `cd ~/bingo-ci-experiment && ./run_single.sh --bayesmith sort; cd ~/dynaboost/eval ./run-single.sh --bayesmith sort` runs DynaBoost with learned model for `sort`.
   The results will be stored in `~/bingo/sortbayesmith-stats.txt`.
+  The number of interactions is `#(lines of the result file) - 1`.
   In the case of `sort`, it takes about an hour.
   Running all benchmarks takes about 12 hours to finish.
 
