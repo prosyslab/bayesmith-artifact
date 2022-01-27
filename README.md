@@ -28,41 +28,41 @@ in the Docker image. Also, we report the approximated running time of each instr
 │
 ├─ datalog                           <- Learned Datalog rules
 │  ├─ BufferOverflow.dl              <- The initial rule used for
-|  |                                    the interval analysis
-|  |
+│  │                                    the interval analysis
+│  │
 │  ├─ IntegerOverflow.dl             <- The initial rule used for
-|  |                                    the taint analysis
-|  |
+│  │                                    the taint analysis
+│  │
 │  ├─ BufferOverflow.<PROGRAM>.dl    <- The learned rules for the
-|  |                                    interval analysis of <PROGRAM>
+│  │                                    interval analysis of <PROGRAM>
 │  │                                     
 │  ├─ IntegerOverflow.<PROGRAM>.dl   <- The learned rules for the 
-|  |                                    taint analysis of <PROGRAM>
+│  │                                    taint analysis of <PROGRAM>
 │  │                                     
 │  ├─ TBufferOverflow.<PROGRAM>.dl   <- The modified versions of learned 
-|  |                                    rules for the interval analysis
+│  │                                    rules for the interval analysis
 │  │                                    in a way that considers feedback
 │  │                                    from dynamic analysis (FSE 2021)
-|  |
+│  │
 │  └─ TIntegerOverflow.<PROGRAM>.dl  <- The modified versions of learned
-|                                       rules for the taint analysis
-|                                       in a way that considers feedback 
-|                                       from dynamic analysis (FSE 2021)
+│                                       rules for the taint analysis
+│                                       in a way that considers feedback 
+│                                       from dynamic analysis (FSE 2021)
 │
 ├─ rank-plots                        
 │  └─ <PROGRAM>.pdf                  <- Plots showing the ranking
-|                                       performance for <PROGRAM>
-|                                       (Figure 6)
+│                                       performance for <PROGRAM>
+│                                       (Figure 6)
 │
 ├─ bayesmith                         <- Main implementation
 │  ├─ sparrow                        <- The Sparrow static analyzer
 │  │
 │  ├─ bin                           
 │  │   └─ run.py                     <- Script for running Sparrow and
-|  |                                    Bingo
+│  │                                    Bingo
 │  │
 │  ├─ bingo                          <- Modules for learning and alarm
-|  |                                    ranking algorithms
+│  │                                    ranking algorithms
 │  │
 │  └─ benchmarks                     <- Benchmark programs
 │     └─ <PROGRAM>/<VERSION>
@@ -70,7 +70,7 @@ in the Docker image. Also, we report the approximated running time of each instr
 │        └─ label.json               <- Bug label of the program
 │ 
 ├─ dynaboost                         <- Implementation for Dynaboost
-|                                       adapted from FSE 2021
+│                                       adapted from FSE 2021
 └─ drake                             <- Implementation for Drake adapted
                                         from PLDI 2019
 ```
