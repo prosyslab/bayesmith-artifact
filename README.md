@@ -19,7 +19,7 @@ It takes about 10 minutes to load the image.
 
 ### Results shipped altogether
 The data obtained from the commands below that run either learning or inference are shipped in the Docker image.
-In each section, we report the duration for those commands together.
+In each section, we report the duration for those commands if manually executed.
 
 ---
 ## 2. Directory structure
@@ -136,7 +136,7 @@ The following generates `bnet-size.csv` showing the size of Bayesian networks be
 script/bnet/size.sh
 ```
 ---
-## 5. Reproducing the Bingo baselines (column Bingo_EM and Bingo_U, Table 2)
+## 5. Reproducing the Bingo baselines (column Bingo_EM and Bingo_U, Table 2 and Table 5)
 ### Running Bingo_EM
 
   It runs an EM algorithm to find optimal weights while preserving the rules.
@@ -148,10 +148,10 @@ script/bnet/size.sh
 
   The result can be found in `benchmarks/sort/7.2/sparrow-out/interval/bingo_stats-em.txt`.
   The number of interactions is `#(lines of the result file) - 1`.
-  In the case of interval analysis benchamrks (including `sort`), it reaches timeout to finish.
-  In the case of taint analysis benchamrks, it takes less than 6 hours to finish.
+  In the case of interval analysis benchmarks (including `sort`), it reaches timeout to finish.
+  In the case of taint analysis benchmarks, it takes less than 6 hours to finish.
 
-  To run over entire benchmarks, user can run the following command:
+  To run over entire benchmarks, the user can run the following command:
   ```
   script/bingo/run-em-all.sh
   ```
@@ -177,7 +177,7 @@ script/bnet/size.sh
   In the case of `sort`, it takes about 30 min. to finish.
   In the worst case, it takes at most an hour to complete.
 
-  To run over entire benchmarks, user can run the following command:
+  To run over entire benchmarks, the user can run the following command:
   ```
   script/bingo/run-unroll-all.sh
   ```
@@ -230,24 +230,25 @@ script/bnet/size.sh
   ```
   It takes about 12 hours to finish.
 
-  The following command generates `drake-bayesmith.pdf` and `dynaboost-bayesmith.pdf` showing the effectiveness of BayeSmith in each application (Figure 5).
+  The following command generates `drake-bayesmith.pdf` and `dynaboost-bayesmith.pdf`, showing the effectiveness of BayeSmith in each application (Figure 5).
   ```sh
   cd ~/bayesmith
   script/comparison-plot/bar-plot.py
   ```
 ---
-## 7. Comparing magnitude of false generalizations (Table 3)
+## 7. Comparing the magnitude of false generalizations (Table 3)
 ```
+cd ~/bayesmith
 script/bnet/fg.sh
 ```
-It generates `bnet-fg.csv` showing the negative impact of false generalizations before and after the learning.
+It generates `bnet-fg.csv`, showing the negative impact of false generalizations before and after the learning.
 
 ---
 ## 8. Learning with different training sets (Table 4)
 
 One can run BayeSmith (i.e., train a probabilistic model) with leave-N-out settings by specifying N programs.
 The set of N programs becomes the test set, and the rest is the training set.
-In Table 4, `BayeSmith_80` uses about 80% of the benchmarks as training data, i.e. N = 2.
+In Table 4, `BayeSmith_80` uses about 80% of the benchmarks as training data, i.e., N = 2.
 We repeated ten times per analysis to report the numbers in `BayeSmith_80` column.
 Those combinations tried by us can be found in `bayesmith-80-combi.txt`.
 The following command runs with the specified training sets and shows the table.
@@ -255,7 +256,7 @@ The following command runs with the specified training sets and shows the table.
 ```
 cd ~/bayesmith
 script/bingo/diff-train.sh bayesmith-80-combi.txt
-script/bnet/table-diff-train.sh
+script/bnet/table-diff-train.py
 ```
 It takes about 12 hours to finish.
 
