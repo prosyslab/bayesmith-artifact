@@ -24,6 +24,7 @@ cp ~/update-scripts/dynaboost-run-single.sh ~/dynaboost/eval/run-single.sh
 
 cp ~/update-scripts/drake-run_all.sh ~/drake/run_all.sh
 cp ~/update-scripts/drake-run_single.sh ~/drake/run_single.sh
+cp ~/update-scripts/setenv ~/drake/setenv
 
 # Copy learned rules
 cp ~/datalog/TBufferOverflow.*.dl ~/datalog/TIntegerOverflow.*.dl ~/bingo-ci-experiment/datalog
