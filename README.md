@@ -215,7 +215,7 @@ It generates `bnet-size.csv` as the numbers reported in Table 5.
   ./delta_all.sh sound 0.001
   ```
   For example, `./run_single.sh sort && ./delta_single.sh sound 0.001 sort` runs Drake for `sort`.
-  The result will be stored in `benchmark/sort-7.2/sparrow-out/interval/bingo_delta_sem-eps_strong_0.001_stats.txt`.
+  The result can be found in `benchmark/sort-7.2/sparrow-out/interval/bingo_delta_sem-eps_strong_0.001_stats.txt`.
   The number of interactions is `#(lines of the result file) - 1`.
   In the case of `sort`, it takes about an hour.
   Running all benchmarks takes about 12 hours to finish.
@@ -230,7 +230,7 @@ It generates `bnet-size.csv` as the numbers reported in Table 5.
   ./delta_all.sh sound 0.001 --bayesmith
   ```
   For example, `./run_single.sh sort --bayesmith && ./delta_single.sh sound 0.001 sort --bayesmith` runs Drake with learned model for `sort`.
-  The result will be stored in `benchmark/sort-7.2/sparrow-out/interval/bingo_delta_sem-eps_strong_0.001_bayesmith_stats.txt`.
+  The result can be found in `benchmark/sort-7.2/sparrow-out/interval/bingo_delta_sem-eps_strong_0.001_bayesmith_stats.txt`.
   The number of interactions is `#(lines of the result file) - 1`.
   In the case of `sort`, it takes about an hour.
   Running all benchmarks takes about 6 hours to finish.
@@ -255,7 +255,7 @@ It generates `bnet-size.csv` as the numbers reported in Table 5.
   ./run-all.sh
   ```
   For example, `cd ~/bingo-ci-experiment && ./run_single.sh sort; cd ~/dynaboost/eval && ./instrument.sh sort-7.2; ./run-single.sh sort` runs DynaBoost for `sort`.
-  The results will be stored in `~/bingo/sorttrue-stats.txt`.
+  The result can be found in `~/bingo/sorttrue-stats.txt`.
   The number of interactions is `#(lines of the result file) - 1`.
   In the case of `sort`, it takes about two hours.
   Running all benchmarks takes about 18 hours to finish.
@@ -274,7 +274,7 @@ It generates `bnet-size.csv` as the numbers reported in Table 5.
   ./run-all.sh --bayesmith
   ```
   For example, `cd ~/bingo-ci-experiment && ./run_single.sh sort --bayesmith; cd ~/dynaboost/eval && ./run-single.sh sort --bayesmith` runs DynaBoost with learned model for `sort`.
-  The results will be stored in `~/bingo/sortbayesmith-stats.txt`.
+  The result can be found in `~/bingo/sortbayesmith-stats.txt`.
   The number of interactions is `#(lines of the result file) - 1`.
   In the case of `sort`, it takes about an hour.
   Running all benchmarks takes about 12 hours to finish.
