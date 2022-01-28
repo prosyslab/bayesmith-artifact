@@ -59,6 +59,7 @@ RUN pushd bingo-ci-experiment/bingo/prune-cons; make -j; popd
 
 # download libstdc++6.0.28 and make it default
 RUN pushd /; sudo wget http://archive.ubuntu.com/ubuntu/pool/main/g/gcc-10/libstdc++6_10-20200411-0ubuntu1_amd64.deb; sudo ar x libstdc++6_10-20200411-0ubuntu1_amd64.deb; sudo tar -xvf data.tar.xz; popd
+RUN sudo ln -sf /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.28 /usr/lib/x86_64-linux-gnu/libstdc++.so.6
 
 # download libstdc++6.0.25 and set LD_LIBRARY_PATH env var
 RUN mkdir tmp; pushd tmp; wget http://archive.ubuntu.com/ubuntu/pool/main/g/gcc-8/libstdc++6_8-20180414-1ubuntu2_amd64.deb; ar x libstdc++6_8-20180414-1ubuntu2_amd64.deb; tar -xvf data.tar.xz; popd

@@ -127,7 +127,7 @@ bingo/learn -test -timestamp final -analysis_type interval -dl_from learn-out/so
 # run Bingo with the pre-learned set of rules
 bingo/learn -test -timestamp final -analysis_type interval -dl_from ~/datalog/BufferOverflow.sort.dl sort
 ```
-The number of interactions will be printed in `stdout` and the log file (`test-out/sort/test.log`).
+The number of interactions will be printed in `stdout` and the log file (`learn-out/sort/test.log`).
 In the case of `sort`, it takes about 30 min. to finish. In the worst case, it takes at most an hour to complete.
 
 ### Summarizing the results
