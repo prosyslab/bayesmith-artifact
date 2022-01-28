@@ -1,0 +1,85 @@
+.type Node <: symbol
+
+.decl Alarm(v0: Node, v1: Node)
+.decl AlarmAllocSize(v0: Node, v1: Node)
+.decl AlarmPrintf(v0: Node, v1: Node)
+.decl BinOpExp(v0: Node, v1: Node, v2: Node, v3: Node)
+.decl DUEdge(v0: Node, v1: Node)
+.decl DUPath(v0: Node, v1: Node)
+.decl FalseBranch(v0: Node, v1: Node)
+.decl FalseCond(v0: Node)
+.decl LoopHead(v0: Node)
+.decl LvalExp(v0: Node, v1: Node)
+.decl Mult(v0: Node)
+.decl SparrowAlarm(v0: Node, v1: Node, v2: Node)
+.decl TrueBranch(v0: Node, v1: Node)
+.decl TrueCond(v0: Node)
+
+.input AlarmAllocSize
+.input AlarmPrintf
+.input BinOpExp
+.input DUEdge
+.input FalseBranch
+.input FalseCond
+.input LoopHead
+.input LvalExp
+.input Mult
+.input SparrowAlarm
+.input TrueBranch
+.input TrueCond
+.output Alarm
+.output DUPath
+.decl Deriv_Alarm10(v0: Node, v1: Node, v2: Node, v3: Node)
+.decl Deriv_Alarm11(v0: Node, v1: Node, v2: Node, v3: Node, v4: Node)
+.decl Deriv_Alarm12(v0: Node, v1: Node, v2: Node, v3: Node, v4: Node)
+.decl Deriv_Alarm3(v0: Node, v1: Node, v2: Node)
+.decl Deriv_Alarm6(v0: Node, v1: Node, v2: Node)
+.decl Deriv_Alarm9(v0: Node, v1: Node, v2: Node, v3: Node)
+.decl Deriv_DUPath0(v0: Node, v1: Node)
+.decl Deriv_DUPath1(v0: Node, v1: Node)
+.decl Deriv_DUPath2(v0: Node, v1: Node)
+.decl Deriv_DUPath4(v0: Node, v1: Node, v2: Node)
+.decl Deriv_DUPath5(v0: Node, v1: Node, v2: Node)
+.decl Deriv_DUPath7(v0: Node, v1: Node, v2: Node)
+.decl Deriv_DUPath8(v0: Node, v1: Node, v2: Node)
+
+.output Deriv_Alarm10
+.output Deriv_Alarm11
+.output Deriv_Alarm12
+.output Deriv_Alarm3
+.output Deriv_Alarm6
+.output Deriv_Alarm9
+.output Deriv_DUPath0
+.output Deriv_DUPath1
+.output Deriv_DUPath2
+.output Deriv_DUPath4
+.output Deriv_DUPath5
+.output Deriv_DUPath7
+.output Deriv_DUPath8
+
+DUPath(v0, v1) :- DUEdge(v0, v1).
+DUPath(v0, v1) :- FalseBranch(v0, v1).
+DUPath(v0, v1) :- TrueBranch(v0, v1).
+Alarm(v0, v1) :- DUPath(v0, v1), SparrowAlarm(v0, v1, v12), AlarmPrintf(v12, _).
+DUPath(v0, v1) :- FalseCond(v0), FalseBranch(v0, v2), DUPath(v2, v1).
+DUPath(v0, v1) :- TrueCond(v0), TrueBranch(v0, v2), DUPath(v2, v1).
+Alarm(v0, v1) :- DUPath(v0, v1), SparrowAlarm(v0, v1, v12), !AlarmAllocSize(v12, _), !AlarmPrintf(v12, _).
+DUPath(v0, v1) :- DUEdge(v0, v2), LoopHead(v2), DUPath(v2, v1), SparrowAlarm(_, v1, _).
+DUPath(v0, v1) :- DUEdge(v0, v2), !LoopHead(v2), DUPath(v2, v1), SparrowAlarm(_, v1, _).
+Alarm(v0, v1) :- DUPath(v0, v1), SparrowAlarm(v0, v1, v12), !AlarmPrintf(v12, _), AlarmAllocSize(v12, v14), !BinOpExp(v14, _, _, _), LvalExp(v14, _).
+Alarm(v0, v1) :- DUPath(v0, v1), SparrowAlarm(v0, v1, v12), !AlarmPrintf(v12, _), AlarmAllocSize(v12, v14), !BinOpExp(v14, _, _, _), !LvalExp(v14, _).
+Alarm(v0, v1) :- DUPath(v0, v1), SparrowAlarm(v0, v1, v12), !AlarmPrintf(v12, _), AlarmAllocSize(v12, v14), BinOpExp(v14, v17, _, _), Mult(v17).
+Alarm(v0, v1) :- DUPath(v0, v1), SparrowAlarm(v0, v1, v12), !AlarmPrintf(v12, _), AlarmAllocSize(v12, v14), BinOpExp(v14, v17, _, _), !Mult(v17).
+Deriv_DUPath0(v0, v1) :- DUEdge(v0, v1).
+Deriv_DUPath1(v0, v1) :- FalseBranch(v0, v1).
+Deriv_DUPath2(v0, v1) :- TrueBranch(v0, v1).
+Deriv_Alarm3(v0, v1, v12) :- DUPath(v0, v1), SparrowAlarm(v0, v1, v12), AlarmPrintf(v12, _).
+Deriv_DUPath4(v0, v1, v2) :- FalseCond(v0), FalseBranch(v0, v2), DUPath(v2, v1).
+Deriv_DUPath5(v0, v1, v2) :- TrueCond(v0), TrueBranch(v0, v2), DUPath(v2, v1).
+Deriv_Alarm6(v0, v1, v12) :- DUPath(v0, v1), SparrowAlarm(v0, v1, v12), !AlarmAllocSize(v12, _), !AlarmPrintf(v12, _).
+Deriv_DUPath7(v0, v1, v2) :- DUEdge(v0, v2), LoopHead(v2), DUPath(v2, v1), SparrowAlarm(_, v1, _).
+Deriv_DUPath8(v0, v1, v2) :- DUEdge(v0, v2), !LoopHead(v2), DUPath(v2, v1), SparrowAlarm(_, v1, _).
+Deriv_Alarm10(v0, v1, v12, v14) :- DUPath(v0, v1), SparrowAlarm(v0, v1, v12), !AlarmPrintf(v12, _), AlarmAllocSize(v12, v14), !BinOpExp(v14, _, _, _), !LvalExp(v14, _).
+Deriv_Alarm11(v0, v1, v12, v14, v17) :- DUPath(v0, v1), SparrowAlarm(v0, v1, v12), !AlarmPrintf(v12, _), AlarmAllocSize(v12, v14), BinOpExp(v14, v17, _, _), Mult(v17).
+Deriv_Alarm12(v0, v1, v12, v14, v17) :- DUPath(v0, v1), SparrowAlarm(v0, v1, v12), !AlarmPrintf(v12, _), AlarmAllocSize(v12, v14), BinOpExp(v14, v17, _, _), !Mult(v17).
+Deriv_Alarm9(v0, v1, v12, v14) :- DUPath(v0, v1), SparrowAlarm(v0, v1, v12), !AlarmPrintf(v12, _), AlarmAllocSize(v12, v14), !BinOpExp(v14, _, _, _), LvalExp(v14, _).
