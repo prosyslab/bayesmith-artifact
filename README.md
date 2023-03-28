@@ -12,8 +12,8 @@ with 128 GB of RAM and Ubuntu 20.04. We recommend running the experiments with a
 ### Loading Docker image
 We provide the artifact as a Docker image. To launch the BayeSmith Docker image, run the following commands:
 ```
-docker load < bayesmith.tar.gz
-docker run -it bayesmith
+docker pull prosyslab/bayesmith
+docker run -it prosyslab/bayesmith
 ```
 It takes about 10 minutes to load the image.
 
